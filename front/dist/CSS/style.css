@@ -1,0 +1,29 @@
+.encabezado {
+    display: flex;
+    align-items: center;
+    background: black;
+    color: #fff;
+    padding: 15px 30px;
+}
+
+.Logo {
+    width: 100px;
+    height: 75px;
+}
+
+a{
+    text-decoration: none;
+    color: #fff;
+}
+a:hover{
+    border: 2px solid #C6F135;
+}
+
+.login {
+    background: black;
+    padding: 10px 10px;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 10%;
+    margin-left: auto;
+}
