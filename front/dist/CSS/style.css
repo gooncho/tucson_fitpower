@@ -17,10 +17,13 @@ body{
 .card{
     background:#1C1F26;
 }
-
 .card:hover{
     border:2px solid #C6F135;
 }
+.entrenadores{
+    background:#2E3340;
+}
+
 .Logo {
     width: 100px;
     height: 75px;
