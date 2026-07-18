@@ -9,44 +9,37 @@
 </head>
 <body>
     <section>
-      <nav class="navbar navbar-expand-lg navbar-dark bg-black">
-    <div class="container">
-        <a class="navbar-brand" href="#">
-            <img src="dist/assets/logo_fitpower.jpg"
-                 width="130"
-                 class="rounded">
-        </a>
-        <button class="navbar-toggler"
-                data-bs-toggle="collapse"
-                data-bs-target="#menu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="menu">
-
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="index.html">Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="dist/paginas/RANKING.html">Ranking</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="dist/paginas/ENTRENADORES.html">Entrenadores</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="dist/paginas/PRODUCTOS.html">Productos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Contacto</a>
-                </li>
-            </ul>
-            <a href="dist/paginas/login.html"class="btn btn-outline-light">
-                Iniciar sesión
-            </a>
-        </div>
-    </div>
-</nav>
+      <div class="encabezado">
+        <img src="dist/assets/logo_fitpower.jpg" class="Logo" alt="Fitpower">
+        <nav style="justify-content: center;">
+          <ul>
+            <a href="index.html">INICIO</a>      
+            <a href="dist/paginas/RANKING.html">RANKING</a>
+            <a href="dist/paginas/ENTRENADORES.html">ENTRENADORES</a>           
+            <a href="dist/paginas/PRODUCTOS.html">PRODUCTOS</a>           
+            <a href="#">CONTACTO</a>
+          </ul>
+        </nav>
+        <button class="login">
+          <a href="dist/paginas/login.html">INICIAR SESIÓN</a></button>
+      </div>
     </section>
+    <section class="banner py-5">
+      <div class="container-fluid p-0"> 
+        <div class="row g-0 align-items-center"> 
+            <div class="col-lg-6">
+                <img src="dist/assets/Encabezado.jpg" class="w-100 vh-100 object-fit-cover rounded-end shadow">
+            </div>
+            <div class="col-lg-6 p-5">
+                <h1 class="display-4 fw-bold">TRANSFÓRMATE EN TU MEJOR VERSIÓN</h1>
+                <p class="lead">Entrenamiento profesional, personalizado y una comunidad que potencia todas tus metas.</p>
+                <a href="#" class="btn btn-success btn-lg me-2">Comenzar ahora</a>
+                <a href="#" class="btn btn-light btn-lg">Ver planes</a>
+            </div>
+        </div>
+      </div>
+      
+</section>
 <section class="beneficios py-5">
   <div class="container">
   <h2 class="text-center mb-5">BENEFICIOS</h2>
