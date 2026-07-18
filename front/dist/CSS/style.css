@@ -4,26 +4,31 @@ body{
     margin: 0;
     padding: 0;
 }
+
+.banner{
+    background:#2E3340;
+}
+
 .beneficios{
+    background:#2E3340;
+}
+
+.planes{
+    background:#2E3340;
+}
+
+.entrenadores{
     background:#2E3340;
 }
 
 .card{
     background:#1C1F26;
 }
+
 .card:hover{
     border:2px solid #C6F135;
 }
-.entrenadores{
-    background:#2E3340;
-}
-a{
-    text-decoration: none;
-    color: #fff;
-}
-a:hover{
-    border: 2px solid #C6F135;
-}
+
 .btn-success{
     background:#C6F135;
     border:none;
@@ -33,6 +38,7 @@ a:hover{
 .btn-success:hover{
     background:#b2dd2b;
 }
+
 * {
   margin: 0;
   padding: 0;
