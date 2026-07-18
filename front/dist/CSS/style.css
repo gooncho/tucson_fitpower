@@ -4,6 +4,9 @@ body{
     margin: 0;
     padding: 0;
 }
+.beneficios{
+    background:#2E3340;
+}
 .encabezado {
     display: flex;
     align-items: center;
@@ -11,7 +14,13 @@ body{
     color: #fff;
     padding: 15px 30px;
 }
+.card{
+    background:#1C1F26;
+}
 
+.card:hover{
+    border:2px solid #C6F135;
+}
 .Logo {
     width: 100px;
     height: 75px;
