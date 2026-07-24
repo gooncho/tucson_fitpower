@@ -12,14 +12,6 @@ h2 {
   font-family: "Montserrat";
 }
 
-.encabezado {
-    display: flex;
-    align-items: center;
-    background: black;
-    color: #fff;
-    padding: 15px 30px;
-}
-
 .Logo {
     width: 100px;
     height: 75px;
