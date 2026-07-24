@@ -1,0 +1,79 @@
+@media (min-width: 992px) {
+    .volver-derecha {
+        left: auto;
+        right: 25px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .textosuperpuesto h1 {
+        font-size: 3rem;
+    }
+
+    .hero-overlay {
+        background: linear-gradient(180deg, rgba(28, 31, 38, 0.5) 0%, rgba(28, 31, 38, 0.9) 100%);
+    }
+
+    .textosuperpuesto {
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .navbar-collapse {
+        background-color: #16181D;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+        text-align: center;
+    }
+
+    .card-plan.destacado {
+        transform: none;
+    }
+
+    .formulario {
+        width: 75%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .textosuperpuesto h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-section {
+        min-height: 80vh;
+    }
+
+    .boton-login {
+        width: 100%;
+    }
+
+    .formulario {
+        width: 95%;
+    }
+
+    .card-entrenador img {
+        height: 250px;
+    }
+
+    .footer {
+        text-align: center;
+    }
+
+    .footer .d-flex.gap-3 {
+        justify-content: center;
+    }
+
+    .footer .d-flex.align-items-start,
+    .footer .d-flex.align-items-center {
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+    }
+
+    .contact-icon {
+        margin-bottom: 8px;
+        margin-right: 0 !important;
+    }
+}

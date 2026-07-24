@@ -6,56 +6,62 @@
   <title>Login</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../CSS/styleslog.css">
+  <link rel="stylesheet" href="../CSS/style.css">
+  <link rel="stylesheet" href="../CSS/mobile.css">
 </head>
+
 <body class="bg-dark text-light">
-  <div class="container-fluid">
-    <div class="row vh-100">
-      <div class="col-lg-7 d-none d-lg-block p-0">
-        <img src="../assets/imagen_login.jpg" class="img-login">
-      </div>
-      <div class="col-lg-5 formulario-col d-flex align-items-center justify-content-center">
-        <div class="formulario">
-          <div class="text-center mt-1 mb-4">
-            <img src="../assets/logo_fitpower.jpg" width="120">
+  <div class="contenedor-vista">
+    <div class="deslizable" id="contenedorDeslizable">
+
+      <div class="pantalla-panel">
+        <a href="../../index.html" class="volver volver-izquierda">
+          <i class="bi bi-arrow-left"></i> Inicio
+        </a>
+        <div class="row vh-100 g-0">
+          <div class="col-lg-7 d-none d-lg-block p-0 contenedor-imagen">
+            <img src="../assets/login.png" class="img-login" alt="Fondo Login">
           </div>
-          <h2 class="text-center">INICIAR SESIÓN</h2>
-          <p class="text-center">Accedé a tu cuenta para continuar</p>
-          <form>
-            <div class="mb-3">
-              <label class="form-label">Email</label>
-              <input type="email" class="form-control" placeholder="Ingresá tu email">
+          <div class="col-lg-5 d-flex align-items-center justify-content-center">
+            <div class="formulario">
+              <div class="text-center mb-4">
+                <img src="../assets/FITPOWER.png" width="250" alt="Logo FitPower">
+              </div>
+              <h2 class="text-center">INICIAR SESIÓN</h2>
+              <p class="text-center">Accedé a tu cuenta para continuar</p>
+              <form>
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" placeholder="Ingresá tu email">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Contraseña</label>
+                  <input type="password" class="form-control" placeholder="Ingresá tu contraseña">
+                </div>
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" id="recordar-login">
+                  <label class="form-check-label" for="recordar-login">Recordarme</label>
+                </div>
+                <a href="#" class="d-block text-light mb-3">¿Olvidaste tu contraseña?</a>
+                <button type="button" class="boton-login" onclick="window.location.href='../../index.html'">INICIAR
+                  SESIÓN</button>
+              </form>
+              <hr class="my-4 border-secondary">
+              <p class="text-center">o continuá con</p>
+              <a href="#" class="btn btn-outline-light w-100 mb-2">
+                <i class="bi bi-google"></i> Continuar con Google
+              </a>
+              <a href="#" class="btn btn-outline-light w-100">
+                <i class="bi bi-facebook"></i> Continuar con Facebook
+              </a>
+              <p class="text-center mt-4">
+                ¿No tenés cuenta? <a href="#" id="irARegistro" class="texto-fitpower fw-bold">Registrate</a>
+              </p>
             </div>
-            <div class="mb-3">
-              <label class="form-label">Contraseña</label>
-              <input type="password" class="form-control" placeholder="Ingresá tu contraseña">
-            </div>
-            <div class="form-check mb-3">
-              <input class="form-check-input" type="checkbox" id="recordar">
-              <label class="form-check-label" for="recordar">Recordarme</label>
-            </div>
-            <a href="" class="d-block text-light mb-3">¿Olvidaste tu contraseña?</a>
-            <button type="submit" class="boton-login">
-              INICIAR SESIÓN
-            </button>
-          </form>
-          <hr class="my-3">
-          <p class="text-center">o continuá con</p>
-          <a href="" class="btn btn-outline-light w-100 mb-2">
-            <i class="bi bi-google"></i> Continuar con Google
-          </a>
-          <a href="" class="btn btn-outline-light w-100">
-            <i class="bi bi-facebook"></i> Continuar con Facebook
-          </a>
-          <p class="text-center mt-3 mb-0">
-            ¿No tenés cuenta? <a href="" class="texto-fitpower">Registrate</a>
-          </p>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../JS/scripts.js"></script>
 </body>
 </html>
