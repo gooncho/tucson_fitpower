@@ -156,12 +156,18 @@ section {
     padding: 20px 10px;
     transition: 0.3s;
 }
+.caja-plan .card-body {
+    height: 100%;
+}
+.caja-plan .boton-login {
+    height: 46px;
+    flex-shrink: 0;
+}
 .caja-plan:hover {
     border-color: #C6F135;
 }
 .caja-plan.destacado {
     border: 2px solid #C6F135;
-    transform: scale(1.05);
     z-index: 2;
     background: linear-gradient(180deg, #2E3340 0%, #252a36 100%);
 }
