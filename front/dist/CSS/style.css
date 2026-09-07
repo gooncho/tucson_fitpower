@@ -300,3 +300,257 @@ section {
 .volver-derecha {
     left: 20px;
 }
+
+.admin-body {
+    background: #0a0a0a;
+    color: #f4f4f2;
+}
+ 
+.admin-sidebar {
+    background: #000;
+    border-right: 1px solid #2a2a2a;
+}
+ 
+.admin-logo {
+    width: 120px;
+}
+ 
+.admin-link {
+    color: #9c9c98 !important;
+    margin-bottom: 3px;
+    border-radius: 10px;
+    border-left: 3px solid transparent;
+    padding-left: 14px;
+}
+ 
+.admin-link:hover {
+    color: #f4f4f2 !important;
+    background: #151515;
+}
+ 
+.admin-link.activo {
+    color: #cdfa3f !important;
+    background: #1c1c1c;
+    border-left-color: #cdfa3f;
+}
+ 
+.admin-link i {
+    margin-right: 8px;
+}
+ 
+.admin-contenido {
+    padding: 30px;
+}
+ 
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+ 
+.admin-header h1 {
+    font-family: "Montserrat", sans-serif;
+    margin: 0;
+    color: #f4f4f2;
+}
+ 
+.admin-header p {
+    color: #9c9c98;
+    margin: 0;
+}
+ 
+.admin-seccion {
+    background: #151515;
+    border: 1px solid #2a2a2a;
+    padding: 15px;
+    border-radius: 14px;
+}
+ 
+.admin-seccion h3 {
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: #f4f4f2;
+}
+ 
+.admin-card {
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 15px;
+    min-height: 115px;
+    position: relative;
+}
+ 
+.admin-card small {
+    color: #9c9c98;
+}
+ 
+.admin-card h2 {
+    color: #cdfa3f;
+    font-family: "Montserrat", sans-serif;
+    margin: 7px 0 2px;
+}
+ 
+.admin-card span {
+    color: #6b6b68;
+    font-size: 12px;
+}
+ 
+.admin-card i {
+    position: absolute;
+    right: 15px;
+    bottom: 12px;
+    color: #cdfa3f;
+    font-size: 22px;
+}
+ 
+.admin-seccion>p {
+    color: #9c9c98;
+}
+ 
+.admin-membresias {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 30px;
+    margin-top: 20px;
+}
+ 
+.admin-membresias p {
+    font-size: 13px;
+    color: #f4f4f2;
+}
+ 
+.admin-circulo {
+    width: 120px;
+    height: 120px;
+    border: 4px solid #cdfa3f;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+ 
+.admin-circulo strong {
+    font-size: 25px;
+    color: #f4f4f2;
+}
+ 
+.admin-circulo span {
+    color: #6b6b68;
+}
+ 
+.admin-producto {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 4px;
+    border-bottom: 1px solid #2a2a2a;
+}
+ 
+.admin-producto strong,
+.admin-producto small {
+    display: block;
+}
+ 
+.admin-producto strong {
+    color: #f4f4f2;
+}
+ 
+.admin-producto small {
+    color: #6b6b68;
+    font-size: 11px;
+}
+ 
+.admin-producto span {
+    color: #cdfa3f;
+    font-size: 11px;
+}
+ 
+.admin-ver {
+    display: block;
+    text-align: right;
+    color: #cdfa3f;
+    font-size: 12px;
+    margin-top: 8px;
+}
+ 
+.admin-titulo-seccion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+ 
+.admin-membresia {
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 9px;
+}
+ 
+.admin-membresia strong,
+.admin-membresia small {
+    display: block;
+}
+ 
+.admin-membresia strong {
+    font-size: 12px;
+    color: #f4f4f2;
+}
+ 
+.admin-membresia small {
+    color: #6b6b68;
+    font-size: 11px;
+}
+ 
+.admin-acceso {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 75px;
+    padding: 10px;
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    color: #f4f4f2;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 11px;
+}
+ 
+.admin-acceso i {
+    color: #cdfa3f;
+    font-size: 23px;
+    margin-bottom: 5px;
+}
+ 
+.admin-acceso:hover {
+    background: #cdfa3f;
+    border-color: #cdfa3f;
+    color: #0a0a0a;
+}
+ 
+.admin-acceso:hover i {
+    color: #0a0a0a;
+}
+ 
+@media (max-width: 767px) {
+    .admin-contenido {
+        padding: 20px 12px;
+    }
+ 
+    .admin-sidebar {
+        min-height: auto;
+    }
+ 
+    .admin-header .admin-logo {
+        display: none;
+    }
+ 
+    .admin-membresias {
+        flex-direction: column;
+    }
+}
