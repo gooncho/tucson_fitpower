@@ -18,13 +18,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const panelGuardado = sessionStorage.getItem('vistaActiva');
 
     if (panelGuardado === 'registro') {
-       
+
         contenedorDeslizable.style.transition = 'none';
 
         btnRegistro.click();
 
         void contenedorDeslizable.offsetHeight;
-      
+
         setTimeout(() => {
             contenedorDeslizable.style.transition = '';
         }, 10);
@@ -39,6 +39,19 @@ document.addEventListener('DOMContentLoaded', function () {
     if (btnLogin) {
         btnLogin.addEventListener('click', function () {
             sessionStorage.setItem('vistaActiva', 'login');
+        });
+    }
+});
+document.addEventListener('DOMContentLoaded', () => {
+    const btnCargarMas = document.getElementById('MasProductos');
+    if (btnCargarMas) {
+        btnCargarMas.addEventListener('click', () => {
+            const productosOcultos = document.querySelectorAll('.producto-tarjeta.d-none');
+            productosOcultos.forEach(producto => {
+                producto.classList.remove('d-none');
+            });
+            btnCargarMas.style.display = 'none';
+
         });
     }
 });
