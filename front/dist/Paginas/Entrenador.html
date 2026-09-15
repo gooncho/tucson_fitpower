@@ -1,243 +1,253 @@
 <!DOCTYPE html>
 <html lang="es">
+ 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel socio</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" href="../assets/Icons_logo.png">
-    <link rel="stylesheet" href="../CSS/entrenador.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel entrenador</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="../assets/Icons_logo.png">
+  <link rel="stylesheet" href="../CSS/fitpower.css">
 </head>
+ 
 <body>
+  <input type="checkbox" id="menuToggle" class="menu-toggle">
+  <label for="menuToggle" class="hamburger-btn" aria-label="Abrir menú">
+    <i class="bi bi-list"></i>
+  </label>
+  <label for="menuToggle" class="sidebar-overlay" aria-label="Cerrar menú"></label>
  
-<input type="checkbox" id="menuToggle" class="menu-toggle">
-<label for="menuToggle" class="hamburger-btn" aria-label="Abrir menú">
-  <i class="bi bi-list"></i>
-</label>
-<label for="menuToggle" class="sidebar-overlay"></label>
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../assets/logo_fitpower.jpg" alt="FitPower">
+    </div>
  
-<aside class="sidebar">
-  <div class="sidebar-logo">
-    <img src="../assets/logo_fitpower.jpg" width="130">
-  </div>
+    <nav class="nav-group">
+      <a href="../../index.html" class="side-link active"><i class="bi bi-house-door-fill"></i><span>Inicio</span></a>
+      <a href="#" class="side-link"><i class="bi bi-graph-up-arrow"></i><span>Mis socios</span></a>
+      <a href="#" class="side-link"><i class="bi bi-list-check"></i><span>Rutinas</span></a>
+      <a href="#" class="side-link"><i class="bi bi-heart-pulse"></i><span>Entrenamientos</span></a>
+      <a href="#" class="side-link"><i class="bi bi-calendar-check"></i><span>Ejercicios</span></a>
+      <a href="#" class="side-link"><i class="bi bi-card-checklist"></i><span>Agenda</span></a>
+      <a href="#" class="side-link"><i class="bi bi-box-seam"></i><span>Mensajes</span></a>
+      <a href="#" class="side-link"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
+    </nav>
  
-  <nav class="nav-group">
-    <a href="#" class="side-link active"><i class="bi bi-house-door-fill"></i><span>Inicio</span></a>
-    <a href="#" class="side-link"><i class="bi bi-graph-up-arrow"></i><span>Mis socios</span></a>
-    <a href="#" class="side-link"><i class="bi bi-list-check"></i><span>Rutinas</span></a>
-    <a href="#" class="side-link"><i class="bi bi-heart-pulse"></i><span>Entrenamientos</span></a>
-    <a href="#" class="side-link"><i class="bi bi-calendar-check"></i><span>Ejercicios</span></a>
-    <a href="#" class="side-link"><i class="bi bi-card-checklist"></i><span>Agenda</span></a>
-    <a href="#" class="side-link"><i class="bi bi-box-seam"></i><span>Mensajes</span></a>
-    <a href="#" class="side-link"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
-  </nav>
+    <div class="sidebar-footer">
+      <a href="#" class="logout-link"><i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span></a>
+    </div>
+  </aside>
  
-  <div class="sidebar-footer">
-    <a href="#" class="logout-link"><i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span></a>
-  </div>
-</aside>
-
-<main class="main">
-  <div class="welcome-header">
-    <div>
-      <h1>¡Hola Entrenador!</h1>
-      <p class="welcome-sub">Resumen entrenamiento</p>
-    </div>
-  </div>
-  <div class="block-heading">Resumen</div>
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-lg-3">
-      <div class="metric-card">
-        <div class="metric-label">Socios asignados</div>
-        <div class="metric-value">28</div>
-        <div class="metric-foot">
-          <span>Ver socios asignados →</span>
-        </div>
+  <main class="main">
+    <div class="welcome-header">
+      <div>
+        <h1>¡Hola, entrenador!</h1>
+        <p class="welcome-sub">Resumen de entrenamiento</p>
       </div>
     </div>
-    <div class="col-6 col-lg-3">
-      <div class="metric-card">
-        <div class="metric-label">Entrenadmientos de hoy</div>
-        <div class="metric-value">6</div>
-        <div class="metric-foot">
-          <span>Ver agenda →</span>
-        </div>
-      </div>
-    </div>
-    <div class="col-6 col-lg-3">
-      <div class="metric-card">
-        <div class="metric-label">Rutinas creadas</div>
-        <div class="metric-value">12</div>
-        <div class="metric-foot">
-          <span>Ver rutinas →</span>
-        </div>
-      </div>
-    </div>
-    <div class="col-6 col-lg-3">
-      <div class="metric-card">
-        <div class="metric-label">Mensajes nuevos</div>
-        <div class="metric-value">3</div>
-        <div class="metric-foot">
-          <span>Ver mensajes nuevos →</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row g-3 mb-4">
-    <div class="col-5">
-    <div class="partners-card">
-      <div class="partners-header">
-        <h2>Mis socios asignados</h2>
-        <a href="#" class="view-all">Ver todos →</a>
-      </div>
-      <div class="partner-list">
-        <div class="partner-item">
-          <div class="partner-info">
-            <h3>Tomás Melo</h3>
-            <p>Objetivo actual: <span>Ganar músculo</span></p>
+ 
+    <div class="block-heading">Resumen</div>
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-lg-3">
+        <div class="metric-card">
+          <div class="metric-label">Socios asignados</div>
+          <div class="metric-value">28</div>
+          <div class="metric-foot">
+            <span>Ver socios asignados</span>
+            <span class="metric-icon"><i class="bi bi-people-fill"></i></span>
           </div>
-          <button class="partner-btn">Ver socio</button>
         </div>
-        <div class="partner-item">
-          <div class="partner-info">
-            <h3>Andrés Trujillo</h3>
-            <p>Objetivo actual: <span>Perder peso</span></p>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="metric-card">
+          <div class="metric-label">Entrenamientos hoy</div>
+          <div class="metric-value">6</div>
+          <div class="metric-foot">
+            <span>Ver agenda</span>
+            <span class="metric-icon"><i class="bi bi-calendar3"></i></span>
           </div>
-          <button class="partner-btn">Ver socio</button>
         </div>
-        <div class="partner-item">
-          <div class="partner-info">
-            <h3>Brian Gonzatto</h3>
-            <p>Objetivo actual: <span>Mejorar resistencia</span></p>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="metric-card">
+          <div class="metric-label">Rutinas creadas</div>
+          <div class="metric-value">12</div>
+          <div class="metric-foot">
+            <span>Ver rutinas</span>
+            <span class="metric-icon"><i class="bi bi-list-check"></i></span>
           </div>
-          <button class="partner-btn">Ver socio</button>
         </div>
-          <div class="partner-item">
-            <div class="partner-info">
-              <h3>Gonzalo Pisón</h3>
-              <p>Objetivo actual: <span>Mejorar movilidad</span></p>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="metric-card">
+          <div class="metric-label">Mensajes nuevos</div>
+          <div class="metric-value">3</div>
+          <div class="metric-foot">
+            <span>Ver mensajes</span>
+            <span class="metric-icon"><i class="bi bi-envelope-fill"></i></span>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-lg-5">
+        <div class="card-panel">
+          <div class="card-header-row">
+            <h2>Mis socios asignados</h2>
+            <a href="#" class="view-all">Ver todos</a>
+          </div>
+          <div class="item-list">
+            <div class="list-item">
+              <div>
+                <h3>Tomás Melo</h3>
+                <p>Objetivo actual: <span>Ganar músculo</span></p>
+              </div>
+              <button class="btn-lime btn-small">Ver socio</button>
             </div>
-            <button class="partner-btn">Ver socio</button>
+            <div class="list-item">
+              <div>
+                <h3>Andrés Trujillo</h3>
+                <p>Objetivo actual: <span>Perder peso</span></p>
+              </div>
+              <button class="btn-lime btn-small">Ver socio</button>
+            </div>
+            <div class="list-item">
+              <div>
+                <h3>Brian Gonzatto</h3>
+                <p>Objetivo actual: <span>Mejorar resistencia</span></p>
+              </div>
+              <button class="btn-lime btn-small">Ver socio</button>
+            </div>
+            <div class="list-item">
+              <div>
+                <h3>Gonzalo Pisón</h3>
+                <p>Objetivo actual: <span>Mejorar movilidad</span></p>
+              </div>
+              <button class="btn-lime btn-small">Ver socio</button>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="col-12 col-lg-7">
+        <div class="card-panel">
+          <div class="card-header-row">
+            <h2>Rutinas creadas</h2>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Rutina</th>
+                  <th>Socio</th>
+                  <th>Ejercicios</th>
+                  <th>Última edición</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Tren Superior</td>
+                  <td>Andrés Trujillo</td>
+                  <td>7</td>
+                  <td>26/07/2026</td>
+                </tr>
+                <tr>
+                  <td>Tren Inferior</td>
+                  <td>Enzo Ríos</td>
+                  <td>12</td>
+                  <td>10/07/2026</td>
+                </tr>
+                <tr>
+                  <td>Core</td>
+                  <td>Brian Gonzatto</td>
+                  <td>9</td>
+                  <td>06/08/2026</td>
+                </tr>
+                <tr>
+                  <td>Brazos</td>
+                  <td>Gonzalo Pisón</td>
+                  <td>7</td>
+                  <td>23/07/2026</td>
+                </tr>
+                <tr>
+                  <td>Espalda y Hombro</td>
+                  <td>Tomás Melo</td>
+                  <td>7</td>
+                  <td>23/08/2026</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-foot">
+            <a href="../paginas/Rutinas" class="view-all">Ver todas las rutinas</a>
           </div>
         </div>
       </div>
     </div>
-
-    <div class="col-7">
-  <div class="routine-card">
-    <div class="routine-header">
-      <h2>Rutinas creadas</h2>
+ 
+    <div class="row g-3">
+      <div class="col-12">
+        <div class="card-panel">
+          <div class="card-header-row">
+            <h2>Próximos entrenamientos</h2>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Fecha y hora</th>
+                  <th>Socio</th>
+                  <th>Rutina</th>
+                  <th>Lugar</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Hoy, 10:00</td>
+                  <td>Andrés Trujillo</td>
+                  <td>Tren Superior</td>
+                  <td>Sala de musculación</td>
+                  <td><button class="btn-lime btn-small">Ver detalles</button></td>
+                </tr>
+                <tr>
+                  <td>Hoy, 12:00</td>
+                  <td>Enzo Ríos</td>
+                  <td>Tren Inferior</td>
+                  <td>Sala de musculación</td>
+                  <td><button class="btn-lime btn-small">Ver detalles</button></td>
+                </tr>
+                <tr>
+                  <td>Mañana, 15:30</td>
+                  <td>Brian Gonzatto</td>
+                  <td>HIIT</td>
+                  <td>Sala de cardio</td>
+                  <td><button class="btn-lime btn-small">Ver detalles</button></td>
+                </tr>
+                <tr>
+                  <td>Jueves, 09:30</td>
+                  <td>Gonzalo Pisón</td>
+                  <td>Movilidad</td>
+                  <td>Sala de yoga</td>
+                  <td><button class="btn-lime btn-small">Ver detalles</button></td>
+                </tr>
+                <tr>
+                  <td>Viernes, 07:00</td>
+                  <td>Tomás Melo</td>
+                  <td>Espalda y Hombro</td>
+                  <td>Sala de musculación</td>
+                  <td><button class="btn-lime btn-small">Ver detalles</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
-    <table class="routine-table">
-      <thead>
-        <tr>
-          <th>Rutina</th>
-          <th>Socio</th>
-          <th>Ejercicios</th>
-          <th>Última edición</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Tren Superior</td>
-          <td>Andrés Trujillo</td>
-          <td>7</td>
-          <td>26/07/2026</td>
-        </tr>
-        <tr>
-          <td>Tren Inferior</td>
-          <td>Enzo Ríos</td>
-          <td>12</td>
-          <td>10/07/2026</td>
-        </tr>
-        <tr>
-          <td>Core</td>
-          <td>Brian Gonzatto</td>
-          <td>9</td>
-          <td>06/08/2026</td>
-        </tr>
-        <tr>
-          <td>Brazos</td>
-          <td>Gonzalo Pisón</td>
-          <td>7</td>
-          <td>23/07/2026</td>
-        </tr>
-        <tr>
-          <td>Espalda y Hombro</td>
-          <td>Tomás Melo</td>
-          <td>7</td>
-          <td>23/08/2026</td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="routine-foot">
-      <a href="#">Ver todas las rutinas →</a>
-    </div>
-  </div>
-</div>
-  </div>
-
-<div class="row g-3 mb-4">
-    <div class="col-12">
-  <div class="trainings-card">
-    <div class="trainings-header">
-      <h2>Próximos entrenamientos</h2>
-    </div>
-    <table class="trainings-table">
-      <thead>
-        <tr>
-          <th>Fecha y hora</th>
-          <th>Socio</th>
-          <th>Rutina</th>
-          <th>Lugar</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Hoy, 10:00AM</td>
-          <td>Andrés Trujillo</td>
-          <td>Tren Superior</td>
-          <td>Sala de musculación</td>
-          <td><button class="details-btn">Ver detalles</button></td>
-        </tr>
-        <tr>
-          <td>Hoy, 12:00PM</td>
-          <td>Enzo Ríos</td>
-          <td>Tren Inferior</td>
-          <td>Sala de musculación</td>
-          <td><button class="details-btn">Ver detalles</button></td>
-        </tr>
-        <tr>
-          <td>Mañana, 15:30AM</td>
-          <td>Brian Gonzatto</td>
-          <td>HIIT</td>
-          <td>Sala de cardio</td>
-          <td><button class="details-btn">Ver detalles</button></td>
-        </tr>
-        <tr>
-          <td>Jueves, 09:30AM</td>
-          <td>Gonzalo Pisón</td>
-          <td>Movilidad</td>
-          <td>Sala de yoga</td>
-          <td><button class="details-btn">Ver detalles</button></td>
-        </tr>
-        <tr>
-          <td>Viernes, 07:00AM</td>
-          <td>Tomás Melo</td>
-          <td>Espalda y Hombro</td>
-          <td>Sala de musculación</td>
-          <td><button class="details-btn">Ver detalles</button></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-  </div>
-</main>
- </body>
+  </main>
+</body>
 </html>
