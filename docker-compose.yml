@@ -19,12 +19,12 @@ services:
     container_name: ${APP_NAME}_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASS}
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: fitpower_tucson
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: password
     ports:
-      - "3306:3306"
+      - "3307:3307"
     volumes:
       - db_data:/var/lib/mysql
       - ./api/config/init.sql:/docker-entrypoint-initdb.d/init.sql
