@@ -30,22 +30,31 @@
               </div>
               <h2 class="text-center">INICIAR SESIÓN</h2>
               <p class="text-center">Accedé a tu cuenta para continuar</p>
-              <form>
+              <form id="form-login">
                 <div class="mb-3">
-                  <label class="form-label">Email</label>
-                  <input type="email" class="form-control" placeholder="Ingresá tu email">
+                  <label for="usuario" class="form-label">
+                    Usuario
+                  </label>
+                  <input type="text" id="usuario" class="form-control" placeholder="Ingresá tu nombre de usuario"
+                    required>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label">Contraseña</label>
-                  <input type="password" class="form-control" placeholder="Ingresá tu contraseña">
+                  <label for="password" class="form-label">
+                    Contraseña
+                  </label>
+                  <input type="password" id="password" class="form-control" placeholder="Ingresá tu contraseña"
+                    required>
+                </div>
+                <div id="alerta-login" class="alert alert-danger d-none">
                 </div>
                 <div class="form-check mb-3">
-                  <input class="form-check-input" type="checkbox" id="recordar-login">
-                  <label class="form-check-label" for="recordar-login">Recordarme</label>
+                  <input class="form-check-input" type="checkbox" id="recordar">
+                  <label class="form-check-label" for="recordar">Recordarme</label>
                 </div>
-                <a href="#" class="d-block text-light mb-3">¿Olvidaste tu contraseña?</a>
-                <button type="button" class="boton-login" onclick="window.location.href='../../index.html'">INICIAR
-                  SESIÓN</button>
+                <a href="" class="d-block text-light mb-3">¿Olvidaste tu contraseña?</a>
+                <button type="submit" class="boton-login">
+                  INICIAR SESIÓN
+                </button>
               </form>
               <hr class="my-4 border-secondary">
               <p class="text-center">o continuá con</p>
@@ -92,7 +101,7 @@
                   <input class="form-check-input" type="checkbox" id="recordar-registro">
                   <label class="form-check-label" for="recordar-registro">Recordarme</label>
                 </div>
-                <button type="button" class="boton-login" onclick="window.location.href='../../index.html'">CREAR
+                <button type="button" class="boton-login">CREAR
                   USUARIO</button>
               </form>
               <hr class="my-4 border-secondary">
@@ -116,7 +125,10 @@
 
     </div>
   </div>
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="../JS/api.js"></script>
+  <script src="../JS/login.js"></script>
   <script src="../JS/script.js"></script>
 </body>
 
