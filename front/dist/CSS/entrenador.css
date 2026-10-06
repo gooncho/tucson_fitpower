@@ -1,0 +1,194 @@
+.partners-card {
+    background: #151515;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 20px;
+    color: #f4f4f2;
+}
+
+.partners-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.partners-header h2 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #cdfa3f;
+    margin: 0;
+}
+
+.view-all {
+    font-size: 14px;
+    font-weight: 600;
+    color: #cdfa3f;
+    text-decoration: none;
+}
+
+.view-all:hover {
+    text-decoration: underline;
+}
+
+.partner-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.partner-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1c1c1c;
+    padding: 12px 16px;
+    border-radius: 10px;
+}
+
+.partner-info h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.partner-info p {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: #9c9c98;
+}
+
+.partner-info span {
+    color: #f4f4f2;
+    font-weight: 600;
+}
+
+.partner-btn {
+    background: #cdfa3f;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #151515;
+}
+
+.partner-btn:hover {
+    background: #b5e635;
+}
+
+.trainings-card {
+    background: #151515;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 20px;
+    color: #f4f4f2;
+}
+
+.trainings-header h2 {
+    margin: 0 0 16px;
+    font-size: 20px;
+    font-weight: 800;
+    color: #cdfa3f;
+}
+
+.trainings-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.trainings-table th,
+.trainings-table td {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.trainings-table thead th {
+    background: #1c1c1c;
+    color: #9c9c98;
+    font-weight: 700;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.trainings-table tbody tr:nth-child(even) {
+    background: #1c1c1c;
+}
+
+.trainings-table tbody tr:hover {
+    background: #2a2a2a;
+}
+
+.details-btn {
+    background: #cdfa3f;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #151515;
+}
+
+.details-btn:hover {
+    background: #b5e635;
+}
+
+.routine-card {
+    background: #151515;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 20px;
+    color: #f4f4f2;
+}
+
+.routine-header h2 {
+    margin: 0 0 16px;
+    font-size: 20px;
+    font-weight: 800;
+    color: #cdfa3f;
+}
+
+.routine-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.routine-table th,
+.routine-table td {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.routine-table thead th {
+    background: #1c1c1c;
+    color: #9c9c98;
+    font-weight: 700;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.routine-table tbody tr:nth-child(even) {
+    background: #1c1c1c;
+}
+
+.routine-table tbody tr:hover {
+    background: #2a2a2a;
+}
+
+.routine-foot {
+    margin-top: 14px;
+    text-align: right;
+}
+
+.routine-foot a {
+    font-size: 14px;
+    font-weight: 600;
+    color: #cdfa3f;
+    text-decoration: none;
+}
+
+.routine-foot a:hover {
+    text-decoration: underline;
+}

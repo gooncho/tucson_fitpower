@@ -1,0 +1,139 @@
+.progress-card {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    height: 100%;
+}
+
+.progress-ring {
+    position: relative;
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    flex: none;
+
+    background: conic-gradient(
+        #cdfa3f calc(var(--pct, 0) * 1%),
+        #1c1c1c 0
+    );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ring::before {
+    content: "";
+    position: absolute;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: #151515;
+}
+
+.progress-ring .progress-pct {
+    position: relative;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.progress-card .progress-msg {
+    font-size: 15px;
+    font-weight: 600;
+    color: #9c9c98;
+}
+
+.next-workout .nw-name {
+    margin-bottom: 6px;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.next-workout .nw-line {
+    margin-bottom: 4px;
+    font-size: 13.5px;
+    color: #9c9c98;
+}
+
+.membership-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.membership-card .mc-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6b6b68;
+}
+
+.membership-card .mc-title i {
+    color: #cdfa3f;
+}
+
+.membership-card .mc-plan {
+    margin-bottom: 4px;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.membership-card .mc-until {
+    font-size: 13px;
+    color: #9c9c98;
+}
+
+.achievement-card {
+    background: #151515;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 18px;
+    height: 100%;
+}
+
+.achievement-card .ac-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 14px;
+    border-radius: 10px;
+    background: #1c1c1c;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+    color: #cdfa3f;
+}
+
+.achievement-card .ac-title {
+    margin-bottom: 4px;
+    font-size: 14.5px;
+    font-weight: 700;
+}
+
+.achievement-card .ac-desc {
+    font-size: 12.5px;
+    color: #6b6b68;
+    line-height: 1.4;
+}
+
+@media (max-width: 767px) {
+
+    .progress-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .membership-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

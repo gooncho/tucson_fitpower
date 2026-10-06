@@ -72,21 +72,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sesion = await API.request('/sesion');
 
     if (sesion.status !== 'ok') {
-
-        window.location.href = '../../index.html';
-
+        window.location.href = '/';
         return;
     }
-
 
     const nombre = document.getElementById('nombre-usuario');
 
     if (nombre && sesion.data) {
-
         nombre.textContent =
             sesion.data.nombre || sesion.data.usuario;
     }
-
 
     const botonSalir = document.getElementById('btn-logout');
 
@@ -96,7 +91,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             await API.request('/logout', 'POST');
 
-            window.location.href = '../../index.html';
+            window.location.href = '/';
         });
     }
+
 });

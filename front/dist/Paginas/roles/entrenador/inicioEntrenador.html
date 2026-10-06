@@ -12,7 +12,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="icon" href="../assets/Icons_logo.png">
-  <link rel="stylesheet" href="../CSS/entrenador.css">
+  <link rel="stylesheet" href="../../../CSS/dashboard.css">
+  <link rel="stylesheet" href="../../../CSS/entrenador.css">
 </head>
 
 <body>
@@ -25,7 +26,7 @@
 
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <img src="../assets/logo_fitpower.jpg" width="130">
+      <img src="../../../assets/logo_fitpower.jpg" width="130">
     </div>
 
     <nav class="nav-group">
@@ -40,14 +41,16 @@
     </nav>
 
     <div class="sidebar-footer">
-      <a href="#" class="logout-link"><i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span></a>
+      <a href="#" class="logout-link" id="btn-logout">
+        <i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span>
+      </a>
     </div>
   </aside>
 
   <main class="main">
     <div class="welcome-header">
       <div>
-        <h1>¡Hola Entrenador!</h1>
+        <h1>¡Hola <span id="nombre-usuario"></span>!</h1>
         <p class="welcome-sub">Resumen entrenamiento</p>
       </div>
     </div>
@@ -243,6 +246,9 @@
       </div>
     </div>
   </main>
+  <script src="../../../JS/api.js"></script>
+  <script src="../../../JS/script.js"></script>
+
 </body>
 
 </html>

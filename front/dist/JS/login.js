@@ -27,11 +27,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 function redirigirSegunRol(rol) {
     if (rol == 1) {
-        window.location.href = './PanelAdministrador.html';
+        window.location.href = './roles/administrador/inicioAdministrador.html';
     } else if (rol == 2) {
-        window.location.href = './Entrenador.html';
+        window.location.href = './roles/entrenador/inicioEntrenador.html';
     } else if (rol == 3) {
-        window.location.href = './Socio.html';
+        window.location.href = './roles/socio/inicioSocio.html';
     } else {
         alert('Tipo de usuario no válido');
     }

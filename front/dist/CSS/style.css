@@ -5,59 +5,79 @@ body {
     padding: 0;
     overflow-x: hidden;
     font-family: 'Roboto', sans-serif;
+    font-size: 15px;
 }
+
 a {
     text-decoration: none;
     transition: 0.3s ease;
 }
+
 .bg-dark-custom {
     background-color: #16181D !important;
 }
+
 .texto-fitpower {
     color: #C6F135 !important;
 }
+
 .encabezado {
     font-family: "Montserrat", sans-serif;
 }
+
 .oswald-titulo {
     font-family: "Oswald", sans-serif;
     font-weight: 600;
     letter-spacing: 1px;
 }
+
 .roboto-subtitulo {
     font-family: "Roboto", sans-serif;
     font-weight: 300;
 }
+
 .navegacion {
     padding: 15px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
+
 .navegacion-link {
     color: #fff !important;
     font-weight: 500;
     margin: 0 10px;
 }
+
 .navegacion-link:hover {
     color: #C6F135 !important;
 }
+
 .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     color: #C6F135;
+    background: transparent;
     border: 1px solid #C6F135;
     border-radius: 4px;
     padding: 8px 20px;
+    font-size: 13.5px;
     font-weight: 600;
     transition: all 0.3s;
 }
+
 .btn-outline:hover {
     background: #C6F135;
     color: #000;
 }
+
 .hero-section,
 .cta-section {
     min-height: 100vh;
     position: relative;
     padding-top: 80px;
 }
+
 .hero-bg {
     position: absolute;
     top: 0;
@@ -68,26 +88,40 @@ a {
     object-position: center top;
     z-index: 0;
 }
+
 .hero-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, rgba(28, 31, 38, 0.95) 0%, rgba(28, 31, 38, 0.6) 50%, rgba(28, 31, 38, 0.3) 100%);
+    background: linear-gradient(
+        90deg,
+        rgba(28, 31, 38, 0.95) 0%,
+        rgba(28, 31, 38, 0.6) 50%,
+        rgba(28, 31, 38, 0.3) 100%
+    );
     z-index: 0;
 }
+
 .textosuperpuesto h1 {
     font-family: "Oswald";
     font-size: 4rem;
     line-height: 1.1;
     margin-bottom: 1.5rem;
 }
+
+
+/* =========================================================
+   5. LOGIN Y REGISTRO
+   ========================================================= */
+
 .formulario {
     width: 90%;
     max-width: 420px;
     margin: 0 auto;
 }
+
 .form-control {
     background: #2E3340;
     color: white;
@@ -95,15 +129,18 @@ a {
     padding: 12px 15px;
     border-radius: 4px;
 }
+
 .form-control::placeholder {
     color: #adb5bd;
 }
+
 .form-control:focus {
     background: #3a4050;
     color: white;
     box-shadow: 0 0 0 0.25rem rgba(198, 241, 53, 0.25);
     outline: none;
 }
+
 .boton-login {
     background: #C6F135;
     color: #000;
@@ -116,17 +153,81 @@ a {
     letter-spacing: 0.5px;
     transition: background-color 0.2s ease, transform 0.2s ease;
 }
+
 .boton-login:hover {
     color: #000;
     background-color: #d4ff3f;
     transform: translateY(-2px);
 }
+
+.contenedor-vista {
+    width: 100vw;
+    height: 100dvh;
+    overflow: hidden;
+    position: relative;
+}
+
+.deslizable {
+    display: flex;
+    width: 200vw;
+    height: 100dvh;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.pantalla-panel {
+    width: 100vw;
+    height: 100dvh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.deslizable.activar-registro {
+    transform: translateX(-100vw);
+}
+
+.img-login {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 100dvh;
+    object-fit: cover;
+    display: block;
+}
+
+.volver {
+    position: absolute;
+    top: 20px;
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    z-index: 100;
+    transition: 0.3s;
+    backdrop-filter: blur(5px);
+}
+
+.volver:hover {
+    background: #C6F135;
+    color: black;
+}
+
+.volver-izquierda {
+    left: 20px;
+}
+
+.volver-derecha {
+    left: 20px;
+}
+
 section {
     background: #1C1F26;
 }
+
 .beneficios {
     background: #2E3340;
 }
+
 .caja-beneficio,
 .caja-entrenador {
     background: #2E3340;
@@ -135,19 +236,41 @@ section {
     transition: 0.3s;
     cursor: pointer;
 }
+
 .caja-beneficio {
     background: #1C1F26;
 }
+
 .caja-beneficio:hover,
 .caja-entrenador:hover {
     border-color: #C6F135;
     transform: translateY(-5px);
 }
+
 .caja-beneficio .logo {
     height: 60px;
     width: auto;
     filter: drop-shadow(0 0 5px rgba(198, 241, 53, 0.5));
 }
+
+.contenedor-imagen {
+    position: relative;
+    overflow: hidden;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.card-entrenador img {
+    height: 300px;
+    width: 100%;
+    object-fit: cover;
+    transition: 0.5s;
+}
+
+.card-entrenador:hover img {
+    transform: scale(1.05);
+}
+
 .caja-plan {
     background: #2E3340;
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -156,21 +279,30 @@ section {
     padding: 20px 10px;
     transition: 0.3s;
 }
+
 .caja-plan .card-body {
     height: 100%;
 }
+
 .caja-plan .boton-login {
     height: 46px;
     flex-shrink: 0;
 }
+
 .caja-plan:hover {
     border-color: #C6F135;
 }
+
 .caja-plan.destacado {
     border: 2px solid #C6F135;
     z-index: 2;
-    background: linear-gradient(180deg, #2E3340 0%, #252a36 100%);
+    background: linear-gradient(
+        180deg,
+        #2E3340 0%,
+        #252a36 100%
+    );
 }
+
 .preferido {
     position: absolute;
     top: -15px;
@@ -183,59 +315,53 @@ section {
     font-weight: 700;
     letter-spacing: 1px;
 }
+
 .precio {
     font-family: 'Oswald', sans-serif;
     color: #fff;
     font-size: 2.5rem;
 }
+
 .precio small {
     font-size: 1rem;
     color: #adb5bd;
     font-family: 'Roboto', sans-serif;
 }
+
 .lista-plan {
     list-style: none;
     padding: 0;
 }
+
 .lista-plan li {
     margin-bottom: 12px;
     font-size: 1.05rem;
 }
+
 .lista-plan li::before {
     content: "✔ ";
     color: #C6F135;
     font-weight: bold;
     margin-right: 8px;
 }
-.contenedor-imagen {
-    position: relative;
-    overflow: hidden;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-}
-.card-entrenador img {
-    height: 300px;
-    width: 100%;
-    object-fit: cover;
-    transition: 0.5s;
-}
-.card-entrenador:hover img {
-    transform: scale(1.05);
-}
+
 .footer {
     background-color: #16181D;
     padding: 60px 0 20px;
 }
+
 .red-social {
     width: 30px;
     height: 30px;
     transition: 0.3s;
     opacity: 0.7;
 }
+
 .red-social:hover {
     opacity: 1;
     transform: scale(1.1);
 }
+
 .icono-contacto {
     width: 18px;
     height: 18px;
@@ -243,60 +369,10 @@ section {
     filter: invert(1);
     opacity: 0.6;
 }
+
 .footer h6 {
     margin-bottom: 20px;
     font-weight: 700;
     font-family: "Oswald";
     letter-spacing: 1px;
-}
-.contenedor-vista {
-    width: 100vw;
-    height: 100dvh;
-    overflow: hidden;
-    position: relative;
-}
-.deslizable {
-    display: flex;
-    width: 200vw;
-    height: 100dvh;
-    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-}
-.pantalla-panel {
-    width: 100vw;
-    height: 100dvh;
-    overflow-y: auto;
-    position: relative;
-}
-.deslizable.activar-registro {
-    transform: translateX(-100vw);
-}
-.img-login {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    min-height: 100dvh;
-    object-fit: cover;
-    display: block;
-}
-.volver {
-    position: absolute;
-    top: 20px;
-    padding: 10px 18px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    text-decoration: none;
-    border-radius: 30px;
-    z-index: 100;
-    transition: .3s;
-    backdrop-filter: blur(5px);
-}
-.volver:hover {
-    background: #C6F135;
-    color: black;
-}
-.volver-izquierda {
-    left: 20px;
-}
-.volver-derecha {
-    left: 20px;
 }
