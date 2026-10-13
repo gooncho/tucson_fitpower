@@ -1,0 +1,205 @@
+.admin-body {
+    font-family: "Inter", sans-serif;
+}
+ 
+.admin-link {
+    display: block;
+    font-weight: 500;
+    text-decoration: none;
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+ 
+.admin-sidebar-separador {
+    border: 0;
+    border-top: 1px solid #2a2a2a;
+    margin: 14px 0;
+    opacity: 1;
+}
+ 
+.admin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #cdfa3f;
+    color: #0a0a0a;
+    border: 1px solid #cdfa3f;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+}
+ 
+.admin-btn:hover {
+    background: #b5e635;
+    border-color: #b5e635;
+    color: #0a0a0a;
+}
+ 
+.admin-herramientas {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+ 
+.admin-campo {
+    position: relative;
+}
+ 
+.admin-campo i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b6b68;
+    pointer-events: none;
+}
+ 
+.admin-input,
+.admin-select {
+    width: 100%;
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    color: #f4f4f2;
+    font-size: 14px;
+    padding: 10px 14px;
+}
+ 
+.admin-campo .admin-input {
+    padding-left: 40px;
+}
+ 
+.admin-input::placeholder {
+    color: #6b6b68;
+}
+ 
+.admin-input:focus,
+.admin-select:focus {
+    outline: none;
+    border-color: #cdfa3f;
+    box-shadow: 0 0 0 3px rgba(205, 250, 63, 0.15);
+}
+ 
+.admin-select option {
+    background: #1c1c1c;
+    color: #f4f4f2;
+}
+ 
+.admin-tabla-wrap {
+    overflow-x: auto;
+}
+ 
+.admin-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+}
+ 
+.admin-tabla th {
+    text-align: left;
+    color: #9c9c98;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #2a2a2a;
+}
+ 
+.admin-tabla td {
+    color: #f4f4f2;
+    font-size: 14px;
+    padding: 13px 12px;
+    border-bottom: 1px solid #2a2a2a;
+    vertical-align: middle;
+}
+ 
+.admin-tabla tbody tr:last-child td {
+    border-bottom: 0;
+}
+ 
+.admin-tabla tbody tr:hover {
+    background: #1c1c1c;
+}
+ 
+.admin-tabla .col-id {
+    color: #6b6b68;
+    width: 56px;
+}
+ 
+.admin-tabla .col-acciones {
+    white-space: nowrap;
+    text-align: right;
+}
+ 
+.admin-nulo {
+    color: #6b6b68;
+}
+ 
+.admin-estado {
+    display: inline-block;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #2a2a2a;
+}
+ 
+.admin-estado.activo {
+    color: #cdfa3f;
+    border-color: #cdfa3f;
+}
+ 
+.admin-estado.pendiente {
+    color: #f5b942;
+    border-color: #f5b942;
+}
+ 
+.admin-estado.vencido {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+}
+ 
+.admin-mini {
+    background: transparent;
+    color: #f4f4f2;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 12px;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+ 
+.admin-mini:hover {
+    background: #cdfa3f;
+    border-color: #cdfa3f;
+    color: #0a0a0a;
+}
+ 
+.admin-vacio {
+    display: none;
+    text-align: center;
+    color: #9c9c98;
+    padding: 28px 10px 14px;
+}
+ 
+.admin-vacio.visible {
+    display: block;
+}
+ 
+@media (max-width: 767px) {
+ 
+    .admin-herramientas {
+        grid-template-columns: 1fr;
+    }
+ 
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+}

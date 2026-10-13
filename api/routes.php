@@ -4,7 +4,10 @@
 $router->post('/acceso', 'AuthController@login');
 $router->get('/sesion', 'AuthController@sesion');
 $router->post('/logout', 'AuthController@logout');
-
-
+$router->get('/socios', 'SocioController@listar');
+$router->get('/ejercicios', 'EjercicioController@listar');
+$router->get('/entrenadores', 'EntrenadorController@listar');
+$router->get('/pagos', 'PagoController@listar');
+$router->get('/productos', 'ProductoController@listar');
 // Próxima clase: login
 // $router->post('/login', 'AuthController@login');

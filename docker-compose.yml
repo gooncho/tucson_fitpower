@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-
   # Servidor Web + PHP (front + api)
   app:
     build: .
@@ -10,6 +9,11 @@ services:
       - "8080:80"
     volumes:
       - ./:/var/www/html
+    environment:
+      DB_HOST: db
+      DB_NAME: fitpower_tucson
+      DB_USER: usuario
+      DB_PASS: password
     depends_on:
       - db
 

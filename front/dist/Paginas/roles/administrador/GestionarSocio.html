@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestionar socios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../CSS/administrador.css">
+    <link rel="stylesheet" href="../../../css/Gestionarsocio.css">
+</head>
+<body class="admin-body">
+ 
+<div class="container-fluid">
+    <div class="row min-vh-100">
+        <aside class="admin-sidebar col-md-2 p-3 d-none d-md-block ">
+            <img src="../../../assets/logo_fitpower.jpg" class="admin-logo">
+            <nav class="nav flex-column">
+                <a class="nav-link admin-link" href="inicioAdministrador.html"><i class="bi bi-house"></i>Inicio</a>
+                <a class="nav-link admin-link activo" href="#"><i class="bi bi-people"></i>Socios</a>
+                <a class="nav-link admin-link" href="#"><i class="bi bi-credit-card"></i>Membresías</a>
+                <a class="nav-link admin-link" href="GestionarEntrenadores.html"><i class="bi bi-person-badge"></i>Entrenadores</a>
+                <a class="nav-link admin-link" href="GestionarProductos.html"><i class="bi bi-bag"></i>Productos</a>
+                <a class="nav-link admin-link" href="GestionarEjercicios.html"><i class="bi bi-activity"></i>Ejercicios</a>
+                <a class="nav-link admin-link" href="#"><i class="bi bi-person-circle"></i>Mi Perfil</a>
+            </nav>
+            <hr>
+            <a href="../../../../index.html" class="nav-link admin-link" id="btn-logout">
+                <i class="bi bi-box-arrow-right"></i>Cerrar sesión
+            </a>
+        </aside>
+ 
+        <main class="col-12 col-md-9 col-lg-10 admin-contenido">
+ 
+            <header class="admin-header">
+                <div>
+                    <h1>Gestionar socios</h1>
+                    <p>Administrar socios del gimnasio</p>
+                </div>
+                <a href="#" class="admin-btn"><i class="bi bi-plus-lg"></i>Nuevo socio</a>
+            </header>
+ 
+            <div class="admin-herramientas">
+                <div class="admin-campo">
+                    <i class="bi bi-search"></i>
+                    <input type="search" id="buscar" class="admin-input" placeholder="Buscar socio..." aria-label="Buscar socio">
+                </div>
+ 
+                <select id="filtroPlan" class="admin-select" aria-label="Filtrar por plan">
+                    <option value="">Todos los planes</option>
+                    <option value="basico">Básico</option>
+                    <option value="pro">Pro</option>
+                    <option value="elite">Elite</option>
+                </select>
+ 
+                <select id="filtroEstado" class="admin-select" aria-label="Filtrar por estado">
+                    <option value="">Todos los estados</option>
+                    <option value="activo">Activo</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="vencido">Vencido</option>
+                </select>
+            </div>
+
+            <section class="admin-seccion">
+                <div class="admin-tabla-wrap">
+                    <table class="admin-tabla">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Email</th>
+                                <th>Membresía</th>
+                                <th>Estado</th>
+                                <th>Vencimiento</th>
+                                <th class="col-acciones">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaSocios"></tbody>
+                    </table>
+                </div>
+ 
+                <p id="sinResultados" class="admin-vacio">No hay socios que coincidan con la búsqueda.</p>
+            </section>
+        </main>
+    </div>
+</div> 
+ 
+<script src="../../../JS/api.js"></script>
+
+<script>
+    const buscar = document.getElementById('buscar');
+    const filtroPlan = document.getElementById('filtroPlan');
+    const filtroEstado = document.getElementById('filtroEstado');
+    const sinResultados = document.getElementById('sinResultados');
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    const fecha = (iso) => {
+      const d = new Date(iso);
+      return isNaN(d) ? esc(iso) : d.toLocaleDateString("es-UY", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });
+    };
+    async function cargarSocios() {
+        try {
+            const respuesta = await API.request('/socios', 'GET');
+            
+            if (respuesta.status === 'ok') {
+                const tbody = document.getElementById('tablaSocios');
+                tbody.innerHTML = '';
+                
+                if (!respuesta.data || respuesta.data.length === 0) {
+                    sinResultados.classList.add('visible');
+                    return;
+                }
+
+                sinResultados.classList.remove('visible');
+
+                respuesta.data.forEach(socio => {
+                    let estadoClase = 'activo';
+                    let estadoTexto = 'Activo';
+
+                    tbody.innerHTML += `
+                        <tr data-plan="${socio.nombre_plan ? socio.nombre_plan.toLowerCase() : ''}" data-estado="${estadoClase}">
+                            <td class="col-id">${socio.id_usuario}</td>
+                            <td>${esc(socio.nombre_usuario)}</td>
+                            <td>${esc(socio.email)}</td>
+                            <td>${socio.nombre_plan ? esc(socio.nombre_plan) : '<span class="admin-nulo">—</span>'}</td>
+                            <td><span class="admin-estado ${estadoClase}">${estadoTexto}</span></td>
+                            <td>${socio.fecha_fin ? fecha(socio.fecha_fin) : '<span class="admin-nulo">—</span>'}</td>
+                            <td class="col-acciones">
+                                <a href="#" class="admin-mini">Ver</a>
+                                <a href="#" class="admin-mini">Editar</a>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } else {
+                console.error("Error al cargar socios:", respuesta.message);
+            }
+        } catch (error) {
+            console.error("Error de conexión:", error);
+        }
+    }
+    function filtrar() {
+        const texto = buscar.value.trim().toLowerCase();
+        const plan = filtroPlan.value.toLowerCase();
+        const estado = filtroEstado.value.toLowerCase();
+        const filasActuales = document.querySelectorAll('#tablaSocios tr');
+        let visibles = 0;
+
+        filasActuales.forEach(fila => {
+            const coincide =
+                fila.textContent.toLowerCase().includes(texto) &&
+                (!plan || fila.dataset.plan.toLowerCase().includes(plan)) &&
+                (!estado || fila.dataset.estado === estado);
+
+            fila.hidden = !coincide;
+            if (coincide) visibles++;
+        });
+        sinResultados.classList.toggle('visible', visibles === 0);
+    }
+    [buscar, filtroPlan, filtroEstado].forEach(el => el.addEventListener('input', filtrar));
+    document.addEventListener('DOMContentLoaded', cargarSocios);
+</script>
+
+</body>
+
+</html>
