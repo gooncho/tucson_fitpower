@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rutinas</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="icon" href="../../../assets/logo_fitpower.jpg">
+  <link rel="stylesheet" href="../../../CSS/dashboard.css">
+  <link rel="stylesheet" href="../../../CSS/entrenador.css">
+</head>
+
+<body>
+
+  <input type="checkbox" id="menuToggle" class="menu-toggle">
+  <label for="menuToggle" class="hamburger-btn" aria-label="Abrir menú">
+    <i class="bi bi-list"></i>
+  </label>
+  <label for="menuToggle" class="sidebar-overlay"></label>
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../../../assets/logo_fitpower.jpg" width="130">
+    </div>
+
+    <nav class="nav-group">
+      <a href="inicioEntrenador.html" class="side-link"><i class="bi bi-house-door-fill"></i><span>Inicio</span></a>
+      <a href="MisSocios.html" class="side-link"><i class="bi bi-graph-up-arrow"></i><span>Mis socios</span></a>
+      <a href="Rutinas.html" class="side-link active"><i class="bi bi-list-check"></i><span>Rutinas</span></a>
+      <a href="Ejercicios.html" class="side-link"><i class="bi bi-calendar-check"></i><span>Ejercicios</span></a>
+      <a href="#" class="side-link"><i class="bi bi-card-checklist"></i><span>Agenda</span></a>
+      <a href="#" class="side-link"><i class="bi bi-box-seam"></i><span>Mensajes</span></a>
+      <a href="#" class="side-link"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" class="logout-link" id="btn-logout">
+        <i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span>
+      </a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="welcome-header">
+    <div>
+      <h1>Rutinas</h1>
+      <p class="welcome-sub">Gestiona las rutinas</p>
+    </div>
+    <button class="btn-lime">+ Crear rutina</button>
+  </div>
+  <div class="d-flex flex-wrap gap-2 mb-3" data-bs-theme="dark">
+    <input type="text" id="buscar-rutina" class="form-control w-auto" placeholder="Buscar rutina...">
+  </div>
+    <div class="routine-card">
+    <table class="routine-table">
+      <thead>
+        <tr>
+          <th>Socio</th>
+          <th>Rutina</th>
+          <th>N°ejercicios</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="listar-rutinas">
+      </tbody>
+    </table>
+  </div>
+  </main>
+
+    <div class="modal fade" id="modalRutina" tabindex="-1" aria-hidden="true" data-bs-theme="dark">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div>
+              <h5 class="modal-title" id="rut-ver-titulo"></h5>
+              <small id="rut-ver-socio"></small>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <table class="table-align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Ejercicio</th>
+                  <th>Series</th>
+                  <th>Repeticiones</th>
+                  <th>Descanso</th>
+                </tr>
+              </thead>
+              <tbody id="rut-ver-ejercicios"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>  
+  <script src="../../../JS/api.js"></script>
+  <script src="../../../JS/script.js"></script>
+  <script src="../../../JS/roles/Entrenador/rutinas.js"></script>
+</body>
+
+</html>
