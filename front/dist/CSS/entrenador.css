@@ -192,3 +192,30 @@
 .routine-foot a:hover {
     text-decoration: underline;
 }
+
+.details-btn + .details-btn {
+    margin-left: 8px;
+}
+
+a.details-btn {
+    display: inline-block;
+}
+
+#modalRutina table {
+    width: 100%;
+}
+
+#modalRutina th,
+#modalRutina td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+}
+
+#modalRutina th {
+    border-bottom: 1px solid;
+}
+
+#modalRutina th:first-child,
+#modalRutina td:first-child {
+    width: 40%;
+}
