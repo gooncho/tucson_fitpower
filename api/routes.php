@@ -13,6 +13,8 @@ $router->get('/socios', 'MissociosController@index');
 $router->get('/rutinas', 'RutinaController@index');
 $router->get('/rutinas/:id', 'RutinaController@verRutina');
 $router->post('/rutinas', 'RutinaController@store');
+$router->get('/ejercicio', 'EjerciciosController@index');
+$router->post('/ejercicio', 'EjerciciosController@store');
 
 // Próxima clase: login
 // $router->post('/login', 'AuthController@login');

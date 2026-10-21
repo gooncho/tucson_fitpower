@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicio</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="icon" href="../../../assets/logo_fitpower.jpg">
+  <link rel="stylesheet" href="../../../CSS/dashboard.css">
+  <link rel="stylesheet" href="../../../CSS/entrenador.css">
+</head>
+
+<body>
+
+  <input type="checkbox" id="menuToggle" class="menu-toggle">
+  <label for="menuToggle" class="hamburger-btn" aria-label="Abrir menú">
+    <i class="bi bi-list"></i>
+  </label>
+  <label for="menuToggle" class="sidebar-overlay"></label>
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../../../assets/logo_fitpower.jpg" width="130">
+    </div>
+
+    <nav class="nav-group">
+      <a href="inicioEntrenador.html" class="side-link"><i class="bi bi-house-door-fill"></i><span>Inicio</span></a>
+      <a href="MisSocios.html" class="side-link"><i class="bi bi-graph-up-arrow"></i><span>Mis socios</span></a>
+      <a href="Rutinas.html" class="side-link"><i class="bi bi-list-check"></i><span>Rutinas</span></a>
+      <a href="Ejercicios.html" class="side-link active"><i class="bi bi-calendar-check"></i><span>Ejercicios</span></a>
+      <a href="#" class="side-link"><i class="bi bi-card-checklist"></i><span>Agenda</span></a>
+      <a href="#" class="side-link"><i class="bi bi-box-seam"></i><span>Mensajes</span></a>
+      <a href="#" class="side-link"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" class="logout-link" id="btn-logout">
+        <i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span>
+      </a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="welcome-header">
+      <div>
+        <h1>Ejercicios</h1>
+        <p class="welcome-sub">Lista de ejercicios</p>
+      </div>
+      <button id="btn-nuevo-ejercicio" class="btn-lime">+ Nuevo ejercicio</button>
+    </div>
+    <div class="d-flex flex-wrap gap-2 mb-3" data-bs-theme="dark">
+      <input type="text" id="buscar-ejercicio" class="form-control w-auto" placeholder="Buscar ejercicio o musculo">
+    </div>
+    <div class="routine-card">
+      <table class="routine-table">
+        <thead>
+          <tr>
+            <th>Ejercicio</th>
+            <th>Grupo muscular</th>
+            <th>Dificultad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="listar-ejercicios">
+            <tr><td colspan="4">Cargando ejercicios</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <div class="modal fade" id="modalNuevoEjercicio" tabindex="-1" aria-hidden="true" data-bs-theme="dark">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Nuevo Ejercicio</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label" for="ej-nombre">Nombre</label>
+          <input id="ej-nombre" type="text" class="form-control mb-3" maxlength="50">
+          <label class="form-label" for="ej-grupo">Grupo muscular</label>
+        <input id="ej-grupo" type="text" class="form-control mb-3" maxlength="70" placeholder="Ej: Pecho, Piernas, Espalda">
+        <label class="form-label" for="ej-nivel">Nivel</label>
+        <select id="ej-nivel" class="form-select mb-3">
+          <option>Principiante</option>
+          <option>Intermedio</option>
+          <option>Avanzado</option>
+        </select>
+
+        <label class="form-label" for="ej-descripcion">Descripción (opcional)</label>
+        <textarea id="ej-descripcion" class="form-control" rows="3"></textarea>
+
+        <p id="ej-error" class="text-danger small mt-3 mb-0"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" id="btn-guardar-ejercicio" class="btn-lime">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalEjercicio" tabindex="-1" aria-hidden="true" data-bs-theme="dark">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body pt-0">
+          <img id="ej-ver-imagen" class="img-fluid rounded mb-3 d-none" alt="">
+          <h4 id="ej-ver-nombre"></h4>
+          <h6 class="text-secondary mt-3">Grupo muscular</h6> 
+          <div id="ej-ver-grupos" class="d-flex flex-wrap gap-2 mb-3"></div>
+          <h6 class="text-secondary">Descripción</h6>
+          <p id="ej-ver-descripcion"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="../../../JS/api.js"></script>
+  <script src="../../../JS/script.js"></script>
+  <script src="../../../JS/roles/Entrenador/ejercicios.js"></script>
+</body>
+
+</html>
