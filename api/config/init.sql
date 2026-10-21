@@ -175,6 +175,15 @@ CREATE TABLE MENSAJE (
     FOREIGN KEY (id_persona) REFERENCES PERSONA(id_persona)
 );
 
+CREATE TABLE ASIGNA (
+    id_rutina INT NOT NULL,
+    id_persona INT NOT NULL,
+    fecha_asignacion DATE,
+    PRIMARY KEY (id_rutina, id_persona),
+    FOREIGN KEY (id_rutina) REFERENCES RUTINA(id_rutina),
+    FOREIGN KEY (id_persona) REFERENCES PERSONA(id_persona)
+);
+
 INSERT INTO TIPOUSUARIO (nombre_rol) VALUES
 ('Administrador'),
 ('Entrenador'),
@@ -330,3 +339,10 @@ INSERT INTO MENSAJE
 (4, 'Recordatorio de entrenamiento de hoy.', '2026-09-01 10:00:00', TRUE),
 (5, 'Tu membresia esta por vencer.', '2026-09-02 09:30:00', FALSE),
 (6, 'Nueva rutina disponible.', '2026-09-03 11:15:00', TRUE);
+
+INSERT INTO ASIGNA (id_rutina, id_persona, fecha_asignacion) VALUES
+(1, 4, '2026-05-20'),
+(5, 5, '2026-08-13'),
+(2, 6, '2026-09-20'),
+(4, 7, '2026-05-22'),
+(3, 8, '2026-07-15');

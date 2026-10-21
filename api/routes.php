@@ -9,5 +9,6 @@ $router->get('/ejercicios', 'EjercicioController@listar');
 $router->get('/entrenadores', 'EntrenadorController@listar');
 $router->get('/pagos', 'PagoController@listar');
 $router->get('/productos', 'ProductoController@listar');
+$router->get('/socios', 'MissociosController@index');
 // Próxima clase: login
 // $router->post('/login', 'AuthController@login');
