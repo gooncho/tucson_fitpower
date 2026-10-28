@@ -1,10 +1,8 @@
-const API_URL = "http://localhost:8080/api";   // ajustar a tu API
- 
 const $ = (id) => document.getElementById(id);
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const norm = (s) => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-const slug = (s) => norm(s).trim().replace(/\s+/g, "-");          // "Bajo stock" -> "bajo-stock"
+const slug = (s) => norm(s).trim().replace(/\s+/g, "-");
 const dinero = (n) => "$" + Number(n ?? 0).toLocaleString("es-UY");
 const fecha = (iso) => {
   const d = new Date(iso);
