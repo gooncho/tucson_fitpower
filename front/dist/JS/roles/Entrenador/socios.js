@@ -15,24 +15,47 @@ function EstadoMembresia(fechaFin) {
         return fin >= hoy ? 'Activo' : 'Vencido';
     }
 
+function AbrirSocio(s) {
+    const nombre = `${s.usuario} ${s.apellido || ''}`.trim();
+
+    document.getElementById('soc-ver-nombre').textContent = nombre;
+    document.getElementById('soc-ver-objetivo').textContent = s.objetivo || '-';
+    document.getElementById('soc-ver-estado-objetivo').textContent = s.estado_objetivo || '-';
+    document.getElementById('soc-ver-membresia').textContent = s.membresia ||'Sin plan';
+    document.getElementById('soc-ver-estado').textContent = EstadoMembresia(s.fecha_fin);
+    document.getElementById('soc-ver-vence').textContent = s.fecha_fin || '-';
+
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalSocio')).show();
+}
+
 function CrearFila(s) {
     const fila = document.createElement('tr');
-    const nombre = `${s.usuario} ${s.apellido || ''}` .trim();
-    [nombre, s.objetivo, s.membresia, EstadoMembresia(s.fecha_fin)].forEach(texto => {
+    const socio = `${s.usuario} ${s.apellido || ''}` .trim();
+    [socio, s.objetivo, s.membresia].forEach(texto => {
         const celda = document.createElement('td');
         celda.textContent = texto || '-';
         fila.appendChild(celda);
     });
 
-const acciones = document.createElement('td');
-const ver = document.createElement('button');
-ver.className = 'details-btn';
-ver.textContent = 'Ver';
+const estado = EstadoMembresia(s.fecha_fin);
+const celdaEstado = document.createElement('td');
+const etiqueta = document.createElement('span');
+etiqueta.className = 'admin-estado';
+if (estado === 'Activo') etiqueta.classList.add('activo');
+if (estado === 'Vencido') etiqueta.classList.add('vencido');
+etiqueta.textContent = estado;
+celdaEstado.appendChild(etiqueta);
+fila.appendChild(celdaEstado);
 
-const editar = document.createElement('button');
-editar.className = 'details-btn';
-editar.textContent = 'Editar';
-acciones.append(ver, editar);
+const acciones = document.createElement('td');
+acciones.className = 'col-acciones';
+
+const ver = document.createElement('button');
+ver.className = 'admin-mini';
+ver.textContent = 'Ver';
+ver.addEventListener('click', () => AbrirSocio(s));
+
+acciones.append(ver);
 fila.appendChild(acciones);
 return fila;
 }
@@ -40,7 +63,7 @@ return fila;
 async function CargarSocios() {
     const tbody = document.getElementById('listar-socios');
     if(!tbody) return;
-    const res = await API.request('/socios');
+    const res = await API.request('/mis-socios');
     if (!res || res.status !== 'ok') {
         MostrarMensaje(tbody, res?.message || 'Los socios no cargan');
         return;

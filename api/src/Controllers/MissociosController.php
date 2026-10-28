@@ -33,7 +33,16 @@ class MissociosController {
                 return;
             }
             try {
-                $this->responder(200, ['status' => 'ok', 'data' => $this->modelo->listar()]);
+                $idEntrenador = null;
+                
+                if (($_SESSION['rol'] ?? '') === 'Entrenador') {
+                    $idEntrenador = $this->modelo->buscarPersonaPorUsuario((int) $_SESSION['usuario_id']);
+                    if (!$idEntrenador) {
+                        $this->responder(403, ['status' => 'error', 'message' => 'Tu usuario no tiene un perfil asociado']);
+                        return;
+                    }
+                }
+                $this->responder(200, ['status' => 'ok', 'data' => $this->modelo->listar((int) $idEntrenador ?: null)]);
             } catch (\Exception $e) {
                 error_log('Error al listar socios: ' . $e->getMessage());
                 $this->responder(500, ['status' => 'error', 'message' => 'No se pudieron cargar los socios']);
