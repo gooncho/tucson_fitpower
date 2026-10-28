@@ -53,10 +53,10 @@ class ResenaModel {
             'producto' => $idProducto,
             'persona' => $idPersona,
             'fecha' => $hoy,
-            'puntuacion' => $puntiacion,
+            'puntuacion' => $puntuacion,
             'comentario' => $comentario,
             'fecha_u' => $hoy,
-            'puntuacion_u' => $puntiacion,
+            'puntuacion_u' => $puntuacion,
             'comentario_u' => $comentario
         ]);
     }

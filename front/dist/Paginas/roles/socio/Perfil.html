@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Perfil</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"
+    rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="icon" href="../../../assets/logo_fitpower.jpg">
+  <link rel="stylesheet" href="../../../CSS/dashboard.css">
+</head>
+
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../../../assets/logo_fitpower.jpg" width="130">
+    </div>
+
+    <nav class="nav-group">
+      <a href="inicioSocio.html" class="side-link"><i class="bi bi-house-door-fill"></i><span>Inicio</span></a>
+      <a href="#" class="side-link"><i class="bi bi-graph-up-arrow"></i><span>Mi progreso</span></a>
+      <a href="#" class="side-link"><i class="bi bi-list-check"></i><span>Rutinas</span></a>
+      <a href="#" class="side-link"><i class="bi bi-heart-pulse"></i><span>Entrenamientos</span></a>
+      <a href="#" class="side-link"><i class="bi bi-calendar-check"></i><span>Asistencia</span></a>
+      <a href="#" class="side-link"><i class="bi bi-card-checklist"></i><span>Membresía</span></a>
+      <a href="#" class="side-link"><i class="bi bi-box-seam"></i><span>Productos</span></a>
+      <a href="#" class="side-link"><i class="bi bi-trophy-fill"></i><span>Mis logros</span></a>
+      <a href="Perfil.html" class="side-link active"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" class="logout-link" id="btn-logout">
+        <i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="welcome-header">
+        <div>
+            <h1>Mi perfil</h1>
+        </div>
+    </div>
+    <div class="perfil-card">
+        <div class="perfil-cabecera">
+            <div class="perfil-avatar" id="perfil-avatar">?</div>
+            <div class="perfil-identidad">
+                <h2 id="perfil-nombre">Cargando...</h2>
+                <p id="perfil-email"></p>
+            </div>
+            <button class="admin-mini" id="btn-editar-perfil">Editar perfil</button>
+        </div>
+        <div class="perfil-datos" id="perfil-datos"></div>
+        <div class="perfil-sobre">
+            <h3>Sobre mí</h3>
+            <p id="perfil-sobre-mi"></p>
+        </div>
+        <p id="perfil-error" class="text-danger small mt-3 mb-0"></p>
+    </div>
+</main>
+
+
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="../../../JS/api.js"></script>
+  <script src="../../../JS/script.js"></script>
+  <script src="../../../JS/Perfil.js"></script>
+</body>
+
+</html>

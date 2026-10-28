@@ -44,7 +44,7 @@ class RutinaController {
 
         $idEntrenador = $this->entrenadorActual();
         if($idEntrenador === 0) {
-            $this->responder(403, ['status' => 'error', 'message' => 'Tu usario no tiene un perfil']);
+            $this->responder(403, ['status' => 'error', 'message' => 'Tu usuario no tiene un perfil']);
             return;
         }
 
@@ -133,7 +133,7 @@ class RutinaController {
                 $idSocio,
                 $limpios
             );
-            $this->responder(201, ['status' => 'ok', 'message' => 'Rutuna creada', 'id' => $id]);
+            $this->responder(201, ['status' => 'ok', 'message' => 'Rutina creada', 'id' => $id]);
         } catch (\Exception $e) {
             error_log('Error al crear rutina: '. $e->getMessage());
             $this->responder(500, ['status' => 'error', 'message' => 'No se pudo guardar']);
