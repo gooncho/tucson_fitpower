@@ -13,12 +13,14 @@ $router->get('/socios', 'MissociosController@index');
 $router->get('/rutinas', 'RutinaController@index');
 $router->get('/rutinas/:id', 'RutinaController@verRutina');
 $router->post('/rutinas', 'RutinaController@store');
+$router->delete('/rutinas/:id', 'RutinaController@destroy');
 $router->get('/ejercicio', 'EjerciciosController@index');
 $router->post('/ejercicio', 'EjerciciosController@store');
 $router->put('/ejercicio/:id', 'EjerciciosController@update');
 $router->get('/producto', 'ProductosController@index');
 $router->get('/producto/:id/resenas', 'ResenaController@index');
 $router->post('/producto/:id/resenas', 'ResenaController@store');
+
 
 // Próxima clase: login
 // $router->post('/login', 'AuthController@login');
