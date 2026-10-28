@@ -32,4 +32,28 @@ class EjerciciosModel {
         ]);
         return $this->db->lastInsertId();
     }
+
+    public function existe($idEjercicio) {
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM EJERCICIO WHERE id_ejercicio = :id');
+        $stmt->execute(['id' => $idEjercicio]);
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
+    public function actualizar($idEjercicio, $nombre, $grupo, $nivel, $descripcion) {
+        $stmt = $this->db->prepare(
+            'UPDATE EJERCICIO
+            SET nombre = :nombre,
+                descripcion = :descripcion,
+                nivel = :nivel,
+                grupo_muscular = :grupo
+            WHERE id_ejercicio = :id'
+        );
+        $stmt->execute([
+            'nombre' => $nombre,
+            'descripcion' => $descripcion,
+            'nivel' => $nivel,
+            'grupo' => $grupo,
+            'id' => $idEjercicio,
+        ]);
+    }
 }

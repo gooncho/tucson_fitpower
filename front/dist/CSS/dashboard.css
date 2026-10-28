@@ -146,7 +146,7 @@ h6 {
     background: #151515;
     border: 1px solid #2a2a2a;
     border-radius: 14px;
-
+    gap: 40px;
     padding: 18px 20px;
     height: 100%;
 }
@@ -311,4 +311,156 @@ h6 {
     .welcome-header {
         flex-direction: column;
     }
+}
+
+.perfil-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.perfil-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #cdfa3f;
+    color: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.perfil-identidad {
+    flex: 1;
+}
+
+.perfil-identidad h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.perfil-identidad p {
+    margin: 4px 0 0;
+    color: #9c9c98;
+}
+
+.perfil-datos {
+    padding: 16px 0;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.perfil-dato {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+}
+
+.perfil-dato span:first-child {
+    color: #9c9c98;
+}
+
+.perfil-sobre {
+    padding-top: 16px;
+}
+
+.perfil-sobre h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.perfil-sobre p {
+    margin: 0;
+    color: #d6d6d2;
+    white-space: pre-line;
+}
+
+.perfil-card {
+    background: #151515;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 20px;
+    color: #f4f4f2;
+}
+
+.admin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #cdfa3f;
+    color: #0a0a0a;
+    border: 1px solid #cdfa3f;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.admin-btn:hover {
+    background: #b5e635;
+    border-color: #b5e635;
+    color: #0a0a0a;
+}
+
+.admin-mini {
+    background: transparent;
+    color: #f4f4f2;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.admin-mini:hover {
+    background: #cdfa3f;
+    border-color: #cdfa3f;
+    color: #0a0a0a;
+}
+
+.admin-mini + .admin-mini {
+    margin-left: 6px;
+}
+
+.admin-mini.peligro:hover {
+    background: #ff6b6b;
+    border-color: #ff6b6b;
+    color: #0a0a0a;
+}
+
+.routine-table .col-acciones {
+    white-space: nowrap;
+    text-align: right;
+}
+
+.admin-estado {
+    display: inline-block;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #2a2a2a;
+}
+
+.admin-estado.activo {
+    color: #cdfa3f;
+    border-color: #cdfa3f;
+}
+
+.admin-estado.vencido {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+}
+
+.Separador {
+    margin-bottom: 100px;
 }

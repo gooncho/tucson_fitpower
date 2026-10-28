@@ -45,43 +45,77 @@ class EjerciciosController {
         }
     }
     
-    public function store() {
-        if (!$this->accesoPermitido()) {
-            return;
-        }
-        $datos = json_decode(file_get_contents('php://input'), true);
+    private function leerDatos() {
+        $datos = json_decode(file_get_contents('php://input'), true); 
         if (!is_array($datos)) {
             $datos = [];
         }
         $nombre = trim((string) ($datos['nombre'] ?? ''));
         $grupo = trim((string) ($datos['grupo_muscular'] ?? ''));
-        $nivel = trim((string) ($datos['nivel'] ?? ''));
-        $descripcion = trim((string) ($datos['descripcion'] ?? ''));
+        $nivel = trim((string)($datos['nivel'] ?? ''));
+        $descripcion = trim((string) ($datos['descripcion'] ?? '')); 
 
-        if ($nombre === '' || mb_strlen($nombre) > 50) {
-            $this->responder(400, ['status' => 'error', 'message' => 'El nombre es obligatorio (maximo 50 caracteres)']);
-            return;
+        if($nombre === '' || mb_strlen($nombre) > 50) {
+            $this->responder(400, ['status' => 'error', 'message' => 'El nombre es obligatorio']);
+            return null;
         }
+
         if ($grupo === '' || mb_strlen($grupo) > 70) {
-            $this->responder(400, ['status' => 'error', 'message' => 'El grupo muscular es obligatorio (maximo 70 caracteres)']);
+        $this->responder(400, ['status' => 'error', 'message' => 'El grupo muscular es obligatorio']);
+        return null;
+        }
+
+        if (!in_array($nivel, self::NIVELES, true)) {
+        $this->responder(400, ['status' => 'error', 'message' => 'El nivel no es valido']);
+        return null;
+        }
+        
+        return [
+            'nombre' => $nombre,
+            'grupo' => $grupo,
+            'nivel' => $nivel,
+            'descripcion' => $descripcion === '' ? null : $descripcion,
+        ];
+    }
+
+    public function store() {
+        if(!$this->accesoPermitido()) {
             return;
         }
-        if (!in_array($nivel, self::NIVELES, true)) {
-            $this->responder(400, ['status' => 'error', 'message' => 'El nivel no es valido']);
+        $d = $this->leerDatos();
+        if ($d === null) {
             return;
         }
 
         try {
-            $id = $this->modelo->crear(
-                $nombre,
-                $grupo,
-                $nivel,
-                $descripcion === '' ? null : $descripcion,
-            );
+            $id = $this->modelo->crear($d['nombre'], $d['grupo'], $d['nivel'], $d['descripcion']);
             $this->responder(201, ['status' => 'ok', 'message' => 'Ejercicio creado', 'id' => (int) $id]);
         } catch (\Exception $e) {
             error_log('Error al crear ejercicio: ' . $e->getMessage());
             $this->responder(500, ['status' => 'error', 'message' => 'No se pudo guardar el ejercicio']);
+        }
+    }
+
+    public function update($idEjercicio) {
+        if (!$this->accesoPermitido()) {
+            return;
+        }
+        $idEjercicio = (int) $idEjercicio;
+        $d = $this->leerDatos();
+        if ($d === null) {
+            return;
+        }
+
+        try {
+            if ($idEjercicio <= 0 || !$this->modelo->existe($idEjercicio)) {
+                $this->responder(404, ['status' => 'error', 'message' => 'Ejercicio no encontrado']);
+                return;
+            }
+            $this->modelo->actualizar($idEjercicio, $d['nombre'], $d['grupo'], $d['nivel'], $d['descripcion']);
+            $this->responder(200, ['status' => 'ok', 'message' => 'Ejercicio actualizado']);
+        } catch (\Exception $e) {
+            error_log('Error al actualizar ejercicio: ' . $e->getMessage());
+            $this->responder(500, ['status' => 'error', 'message' => 'No se pudo actualizar el ejercicio']);
         }
     }
 }

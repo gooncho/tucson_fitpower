@@ -1,4 +1,5 @@
 let Todoslosejercicios = [];
+let EjercicioEditado = null;
 
 function MostrarMensaje(tbody, texto) {
     const fila = document.createElement('tr');
@@ -43,16 +44,18 @@ function CrearFila(e) {
     });
     
     const acciones = document.createElement('td');
+    acciones.className = 'col-acciones';
 
     const ver = document.createElement('button');
-    ver.className = 'details-btn';
+    ver.className = 'admin-mini';
     ver.textContent = 'Ver';
     ver.addEventListener('click', () => AbrirEjercicio(e));
 
     const editar = document.createElement('button');
-    editar.className = 'details-btn';
+    editar.className = 'admin-mini';
     editar.textContent = 'Editar';
     acciones.append(ver, editar);
+    editar.addEventListener('click', () => AbrirFormularioEjercicio(e));
     
 
     fila.appendChild(acciones);
@@ -123,26 +126,40 @@ async function GuardarEjercicio() {
     const boton = document.getElementById('btn-guardar-ejercicio');
     boton.disabled = true;
 
-    const res = await API.request('/ejercicio', 'POST', datos);
-
+    const res = EjercicioEditado
+        ? await API.request(`/ejercicio/${EjercicioEditado.id_ejercicio}`, 'PUT', datos)
+        : await API.request('/ejercicio', 'POST', datos);
+    
     boton.disabled = false;
-
-    if (res.status === 'ok') {
+    
+    if (res && res.status === 'ok')  {
         bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevoEjercicio')).hide();
         await CargarEjercicios();
         return;
     }
-    error.textContent = res.message || 'No se pudo guardar el ejercicio.';
+    error.textContent = res?.message || 'No se pudo guardar el ejercicio.';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     CargarEjercicios();
 
-    document.getElementById('btn-nuevo-ejercicio').addEventListener('click', () => {
-        LimpiarFormularioEjercicio();
-        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevoEjercicio')).show();
-    });
-
+    document.getElementById('btn-nuevo-ejercicio').addEventListener('click', () => AbrirFormularioEjercicio());
     document.getElementById('btn-guardar-ejercicio').addEventListener('click', GuardarEjercicio);
     document.getElementById('buscar-ejercicio').addEventListener('input', FiltrarEjercicios);
 });
+
+function AbrirFormularioEjercicio(e = null) {
+    LimpiarFormularioEjercicio();
+    EjercicioEditado = e;
+
+    document.getElementById('ej-modal-titulo').textContent = e ? 'Editar ejercicio' : 'Nuevo ejercicio';
+
+    if(e) {
+        document.getElementById('ej-nombre').value = e.nombre;
+        document.getElementById('ej-grupo').value = e.grupo_muscular;
+        document.getElementById('ej-nivel').value = e.nivel;
+        document.getElementById('ej-descripcion').value = e.descripcion || '';
+    }
+
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevoEjercicio')).show();
+}

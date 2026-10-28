@@ -28,8 +28,13 @@ CREATE TABLE PERSONA (
     fecha_inicio DATE,
     fecha_fin DATE,
     especialidad VARCHAR(70),
+    fecha_nacimiento DATE NULL,
+    altura INT NULL,
+    sobre_mi TEXT NULL,
+    id_entrenador INT NULL,
     FOREIGN KEY (id_usuario) REFERENCES USUARIO(id_usuario),
-    FOREIGN KEY (id_plan) REFERENCES PLAN(id_plan)
+    FOREIGN KEY (id_plan) REFERENCES PLAN(id_plan),
+    FOREIGN KEY (id_entrenador) REFERENCES PERSONA(id_persona)
 );
 
 CREATE TABLE SALA (
@@ -205,15 +210,15 @@ INSERT INTO PLAN (nombre, precio, duracion, descripcion) VALUES
 ('Plan Trimestral', 4800.00, '3 meses', 'Acceso durante tres meses con beneficios adicionales.');
 
 INSERT INTO PERSONA
-(id_usuario, id_plan, apellido, fecha_inicio, fecha_fin, especialidad) VALUES
-(1, NULL, 'Sanchez', NULL, NULL, NULL),
-(2, NULL, 'Perez', NULL, NULL, 'Hipertrofia'),
-(3, NULL, 'Fernandez', NULL, NULL, 'Entrenamiento funcional'),
-(4, 2, 'Silva', '2026-08-01', '2026-08-30', NULL),
-(5, 1, 'Lopez', '2026-08-05', '2026-09-04', NULL),
-(6, 3, 'Rodriguez', '2026-07-15', '2026-10-12', NULL),
-(7, 1, 'Martinez', '2026-08-10', '2026-09-08', NULL),
-(8, NULL, 'Gomez', NULL, NULL, NULL);
+(id_usuario, id_plan, apellido, fecha_inicio, fecha_fin, especialidad, fecha_nacimiento, altura, sobre_mi, id_entrenador) VALUES
+(1, NULL, 'Sanchez', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, NULL, 'Perez', NULL, NULL, 'Hipertrofia', NULL, NULL, NULL, NULL),
+(3, NULL, 'Fernandez', NULL, NULL, 'Entrenamiento funcional', NULL, NULL, NULL, NULL),
+(4, 2, 'Silva', '2026-08-01', '2026-08-30', NULL, NULL, NULL, NULL, NULL),
+(5, 1, 'Lopez', '2026-08-05', '2026-09-04', NULL, NULL, NULL, NULL, NULL),
+(6, 3, 'Rodriguez', '2026-07-15', '2026-10-12', NULL, NULL, NULL, NULL, NULL),
+(7, 1, 'Martinez', '2026-08-10', '2026-09-08', NULL, NULL, NULL, NULL, NULL),
+(8, NULL, 'Gomez', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 INSERT INTO SALA (nombre) VALUES
 ('Musculacion'),

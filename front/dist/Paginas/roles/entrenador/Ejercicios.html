@@ -34,9 +34,7 @@
       <a href="MisSocios.html" class="side-link"><i class="bi bi-graph-up-arrow"></i><span>Mis socios</span></a>
       <a href="Rutinas.html" class="side-link"><i class="bi bi-list-check"></i><span>Rutinas</span></a>
       <a href="Ejercicios.html" class="side-link active"><i class="bi bi-calendar-check"></i><span>Ejercicios</span></a>
-      <a href="#" class="side-link"><i class="bi bi-card-checklist"></i><span>Agenda</span></a>
-      <a href="#" class="side-link"><i class="bi bi-box-seam"></i><span>Mensajes</span></a>
-      <a href="#" class="side-link"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
+      <a href="Perfil.html" class="side-link"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
     </nav>
 
     <div class="sidebar-footer">
@@ -51,7 +49,7 @@
         <h1>Ejercicios</h1>
         <p class="welcome-sub">Lista de ejercicios</p>
       </div>
-      <button id="btn-nuevo-ejercicio" class="btn-lime">+ Nuevo ejercicio</button>
+      <button id="btn-nuevo-ejercicio" class="admin-btn">+ Nuevo ejercicio</button>
     </div>
     <div class="d-flex flex-wrap gap-2 mb-3" data-bs-theme="dark">
       <input type="text" id="buscar-ejercicio" class="form-control w-auto" placeholder="Buscar ejercicio o musculo">
@@ -63,7 +61,7 @@
             <th>Ejercicio</th>
             <th>Grupo muscular</th>
             <th>Dificultad</th>
-            <th>Acciones</th>
+            <th class="col-acciones">Acciones</th>
           </tr>
         </thead>
         <tbody id="listar-ejercicios">
@@ -77,7 +75,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Nuevo Ejercicio</h5>
+          <h5 class="modal-title" id="ej-modal-titulo">Nuevo Ejercicio</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
@@ -99,7 +97,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" id="btn-guardar-ejercicio" class="btn-lime">Guardar</button>
+          <button type="button" id="btn-guardar-ejercicio" class="admin-btn">Guardar</button>
         </div>
       </div>
     </div>
