@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gestionar entrenadores</title>
-  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
@@ -22,6 +21,7 @@
         <a class="nav-link admin-link" href="GestionarSocio.html"><i class="bi bi-people"></i>Socios</a>
         <a class="nav-link admin-link" href="#"><i class="bi bi-card-checklist"></i>Membresías</a>
         <a class="nav-link admin-link activo" href="#"><i class="bi bi-person-badge"></i>Entrenadores</a>
+        <a href="Pagos.html" class="nav-link admin-link"><i class="bi bi-cash-stack"></i>Pagos e ingresos</a>
         <a class="nav-link admin-link" href="GestionarProductos.html"><i class="bi bi-bag"></i>Productos</a>
         <a class="nav-link admin-link" href="GestionarEjercicios.html"><i class="bi bi-activity"></i>Ejercicios</a>
         <a class="nav-link admin-link" href="#"><i class="bi bi-person-circle"></i>Mi Perfil</a>
@@ -38,7 +38,7 @@
           <h1>Gestionar entrenadores</h1>
           <p>Administrar los entrenadores del gimnasio</p>
         </div>
-        <a href="admin-entrenador-form.html" class="admin-btn"><i class="bi bi-plus-lg"></i>Nuevo entrenador</a>
+        <a href="#" class="admin-btn"><i class="bi bi-plus-lg"></i>Nuevo entrenador</a>
       </header>
  
       <section class="admin-seccion">
@@ -75,54 +75,27 @@
         <p class="admin-vacio" id="vacio"></p>
       </section>
     </main>
- 
   </div>
 </div>
  
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../../../JS/api.js"></script>
 <script src="../../../JS/roles/Administrador/administrador.js"></script>
-<script>
-  let entrenadores = [];
- 
-  function render() {
-    const q = norm($("buscar").value.trim());
-    const esp = $("filtroEspecialidad").value;
-    const est = $("filtroEstado").value;
- 
-    const lista = entrenadores.filter(e =>
-      (!q || norm(e.nombre_usuario).includes(q) || norm(e.email).includes(q)) &&
-      (!esp || e.especialidad === esp) &&
-      (!est || e.estado === est));
- 
-    $("tbody").innerHTML = lista.map(e => `
-      <tr>
-        <td>${esc(e.nombre_usuario)}<small class="d-block admin-nulo">${esc(e.email)}</small></td>
-        <td>${e.especialidad ? esc(e.especialidad) : '<span class="admin-nulo">—</span>'}</td>
-        <td class="text-center">${esc(e.socios_asignados ?? 0)}</td>
-        <td>${e.hora_inicio && e.dias
-          ? `${esc(e.dias)}<small class="d-block admin-nulo">${esc(e.hora_inicio)} -${esc(e.hora_fin)}</small>`
-          : '<span class="admin-nulo">—</span>'}</td>
-        <td><span class="admin-estado ${slug(e.estado)}">${esc(e.estado)}</span></td>
-        <td class="col-acciones">
-          <a class="admin-mini" href="admin-entrenador-detalle.html?id=${encodeURIComponent(e.id_usuario)}">Ver</a>
-          <a class="admin-mini" href="admin-entrenador-form.html?id=${encodeURIComponent(e.id_usuario)}">Editar</a>
-        </td>
-      </tr>`).join("");
- 
-    aviso(lista.length ? "" : (entrenadores.length
-      ? "No hay entrenadores que coincidan con la búsqueda"
-      : "Todavía no hay entrenadores registrados"));
-  }
- 
-  conectar(["buscar", "filtroEspecialidad", "filtroEstado"], render);
- 
-  API.request('/entrenadores', 'GET').then(d => {
-    entrenadores = Array.isArray(d) ? d : (d.data || []);
-    const esp = [...new Set(entrenadores.map(e => e.especialidad).filter(Boolean))].sort();
-    $("filtroEspecialidad").innerHTML = `<option value="">Todas las especialidades</option>` +
-      esp.map(e => `<option value="${esc(e)}">${esc(e)}</option>`).join("");
-    render();
-  }).catch(() => aviso("No se pudo conectar con la API"));
-</script>
+<script src="../../../JS/roles/Administrador/gestionarEntrenadores.js"></script>
+
+<div class="modal fade" id="adminModal" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: #151515; border: 1px solid #2a2a2a; color: #f4f4f2;">
+            <div class="modal-header" style="border-bottom: 1px solid #2a2a2a;">
+                <h5 class="modal-title" id="adminModalLabel" style="font-family: 'Montserrat', sans-serif; color: #cdfa3f;">Detalles</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="adminModalBody"></div>
+            <div class="modal-footer" style="border-top: 1px solid #2a2a2a;" id="adminModalFooter">
+                <button type="button" class="admin-mini" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
