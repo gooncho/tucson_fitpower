@@ -214,11 +214,11 @@ INSERT INTO PERSONA
 (1, NULL, 'Sanchez', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (2, NULL, 'Perez', NULL, NULL, 'Hipertrofia', NULL, NULL, NULL, NULL),
 (3, NULL, 'Fernandez', NULL, NULL, 'Entrenamiento funcional', NULL, NULL, NULL, NULL),
-(4, 2, 'Silva', '2026-08-01', '2026-08-30', NULL, NULL, NULL, NULL, NULL),
-(5, 1, 'Lopez', '2026-08-05', '2026-09-04', NULL, NULL, NULL, NULL, NULL),
-(6, 3, 'Rodriguez', '2026-07-15', '2026-10-12', NULL, NULL, NULL, NULL, NULL),
-(7, 1, 'Martinez', '2026-08-10', '2026-09-08', NULL, NULL, NULL, NULL, NULL),
-(8, NULL, 'Gomez', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+(4, 2, 'Silva', '2026-08-01', '2026-08-30', NULL, NULL, NULL, NULL, 2),
+(5, 1, 'Lopez', '2026-08-05', '2026-09-04', NULL, NULL, NULL, NULL, 2),
+(6, 3, 'Rodriguez', '2026-07-15', '2026-10-12', NULL, NULL, NULL, NULL, 3),
+(7, 1, 'Martinez', '2026-08-10', '2026-09-08', NULL, NULL, NULL, NULL, 3),
+(8, NULL, 'Gomez', NULL, NULL, NULL, NULL, NULL, NULL, 3);
 
 INSERT INTO SALA (nombre) VALUES
 ('Musculacion'),

@@ -20,6 +20,7 @@ $router->put('/ejercicio/:id', 'EjerciciosController@update');
 $router->get('/producto', 'ProductosController@index');
 $router->get('/producto/:id/resenas', 'ResenaController@index');
 $router->post('/producto/:id/resenas', 'ResenaController@store');
+$router->get('/perfil', 'PerfilController@ver');
 
 
 // Próxima clase: login
