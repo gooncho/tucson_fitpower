@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../../CSS/administrador.css">
-    <link rel="stylesheet" href="../../../css/Gestionarsocio.css">
+    <link rel="stylesheet" href="../../../CSS/Gestionarsocio.css">
 </head>
 <body class="admin-body">
  
@@ -21,6 +21,7 @@
                 <a class="nav-link admin-link activo" href="#"><i class="bi bi-people"></i>Socios</a>
                 <a class="nav-link admin-link" href="#"><i class="bi bi-credit-card"></i>Membresías</a>
                 <a class="nav-link admin-link" href="GestionarEntrenadores.html"><i class="bi bi-person-badge"></i>Entrenadores</a>
+                <a href="Pagos.html" class="nav-link admin-link"><i class="bi bi-cash-stack"></i>Pagos e ingresos</a>
                 <a class="nav-link admin-link" href="GestionarProductos.html"><i class="bi bi-bag"></i>Productos</a>
                 <a class="nav-link admin-link" href="GestionarEjercicios.html"><i class="bi bi-activity"></i>Ejercicios</a>
                 <a class="nav-link admin-link" href="#"><i class="bi bi-person-circle"></i>Mi Perfil</a>
@@ -85,84 +86,24 @@
         </main>
     </div>
 </div> 
- 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../../../JS/api.js"></script>
-
-<script>
-    const buscar = document.getElementById('buscar');
-    const filtroPlan = document.getElementById('filtroPlan');
-    const filtroEstado = document.getElementById('filtroEstado');
-    const sinResultados = document.getElementById('sinResultados');
-    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-
-    const fecha = (iso) => {
-      const d = new Date(iso);
-      return isNaN(d) ? esc(iso) : d.toLocaleDateString("es-UY", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });
-    };
-    async function cargarSocios() {
-        try {
-            const respuesta = await API.request('/socios', 'GET');
-            
-            if (respuesta.status === 'ok') {
-                const tbody = document.getElementById('tablaSocios');
-                tbody.innerHTML = '';
-                
-                if (!respuesta.data || respuesta.data.length === 0) {
-                    sinResultados.classList.add('visible');
-                    return;
-                }
-
-                sinResultados.classList.remove('visible');
-
-                respuesta.data.forEach(socio => {
-                    let estadoClase = 'activo';
-                    let estadoTexto = 'Activo';
-
-                    tbody.innerHTML += `
-                        <tr data-plan="${socio.nombre_plan ? socio.nombre_plan.toLowerCase() : ''}" data-estado="${estadoClase}">
-                            <td class="col-id">${socio.id_usuario}</td>
-                            <td>${esc(socio.nombre_usuario)}</td>
-                            <td>${esc(socio.email)}</td>
-                            <td>${socio.nombre_plan ? esc(socio.nombre_plan) : '<span class="admin-nulo">—</span>'}</td>
-                            <td><span class="admin-estado ${estadoClase}">${estadoTexto}</span></td>
-                            <td>${socio.fecha_fin ? fecha(socio.fecha_fin) : '<span class="admin-nulo">—</span>'}</td>
-                            <td class="col-acciones">
-                                <a href="#" class="admin-mini">Ver</a>
-                                <a href="#" class="admin-mini">Editar</a>
-                            </td>
-                        </tr>
-                    `;
-                });
-            } else {
-                console.error("Error al cargar socios:", respuesta.message);
-            }
-        } catch (error) {
-            console.error("Error de conexión:", error);
-        }
-    }
-    function filtrar() {
-        const texto = buscar.value.trim().toLowerCase();
-        const plan = filtroPlan.value.toLowerCase();
-        const estado = filtroEstado.value.toLowerCase();
-        const filasActuales = document.querySelectorAll('#tablaSocios tr');
-        let visibles = 0;
-
-        filasActuales.forEach(fila => {
-            const coincide =
-                fila.textContent.toLowerCase().includes(texto) &&
-                (!plan || fila.dataset.plan.toLowerCase().includes(plan)) &&
-                (!estado || fila.dataset.estado === estado);
-
-            fila.hidden = !coincide;
-            if (coincide) visibles++;
-        });
-        sinResultados.classList.toggle('visible', visibles === 0);
-    }
-    [buscar, filtroPlan, filtroEstado].forEach(el => el.addEventListener('input', filtrar));
-    document.addEventListener('DOMContentLoaded', cargarSocios);
-</script>
-
+<script src="../../../JS/roles/Administrador/GestionarSocio.js"></script>
+<div class="modal fade" id="adminModal" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: #151515; border: 1px solid #2a2a2a; color: #f4f4f2;">
+            <div class="modal-header" style="border-bottom: 1px solid #2a2a2a;">
+                <h5 class="modal-title" id="adminModalLabel" style="font-family: 'Montserrat', sans-serif; color: #cdfa3f;">Detalles</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="adminModalBody">
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #2a2a2a;" id="adminModalFooter">
+                <button type="button" class="admin-mini" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>
