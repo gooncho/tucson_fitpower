@@ -11,6 +11,7 @@ Class RutinaModel {
 
     public function listar($idEntrenador = null) {
         $sql =  'SELECT a.id_rutina,
+                    r.descripcion,
                     a.id_persona,
                     r.nombre AS rutina,
                     u.nombre_usuario AS usuario,
@@ -27,7 +28,7 @@ Class RutinaModel {
             $sql .= ' WHERE p.id_entrenador = :entrenador';
             $params['entrenador'] = $idEntrenador;
         }
-        $sql .= ' GROUP BY a.id_rutina, a.id_persona, r.nombre, u.nombre_usuario, p.apellido
+        $sql .= ' GROUP BY a.id_rutina, a.id_persona, r.nombre, r.descripcion, u.nombre_usuario, p.apellido
                 ORDER BY a.id_persona, a.id_rutina';
 
         $stmt = $this->db->prepare($sql); 
@@ -37,7 +38,8 @@ Class RutinaModel {
 
     public function VerRutina($idRutina) {
         $stmt = $this->db->prepare(
-            'SELECT e.nombre,
+            'SELECT d.id_ejercicio,
+                    e.nombre,
                     d.series,
                     d.repeticiones,
                     d.descanso
@@ -57,10 +59,10 @@ Class RutinaModel {
     }
 
     public function esSocioDe($idSocio, $idEntrenador = null) {
-        $sql = 'SELECT COUNT(*)
+        $sql = 'SELECT p.id_persona, p.id_entrenador, u.id_rol
                 FROM PERSONA AS p
                 INNER JOIN USUARIO AS u ON u.id_usuario = p.id_usuario
-                WHERE p.id_persona = :socio AND u.id_rol = 3';
+                WHERE p.id_persona = 5';
         $params = ['socio' => $idSocio];
 
         if ($idEntrenador !== null) {
@@ -88,21 +90,8 @@ Class RutinaModel {
             );
             $stmt->execute(['rutina' => $idRutina, 'persona' => $idSocio]);
 
-            $stmt = $this->db->prepare(
-                'INSERT INTO DETALLERUTINA (id_rutina, id_ejercicio, series, repeticiones, descanso, orden_ejercicios)
-                VALUES (:rutina, :ejercicio, :series, :repeticiones, :descanso, :orden)'
-            );
-            
-            foreach($ejercicios as $i => $item) {
-                $stmt->execute([
-                    'rutina' => $idRutina,
-                    'ejercicio' => $item['id_ejercicio'],
-                    'series' => $item['series'],
-                    'repeticiones' => $item['repeticiones'],
-                    'descanso' => $item['descanso'],
-                    'orden' => $i + 1,
-                ]);
-            }
+            $this->guardarEjercicios($idRutina, $ejercicios);
+
             $this->db->commit();
             return $idRutina;
             } catch (\Exception $e) {
@@ -134,6 +123,44 @@ Class RutinaModel {
                 $stmt = $this->db->prepare("DELETE FROM $tabla WHERE id_rutina = :id");
                 $stmt->execute(['id' => $idRutina]);
             }
+            $this->db->commit();
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
+
+    private function guardarEjercicios($idRutina, $ejercicios) {
+        $stmt = $this->db->prepare(
+            'INSERT INTO DETALLERUTINA (id_rutina, id_ejercicio, series, repeticiones, descanso, orden_ejercicios)
+            VALUES (:rutina, :ejercicio, :series, :repeticiones, :descanso, :orden)'
+        );
+        foreach ($ejercicios as $i => $item) {
+            $stmt->execute ([
+                'rutina' => $idRutina,
+                'ejercicio' => $item['id_ejercicio'],
+                'series' => $item['series'],
+                'repeticiones' => $item['repeticiones'],
+                'descanso' => $item['descanso'],
+                'orden' => $i + 1,
+            ]);
+        }
+    }
+
+    public function actualizar($idRutina, $nombre, $descripcion, $ejercicios) {
+        try {
+            $this->db->beginTransaction();
+
+            $stmt = $this->db->prepare(
+                'UPDATE RUTINA SET nombre = :nombre, descripcion = :descripcion WHERE id_rutina = :id'
+            );
+            $stmt->execute(['nombre' => $nombre, 'descripcion' => $descripcion, 'id' => $idRutina]);
+
+            $stmt = $this->db->prepare('DELETE FROM DETALLERUTINA WHERE id_rutina = :id');
+            $stmt->execute(['id' => $idRutina]);
+
+            $this->guardarEjercicios($idRutina, $ejercicios);
+
             $this->db->commit();
         } catch (\Exception $e) {
             $this->db->rollBack();

@@ -1,4 +1,5 @@
 let TodasLasRutinas = [];
+let RutinaEditada = null;
 
 function MostrarMensaje(tbody, texto) {
     const fila = document.createElement('tr');
@@ -71,6 +72,7 @@ function CrearFila(r) {
     const editar = document.createElement('button');
     editar.className = 'admin-mini';
     editar.textContent = 'Editar';
+    editar.addEventListener('click', () => AbrirNuevaRutina(r));
 
     const eliminar = document.createElement('button');
     eliminar.className = 'admin-mini peligro';
@@ -149,17 +151,35 @@ const opciones = [...unicos.values()].map(s => {
 select.replaceChildren(vacia, ...opciones);
 }
 
-async function AbrirNuevaRutina() {
-    document.getElementById('rut-nombre').value = '';
-    document.getElementById('rut-descripcion').value = '';
+async function AbrirNuevaRutina(r = null) {
+    RutinaEditada = r;
+
+    document.getElementById('rut-modal-titulo').textContent = r ? 'Editar rutina' : 'Crear rutina';
+    document.getElementById('rut-nombre').value = r ? r.rutina : '';
+    document.getElementById('rut-descripcion').value = r ? (r.descripcion || '') : '';
     document.getElementById('rut-error').textContent = '';
     document.getElementById('rut-ejercicios').replaceChildren();
 
     await Promise.all([CargarSociosSelect(), CargarEjerciciosDisponibles()]);
 
-    AgregarFilaEjercicio();
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevaRutina')).show();
-}
+    const select = document.getElementById('rut-socio');
+
+    if (r) {
+        select.value = r.id_persona;
+        select.disabled = true;
+        const res = await API.request(`/rutinas/${r.id_rutina}`);
+        if (res && res.status === 'ok' && res.data.length > 0) {
+            res.data.forEach(e => AgregarFilaEjercicio(e));
+        } else {
+            AgregarFilaEjercicio();
+        }
+    } else {
+        select.disabled = false;
+        AgregarFilaEjercicio();
+    }
+    
+     bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevaRutina')).show();
+}   
 
 async function GuardarRutina() {
     const error = document.getElementById('rut-error');
@@ -206,12 +226,9 @@ async function GuardarRutina() {
    const boton = document.getElementById('btn-guardar-rutina');
    boton.disabled = true;
 
-   const res = await API.request('/rutinas', 'POST', {
-    nombre,
-    descripcion,
-    id_persona: idSocio,
-    ejercicios
-   });
+   const res =  RutinaEditada
+    ? await API.request(`/rutinas/${RutinaEditada.id_rutina}`, 'PUT', { nombre, descripcion, ejercicios })
+    : await API.request('/rutinas', 'POST', {nombre, descripcion, id_persona: idSocio, ejercicios });
 
    boton.disabled = false;
 
@@ -230,7 +247,7 @@ async function CargarEjerciciosDisponibles() {
     EjerciciosDisponible = (res && res.status === 'ok') ? res.data : [];
 }
 
-function CrearFilaFormulario() {
+function CrearFilaFormulario(e = null) {
     const fila = document.createElement('div');
     fila.className = 'row g-2 align-items-center mb-2 rut-ejercicio-fila';
 
@@ -280,6 +297,14 @@ function CrearFilaFormulario() {
     colQuitar.appendChild(quitar);
 
     fila.append(colSelect, ...columnas, colQuitar);
+
+    if (e) {
+        select.value = e.id_ejercicio;
+        columnas[0].querySelector('input').value = e.series;
+        columnas[1].querySelector('input').value = e.repeticiones;
+        columnas[2].querySelector('input').value = e.descanso;
+    }
+
     return fila
 }
 
@@ -290,7 +315,7 @@ function AgregarFilaEjercicio() {
 document.addEventListener('DOMContentLoaded', () => {
     CargarRutinas();
     document.getElementById('buscar-rutina').addEventListener('input', FiltrarRutinas);
-    document.getElementById('btn-nueva-rutina').addEventListener('click', AbrirNuevaRutina);
+    document.getElementById('btn-nueva-rutina').addEventListener('click', () => AbrirNuevaRutina());
     document.getElementById('btn-guardar-rutina').addEventListener('click', GuardarRutina);
-    document.getElementById('btn-agregar-ejercicio').addEventListener('click', AgregarFilaEjercicio);
+    document.getElementById('btn-agregar-ejercicio').addEventListener('click', () => AgregarFilaEjercicio ());
 });

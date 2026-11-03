@@ -14,6 +14,7 @@ $router->get('/rutinas', 'RutinaController@index');
 $router->get('/rutinas/:id', 'RutinaController@verRutina');
 $router->post('/rutinas', 'RutinaController@store');
 $router->delete('/rutinas/:id', 'RutinaController@destroy');
+$router->put('/rutinas/:id', 'RutinaController@actualizar');
 $router->get('/ejercicio', 'EjerciciosController@index');
 $router->post('/ejercicio', 'EjerciciosController@store');
 $router->put('/ejercicio/:id', 'EjerciciosController@update');
