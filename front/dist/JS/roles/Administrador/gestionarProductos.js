@@ -1,4 +1,4 @@
-let productos = [];
+let productos = []; 
 let adminModal = null;
 let modalTitle, modalBody;
 

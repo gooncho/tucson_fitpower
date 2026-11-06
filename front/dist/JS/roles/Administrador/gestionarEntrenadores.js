@@ -1,4 +1,4 @@
-let entrenadores = [];
+let entrenadores = []; 
 let adminModal = null;
 let modalTitle, modalBody;
 
