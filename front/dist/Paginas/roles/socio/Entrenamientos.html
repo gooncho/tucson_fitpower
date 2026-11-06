@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrenamientos</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="../../../assets/Icons_logo.png">
+  <link rel="stylesheet" href="../../../CSS/dashboard.css">
+  <link rel="stylesheet" href="../../../CSS/socio.css">
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../../../assets/logo_fitpower.jpg" width="130" alt="Logo FitPower">
+    </div>
+
+    <nav class="nav-group">
+      <a href="inicioSocio.html" class="side-link"><i class="bi bi-house-door-fill"></i><span>Inicio</span></a>
+      <a href="miProgreso.html" class="side-link"><i class="bi bi-graph-up-arrow"></i><span>Mi progreso</span></a>
+      <a href="Rutinas.html" class="side-link"><i class="bi bi-list-check"></i><span>Rutinas</span></a>
+      <a href="Entrenamientos.html" class="side-link active"><i class="bi bi-heart-pulse"></i><span>Entrenamientos</span></a>
+      <a href="Mensajes.html" class="side-link"><i class="bi bi-chat-dots"></i><span>Mensajes</span></a>
+      <a href="Membresia.html" class="side-link"><i class="bi bi-card-checklist"></i><span>Membresía</span></a>
+      <a href="Productos.html" class="side-link"><i class="bi bi-box-seam"></i><span>Productos</span></a>
+      <a href="MisLogros.html" class="side-link"><i class="bi bi-trophy-fill"></i><span>Mis logros</span></a>
+      <a href="Objetivos.html" class="side-link"><i class="bi bi-bullseye"></i><span>Objetivos</span></a>
+      <a href="Perfil.html" class="side-link"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="#" class="logout-link" id="btn-logout">
+        <i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span>
+      </a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="mb-4">
+      <h1 class="mb-0" style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 28px;">Entrenamientos</h1>
+    </div>
+    <div class="row g-3 mb-4" style="max-width: 950px;">
+      <div class="col-md-7">
+        <div class="position-relative">
+          <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+          <input type="search" id="buscarEntrenamiento" class="form-control bg-whit text-dark border-secondary ps-5 py-2" placeholder="Buscar entrenamiento...">
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="position-relative">
+          <i class="bi bi-calendar-event position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+          <input type="text" id="filtroFecha" class="form-control bg-whit text-dark border-secondary ps-5 py-2" placeholder="Fecha">
+        </div>
+      </div>
+    </div>
+    <h3 class="mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 19px;">Historial de tus entrenamientos recientes</h3>
+    <div class="card-panel p-3" style="background: #151515; border: 1px solid #2a2a2a; border-radius: 14px; max-width: 950px;">
+      <div class="table-responsive">
+        <table class="table table-dark table-borderless align-middle mb-0">
+          <thead>
+            <tr class="text-muted border-bottom border-secondary" style="font-size: 13.5px;">
+              <th scope="col" class="pb-3">Fecha</th>
+              <th scope="col" class="pb-3">Rutina</th>
+              <th scope="col" class="pb-3">Duración</th>
+              <th scope="col" class="pb-3 text-end">Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tablaEntrenamientos">
+            <tr>
+              <td colspan="4" class="text-center text-muted py-4">Cargando entrenamientos...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="../../../JS/api.js"></script>
+  <script src="../../../JS/roles/Socio/entrenamientosSocio.js"></script>
+</body>
+</html>

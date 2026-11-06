@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrenamiento en curso</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="../../../assets/Icons_logo.png">
+  <link rel="stylesheet" href="../../../CSS/dashboard.css">
+  <link rel="stylesheet" href="../../../CSS/socio.css">
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../../../assets/logo_fitpower.jpg" width="130" alt="Logo FitPower">
+    </div>
+    <nav class="nav-group">
+      <a href="inicioSocio.html" class="side-link"><i class="bi bi-house-door-fill"></i><span>Inicio</span></a>
+      <a href="miProgreso.html" class="side-link"><i class="bi bi-graph-up-arrow"></i><span>Mi progreso</span></a>
+      <a href="Rutinas.html" class="side-link active"><i class="bi bi-list-check"></i><span>Rutinas</span></a>
+      <a href="Entrenamientos.html" class="side-link"><i class="bi bi-heart-pulse"></i><span>Entrenamientos</span></a>
+      <a href="Mensajes.html" class="side-link"><i class="bi bi-chat-dots"></i><span>Mensajes</span></a>
+      <a href="Membresia.html" class="side-link"><i class="bi bi-card-checklist"></i><span>Membresía</span></a>
+      <a href="Productos.html" class="side-link"><i class="bi bi-box-seam"></i><span>Productos</span></a>
+      <a href="MisLogros.html" class="side-link"><i class="bi bi-trophy-fill"></i><span>Mis logros</span></a>
+      <a href="Objetivos.html" class="side-link"><i class="bi bi-bullseye"></i><span>Objetivos</span></a>
+      <a href="Perfil.html" class="side-link"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" class="logout-link" id="btn-logout">
+        <i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span>
+      </a>
+    </div>
+  </aside>
+  <main class="main">
+
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4" style="max-width: 800px;">
+      <div>
+        <h1 class="mb-1" style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 28px;">Entrenamiento en curso</h1>
+        <h3 id="nombreRutina" class="mb-1 text-light" style="font-size: 20px; font-weight: 700;">Cargando rutina...</h3>
+        <p id="progresoEjercicios" class="mb-0 text-with" style="font-size: 14px;">0 / 0 ejercicios</p>
+      </div>
+      <div class="text-end">
+        <div id="cronometro" class="fw-bold fs-3 text-light font-monospace">00:00</div>
+        <div class="text-with" style="font-size: 12px;">Tiempo transcurrido</div>
+        <button id="btnFinalizar" class="btn btn-outline-light btn-sm mt-2 px-3 py-1 rounded-pill fw-semibold" style="border-color: #555;">Finalizar</button>
+      </div>
+    </div>
+
+    <div class="p-4" style="background: #151515; border: 1px solid #2a2a2a; border-radius: 14px; max-width: 800px;">
+      
+      <div class="text-center pb-3 border-bottom border-secondary mb-4">
+        <h3 id="nombreEjercicio" class="mb-1" style="font-size: 22px; font-weight: 700; color: #f4f4f2;">Cargando ejercicio...</h3>
+        <p id="infoEjercicio" class="mb-0 text-with" style="font-size: 13.5px;">—</p>
+      </div>
+      <div id="contenedorSeries" class="d-flex flex-column gap-3 mb-4">
+      </div>
+      <button id="btnAnadirSerie" class="w-100 py-2 rounded border border-secondary bg-transparent text-light fw-semibold mb-4" style="font-size: 14px; transition: 0.2s;">
+        + Añadir serie
+      </button>
+      <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
+        <button id="btnAnterior" class="btn btn-dark border border-secondary px-4 py-2 text-with" disabled>Anterior</button>
+        <button id="btnSiguiente" class="btn-lime px-4 py-2">Siguiente ejercicio <i class="bi bi-arrow-right"></i></button>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="../../../JS/api.js"></script>
+  <script src="../../../JS/roles/Socio/entrenamientoCurso.js"></script>
+</body>
+</html>
