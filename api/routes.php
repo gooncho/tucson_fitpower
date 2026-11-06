@@ -22,7 +22,8 @@ $router->get('/producto', 'ProductosController@index');
 $router->get('/producto/:id/resenas', 'ResenaController@index');
 $router->post('/producto/:id/resenas', 'ResenaController@store');
 $router->get('/perfil', 'PerfilController@ver');
-
+$router->get('/objetivos', 'ObjetivoController@index');
+$router->post('/objetivos', 'ObjetivoController@store');
 
 // Próxima clase: login
 // $router->post('/login', 'AuthController@login');

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Objetivos</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="../../../assets/Icons_logo.png">
+  <link rel="stylesheet" href="../../../CSS/dashboard.css">
+  <link rel="stylesheet" href="../../../CSS/socio.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../../../assets/logo_fitpower.jpg" width="130" alt="Logo FitPower">
+    </div>
+    <nav class="nav-group">
+      <a href="inicioSocio.html" class="side-link"><i class="bi bi-house-door-fill"></i><span>Inicio</span></a>
+      <a href="miProgreso.html" class="side-link"><i class="bi bi-graph-up-arrow"></i><span>Mi progreso</span></a>
+      <a href="Rutinas.html" class="side-link"><i class="bi bi-list-check"></i><span>Rutinas</span></a>
+      <a href="Entrenamientos.html" class="side-link"><i class="bi bi-heart-pulse"></i><span>Entrenamientos</span></a>
+      <a href="Mensajes.html" class="side-link"><i class="bi bi-chat-dots"></i><span>Mensajes</span></a>
+      <a href="Membresia.html" class="side-link"><i class="bi bi-card-checklist"></i><span>Membresía</span></a>
+      <a href="Productos.html" class="side-link"><i class="bi bi-box-seam"></i><span>Productos</span></a>
+      <a href="MisLogros.html" class="side-link"><i class="bi bi-trophy-fill"></i><span>Mis logros</span></a>
+      <a href="Objetivos.html" class="side-link active"><i class="bi bi-bullseye"></i><span>Objetivos</span></a>
+      <a href="Perfil.html" class="side-link"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="#" class="logout-link" id="btn-logout">
+        <i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span>
+      </a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4" style="max-width: 950px;">
+      <div>
+        <h1 class="mb-1" style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 28px;">Objetivos</h1>
+        <p class="text-whit mb-0" style="font-size: 14.5px;">Supera tus límites y alcanza tus metas</p>
+      </div>
+      <button id="btnNuevoObjetivo" class="btn-lime py-2 px-3 fw-bold" style="font-size: 13.5px;">+ NUEVO OBJETIVO</button>
+    </div>
+    <div class="d-flex align-items-center gap-2 mb-4 flex-wrap" style="max-width: 950px;">
+      <button class="btn btn-dark filter-tab active px-4 py-2 rounded-pill fw-semibold border border-secondary" data-filtro="todos" style="font-size: 13.5px; background: #222;">TODOS</button>
+      <button class="btn btn-dark filter-tab px-4 py-2 rounded-pill fw-semibold border border-secondary text-whit" data-filtro="en curso" style="font-size: 13.5px; background: #151515;">EN PROGRESO</button>
+      <button class="btn btn-dark filter-tab px-4 py-2 rounded-pill fw-semibold border border-secondary text-whit" data-filtro="completados" style="font-size: 13.5px; background: #151515;">COMPLETADOS</button>
+      <button class="btn btn-dark filter-tab px-4 py-2 rounded-pill fw-semibold border border-secondary text-whit" data-filtro="pausado" style="font-size: 13.5px; background: #151515;">PAUSADOS</button>
+    </div>
+    <div id="listaObjetivos" class="d-flex flex-column gap-3" style="max-width: 950px;">
+      <div class="card-panel text-whit text-center py-4" style="background: #151515; border: 1px solid #2a2a2a; border-radius: 14px;">Cargando objetivos...</div>
+    </div>
+    <div class="modal fade" id="modalNuevoObjetivo" tabindex="-1" aria-labelledby="modalNuevoObjetivoLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-light" style="background: #151515; border: 1px solid #2a2a2a; border-radius: 14px;">
+          
+          <div class="modal-header border-bottom border-secondary">
+            <h5 class="modal-title fw-bold" id="modalNuevoObjetivoLabel" style="font-family: 'Montserrat', sans-serif;">Nuevo Objetivo</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+
+          <form id="formNuevoObjetivo">
+            <div class="modal-body d-flex flex-column gap-3">
+              <div>
+                <label class="form-label text-whit" style="font-size: 13px;">Título del objetivo</label>
+                <input type="text" id="inputTitulo" class="form-control bg-dark text-light border-secondary" required placeholder="Ej: Ganar masa muscular">
+              </div>
+              <div>
+                <label class="form-label text-whit" style="font-size: 13px;">Descripción</label>
+                <textarea id="inputDescripcion" class="form-control bg-dark text-light border-secondary" rows="3" placeholder="Describe brevemente tu meta..."></textarea>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                  <label class="form-label text-whit" style="font-size: 13px;">Fecha de inicio</label>
+                  <input type="date" id="inputFechaInicio" class="form-control bg-dark text-light border-secondary" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-whit" style="font-size: 13px;">Fecha límite (Fin)</label>
+                  <input type="date" id="inputFechaFin" class="form-control bg-dark text-light border-secondary" required>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <label class="form-label text-whit" style="font-size: 13px;">Estado</label>
+                  <select id="inputEstado" class="form-select bg-dark text-light border-secondary">
+                    <option value="En curso">En curso</option>
+                    <option value="Pausado">Pausado</option>
+                    <option value="Completado">Completado</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-whit" style="font-size: 13px;">Progreso inicial (%)</label>
+                  <input type="number" id="inputPorcentaje" class="form-control bg-dark text-light border-secondary" value="0" min="0" max="100">
+                </div>
+              </div>
+            </div>
+            <div class="modal-header border-top border-secondary justify-content-end gap-2">
+              <button type="button" class="btn btn-outline-light btn-sm px-3" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn-lime btn-sm px-4 fw-bold">Guardar objetivo</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="../../../JS/api.js"></script>
+  <script src="../../../JS/roles/Socio/objetivosSocio.js"></script>
+</body>
+</html>
