@@ -10,15 +10,29 @@ function MostrarMensaje(tbody, texto) {
     tbody.replaceChildren(fila);
 }
 
+const EXTENSIONES = ['png', 'jpg', 'webp'];
+
+function MostrarImagen(img, id) {
+    let intento = 0;
+    img.classList.remove('d-none');
+    img.onerror = () => {
+        intento++;
+        if (intento < EXTENSIONES.length) {
+            img.src = `/front/dist/assets/Ejercicios/${id}.${EXTENSIONES[intento]}`;
+        } else {
+            img.classList.add('d-none');
+        }
+    };
+    img.src = `/front/dist/assets/Ejercicios/${id}.${EXTENSIONES[0]}`;
+}
+
 function AbrirEjercicio(e) {
     document.getElementById('ej-ver-nombre').textContent = e.nombre;
     document.getElementById('ej-ver-descripcion').textContent = e.descripcion || 'Sin descripcion';
 
     const img = document.getElementById('ej-ver-imagen');
     img.alt = e.nombre;
-    img.onerror = () => img.classList.add('d-none');
-    img.classList.remove('d-none');
-    img.src = `/front/dist/assets/Ejercicios/${e.id_ejercicio}.png`;
+    MostrarImagen(img, e.id_ejercicio);
 
     const chips = (e.grupo_muscular || '')
         .split(',')
@@ -106,6 +120,7 @@ function LimpiarFormularioEjercicio() {
     document.getElementById('ej-nivel').value = 'Principiante';
     document.getElementById('ej-descripcion').value = '';
     document.getElementById('ej-error').textContent = '';
+    document.getElementById('ej-imagen').value = '';
 }
 async function GuardarEjercicio() {
     const error = document.getElementById('ej-error');
@@ -132,7 +147,18 @@ async function GuardarEjercicio() {
     
     boton.disabled = false;
     
-    if (res && res.status === 'ok')  {
+    if (res && res.status === 'ok') {
+        const archivo = document.getElementById('ej-imagen').files[0];
+
+        if (!EjercicioEditado && archivo) {
+            const formulario = new FormData();
+            formulario.append('imagen', archivo);
+            const resImg = await API.subir(`/ejercicio/${res.id}/imagen`, formulario);
+
+            if (!resImg || resImg.status !== 'ok') {
+                alert('El ejercicio se creó, pero la imagen no: ' + (resImg?.message || 'error desconocido'));
+            }
+        }
         bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevoEjercicio')).hide();
         await CargarEjercicios();
         return;
@@ -153,6 +179,7 @@ function AbrirFormularioEjercicio(e = null) {
     EjercicioEditado = e;
 
     document.getElementById('ej-modal-titulo').textContent = e ? 'Editar ejercicio' : 'Nuevo ejercicio';
+    document.getElementById('ej-imagen-grupo').classList.toggle('d-none', e !== null);
 
     if(e) {
         document.getElementById('ej-nombre').value = e.nombre;

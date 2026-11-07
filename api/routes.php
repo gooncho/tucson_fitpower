@@ -18,6 +18,7 @@ $router->put('/rutinas/:id', 'RutinaController@actualizar');
 $router->get('/ejercicio', 'EjerciciosController@index');
 $router->post('/ejercicio', 'EjerciciosController@store');
 $router->put('/ejercicio/:id', 'EjerciciosController@update');
+$router->post('/ejercicio/:id/imagen', 'EjerciciosController@subirImagen');
 $router->get('/producto', 'ProductosController@index');
 $router->get('/producto/:id/resenas', 'ResenaController@index');
 $router->post('/producto/:id/resenas', 'ResenaController@store');

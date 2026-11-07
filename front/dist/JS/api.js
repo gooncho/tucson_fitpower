@@ -26,5 +26,17 @@ const API = {
             console.error('Error de conexión con la API:', error);
             return { status: 'error', message: 'No se pudo conectar con la API' };
         }
+    },
+    async subir(endpoint, formData) {
+        try {
+            const respuesta = await fetch(this.urlBase + endpoint, {
+                method: 'POST',
+                body: formData
+            });
+            return await respuesta.json();
+        } catch (error) {
+            console.error('Error de conexión con la API:', error);
+            return { status: 'error', message: 'No se pudo conectar con la API' };
+        }
     }
 };

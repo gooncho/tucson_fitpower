@@ -118,4 +118,62 @@ class EjerciciosController {
             $this->responder(500, ['status' => 'error', 'message' => 'No se pudo actualizar el ejercicio']);
         }
     }
+
+    public function subirImagen($idEjercicio) {
+        if (!$this->accesoPermitido()) {
+            return;
+        }
+        $idEjercicio = (int) $idEjercicio;
+
+        try {
+            if ($idEjercicio <= 0 || !$this->modelo->existe($idEjercicio)) {
+                $this->responder(404, ['status' => 'error', 'message' => 'Ejercicio no encontrado']);
+                return;
+            }
+
+            if (!isset($_FILES['imagen'])) {
+                $this->responder(400, ['status' => 'error', 'message' => 'No se recibió ninguna imagen']);
+                return;
+            }
+            $archivo = $_FILES['imagen'];
+
+            if ($archivo['error'] === UPLOAD_ERR_INI_SIZE || $archivo['size'] > 2 * 1024 * 1024) {
+                $this->responder(400, ['status' => 'error', 'message' => 'La imagen pesa más de 2 MB']);
+                return;
+            }
+            if ($archivo['error'] !== UPLOAD_ERR_OK) {
+                $this->responder(400, ['status' => 'error', 'message' => 'No se pudo subir la imagen']);
+                return;
+            }
+            $info = getimagesize($archivo['tmp_name']);
+            $tipos = [
+                IMAGETYPE_PNG  => 'png',
+                IMAGETYPE_JPEG => 'jpg',
+                IMAGETYPE_WEBP => 'webp',
+            ];
+            if ($info === false || !isset($tipos[$info[2]])) {
+                $this->responder(400, ['status' => 'error', 'message' => 'Solo se aceptan imágenes PNG, JPG o WEBP']);
+                return;
+            }
+            $extension = $tipos[$info[2]];
+
+            $carpeta = __DIR__ . '/../../../front/dist/assets/Ejercicios/';
+            foreach ($tipos as $ext) {
+                $vieja = $carpeta . $idEjercicio . '.' . $ext;
+                if (file_exists($vieja)) {
+                    unlink($vieja);
+                }
+            }
+
+            if (!move_uploaded_file($archivo['tmp_name'], $carpeta . $idEjercicio . '.' . $extension)) {
+                $this->responder(500, ['status' => 'error', 'message' => 'No se pudo guardar la imagen']);
+                return;
+            }
+
+            $this->responder(200, ['status' => 'ok', 'message' => 'Imagen guardada']);
+        } catch (\Exception $e) {
+            error_log('Error al subir imagen: ' . $e->getMessage());
+            $this->responder(500, ['status' => 'error', 'message' => 'No se pudo guardar la imagen']);
+        }
+    }
 }
