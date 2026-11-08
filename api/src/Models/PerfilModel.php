@@ -39,4 +39,30 @@ class PerfilModel {
         $stmt->execute(['id' => $idUsuario]);
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
+    
+    public function actualizar($idUsuario, $d, $esEntrenador) {
+        $campos = [
+            'apellido = :apellido',
+            'fecha_nacimiento = :fecha',
+            'altura = :altura',
+            'sobre_mi = :sobre',
+        ];
+        $params = [
+            'apellido' => $d['apellido'],
+            'fecha'    => $d['fecha_nacimiento'],
+            'altura'   => $d['altura'],
+            'sobre'    => $d['sobre_mi'],
+            'id'       => $idUsuario,
+        ];
+
+        if ($esEntrenador) {
+            $campos[] = 'especialidad = :especialidad';
+            $params['especialidad'] = $d['especialidad'];
+        }
+
+        $stmt = $this->db->prepare(
+            'UPDATE PERSONA SET ' . implode(', ', $campos) . ' WHERE id_usuario = :id'
+        );
+        $stmt->execute($params);
+    }
 }

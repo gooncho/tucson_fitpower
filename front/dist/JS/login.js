@@ -24,15 +24,46 @@ document.addEventListener('DOMContentLoaded', async () => {
             respuesta.message || 'Usuario o contraseña incorrectos';
         alerta.classList.remove('d-none');
     });
-});
-function redirigirSegunRol(rol) {
-    if (rol == 1) {
-        window.location.href = './roles/administrador/inicioAdministrador.html';
-    } else if (rol == 2) {
-        window.location.href = './roles/entrenador/inicioEntrenador.html';
-    } else if (rol == 3) {
-        window.location.href = './roles/socio/inicioSocio.html';
-    } else {
-        alert('Tipo de usuario no válido');
-    }
+
+    const formRegistro = document.getElementById('form-registro');
+    const alertaRegistro = document.getElementById('alerta-registro');
+
+    formRegistro.addEventListener('submit', async (evento) => {
+        evento.preventDefault();
+        alertaRegistro.classList.add('d-none');
+        alertaRegistro.textContent = '';
+
+        const boton = formRegistro.querySelector('button[type="submit"]');
+        boton.disabled = true;
+
+        const respuesta = await API.request('/registro', 'POST', {
+            usuario: document.getElementById('reg-usuario').value.trim(),
+            email: document.getElementById('reg-email').value.trim(),
+            password: document.getElementById('reg-password').value
+        });
+
+        boton.disabled = false;
+
+        if (respuesta.status === 'ok') {
+            sessionStorage.setItem('vistaActiva', 'login');
+            redirigirSegunRol(respuesta.data.rol_id);
+            return;
+        }
+
+        alertaRegistro.textContent =
+            respuesta.message || 'No se pudo crear el usuario';
+        alertaRegistro.classList.remove('d-none');
+        });
+    });
+
+    function redirigirSegunRol(rol) {
+        if (rol == 1) {
+            window.location.href = './roles/administrador/inicioAdministrador.html';
+        } else if (rol == 2) {
+            window.location.href = './roles/entrenador/inicioEntrenador.html';
+        } else if (rol == 3) {
+            window.location.href = './roles/socio/inicioSocio.html';
+        } else {
+            alert('Tipo de usuario no válido');
+        }
 }

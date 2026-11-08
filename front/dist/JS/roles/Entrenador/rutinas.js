@@ -272,7 +272,7 @@ function CrearFilaFormulario(e = null) {
     const campos = [
         { clase: 'rut-ej-series', placeholder: 'Series', min: 1},
         { clase: 'rut-ej-reps', placeholder: 'Repeticiones', min: 1},
-        { clase: 'rut-ej-descanso', placeholder: 'Descando (s)', min: 0},
+        { clase: 'rut-ej-descanso', placeholder: 'Descanso (s)', min: 0},
     ];
 
     const columnas = campos.map(c => {

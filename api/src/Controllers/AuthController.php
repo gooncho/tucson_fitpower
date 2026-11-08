@@ -119,4 +119,75 @@ class AuthController {
             'message' => 'Sesión cerrada'
         ], JSON_UNESCAPED_UNICODE);
     }
+
+    public function registrar() {
+        $datos = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($datos)) {
+            $datos = [];
+        }
+
+        $usuario = trim((string) ($datos['usuario'] ?? ''));
+        $email = strtolower(trim((string) ($datos['email'] ?? '')));
+        $password = (string) ($datos['password'] ?? '');
+
+        $error = null;
+        if (mb_strlen($usuario) < 3 || mb_strlen($usuario) > 50) {
+            $error = 'El usuario debe tener entre 3 y 50 caracteres.';
+        } elseif (!preg_match('/^[A-Za-z0-9._-]+$/', $usuario)) {
+            $error = 'El usuario solo puede tener letras, numeros, ., -, _.';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 100) {
+            $error = 'El email no es válido';
+        } elseif (mb_strlen($password) < 6 || mb_strlen($password) > 100) {
+            $error = 'La contraseña debe tener entre 6 y 100 caracteres';
+        }
+
+        if ($error !== null) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => $error], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $authModel = new AuthModel($this->db);
+
+        try {
+            $duplicado = $authModel->buscarDuplicado($usuario, $email);
+            if ($duplicado) {
+                http_responde_code(409);
+                $mensaje = strtolower($duplicado['nombre_usuario']) === strtolower($usuario)
+                    ? 'Ese nombre de usuario ya existe'
+                    : 'Ese email ya esta registrado';
+                    echo json_encode(['status' => 'error', 'message' => $mensaje], JSON_UNESCAPED_UNICODE);
+                    return;
+            }
+
+            $nuevo = $authModel->crearSocio($usuario, $email, $password);
+        } catch (\Exception $e) {
+            if ((string) $e->getCode() === '23000') {
+            http_response_code(409);
+            echo json_encode(['status' => 'error', 'message' => 'Ese usuario o email ya está registrado'], JSON_UNESCAPED_UNICODE);
+            return;
+            }
+            error_log('Error al registrar usuario: ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'No se pudo crear el usuario'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        session_regenerate_id(true);
+            $_SESSION['usuario_id'] = $nuevo['id_usuario'];
+            $_SESSION['usuario'] = $usuario;
+            $_SESSION['rol_id'] = $nuevo['id_rol'];
+            $_SESSION['rol'] = $nuevo['nombre_rol'];
+
+        http_response_code(201);
+        echo json_encode([
+            'status' => 'ok',
+            'message' => 'Usuario creado',
+            'data' => [
+                'usuario' => $usuario,
+                'rol_id' => $nuevo['id_rol'],
+                'rol' => $nuevo['nombre_rol'],
+            ]
+        ], JSON_UNESCAPED_UNICODE);
+    }
 }

@@ -1,6 +1,7 @@
 <?php
 // api/routes.php
 // Acá se anota: "cuando pidan ESTA url, ejecutá ESTE controlador@método"
+$router->post('/registro', 'AuthController@registrar');
 $router->post('/acceso', 'AuthController@login');
 $router->get('/sesion', 'AuthController@sesion');
 $router->post('/logout', 'AuthController@logout');
@@ -18,11 +19,12 @@ $router->put('/rutinas/:id', 'RutinaController@actualizar');
 $router->get('/ejercicio', 'EjerciciosController@index');
 $router->post('/ejercicio', 'EjerciciosController@store');
 $router->put('/ejercicio/:id', 'EjerciciosController@update');
-$router->post('/ejercicio/:id/imagen', 'EjerciciosController@subirImagen');
+$router->post('/ejercicio/:id/imagen', 'EjerciciosController@subirImagen'); 
 $router->get('/producto', 'ProductosController@index');
 $router->get('/producto/:id/resenas', 'ResenaController@index');
 $router->post('/producto/:id/resenas', 'ResenaController@store');
 $router->get('/perfil', 'PerfilController@ver');
+$router->put('/perfil', 'PerfilController@actualizar');
 $router->get('/objetivos', 'ObjetivoController@index');
 $router->post('/objetivos', 'ObjetivoController@store');
 

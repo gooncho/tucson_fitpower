@@ -28,4 +28,58 @@ class AuthModel {
             return false;
         }
     }
+
+    public function buscarDuplicado($usuario, $email) {
+        $stmt = $this->db->prepare(
+            'SELECT nombre_usuario, email
+            FROM USUARIO 
+            WHERE nombre_usuario = :usuario OR email = :email
+            LIMIT 1'
+        );
+        $stmt->execute(['usuario' => $usuario, 'email' => $email]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public function crearSocio($usuario, $email, $password) {
+        try {
+            $this->db->beginTransaction();
+
+            $stmt = $this->db->prepare('SELECT id_rol, nombre_rol FROM TIPOUSUARIO WHERE nombre_rol = :rol');
+            $stmt->execute(['rol' => 'Socio']);
+            $rol = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if (!$rol) {
+                throw new \Exception('No existe el rol Socio');
+            }
+
+            $stmt = $this->db->prepare(
+                'INSERT INTO USUARIO (id_rol, nombre_usuario, email, hash)
+                VALUES (:rol, :usuario, :email, :hash)'
+            );
+
+            $stmt->execute([
+                'rol' => $rol['id_rol'],
+                'usuario' => $usuario,
+                'email' => $email,
+                'hash' => $password,
+            ]);
+
+            $idUsuario = (int) $this->db->lastInsertId();
+
+            $stmt = $this->db->prepare('INSERT INTO PERSONA (id_usuario) VALUES (:id)');
+            $stmt->execute(['id' => $idUsuario]);
+
+            $this->db->commit();
+
+            return [
+                'id_usuario' => $idUsuario,
+                'id_rol' => (int) $rol['id_rol'],
+                'nombre_rol' => $rol['nombre_rol'],
+            ];
+        } catch (\Exception $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            throw $e;
+        }
+    }
 }

@@ -64,12 +64,46 @@
         <p id="perfil-error" class="text-danger small mt-3 mb-0"></p>
     </div>
 </main>
+  <div class="modal fade" id="modalPerfil" tabindex="-1" aria-hidden="true" data-bs-theme="dark">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar perfil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label" for="pf-apellido">Apellido</label>
+          <input id="pf-apellido" type="text" class="form-control mb-3" maxlength="50">
+
+          <label class="form-label" for="pf-fecha">Fecha de nacimiento</label>
+          <input id="pf-fecha" type="date" class="form-control mb-3">
+
+          <label class="form-label" for="pf-altura">Altura (cm)</label>
+          <input id="pf-altura" type="number" class="form-control mb-3" min="50" max="250">
+
+          <div id="pf-especialidad-grupo">
+            <label class="form-label" for="pf-especialidad">Especialidad</label>
+            <input id="pf-especialidad" type="text" class="form-control mb-3" maxlength="70">
+          </div>
+
+          <label class="form-label" for="pf-sobre-mi">Sobre mí</label>
+          <textarea id="pf-sobre-mi" class="form-control" rows="3" maxlength="500"></textarea>
+
+          <p id="pf-error" class="text-danger small mt-3 mb-0"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" id="btn-guardar-perfil" class="admin-btn">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
   <script src="../../../JS/api.js"></script>
   <script src="../../../JS/script.js"></script>
-  <script src="../../../JS/Perfil.js"></script>
+  <script src="../../../JS/perfil.js"></script>
 </body>
 
 </html>
