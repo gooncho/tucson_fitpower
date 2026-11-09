@@ -32,6 +32,7 @@ CREATE TABLE PERSONA (
     altura INT NULL,
     sobre_mi TEXT NULL,
     id_entrenador INT NULL,
+    foto VARCHAR(100) NULL,
     FOREIGN KEY (id_usuario) REFERENCES USUARIO(id_usuario),
     FOREIGN KEY (id_plan) REFERENCES PLAN(id_plan),
     FOREIGN KEY (id_entrenador) REFERENCES PERSONA(id_persona)

@@ -464,3 +464,13 @@ h6 {
 .Separador {
     margin-bottom: 100px;
 }
+
+.perfil-avatar {
+    overflow: hidden;
+}
+
+.perfil-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

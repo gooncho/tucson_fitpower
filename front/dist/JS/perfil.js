@@ -20,7 +20,15 @@ function PintarPerfil(p) {
 
     document.getElementById('perfil-nombre').textContent = nombre;
     document.getElementById('perfil-email').textContent = p.email;
-    document.getElementById('perfil-avatar').textContent = nombre.charAt(0).toUpperCase();
+    const avatar = document.getElementById('perfil-avatar');
+    if (p.foto) {
+        const img = document.createElement('img');
+        img.src = `/front/dist/assets/perfiles/${encodeURIComponent(p.foto)}`;
+        img.alt = nombre;
+        avatar.replaceChildren(img);
+    } else {
+        avatar.textContent = nombre.charAt(0).toUpperCase();
+    }
     document.getElementById('perfil-sobre-mi').textContent = p.sobre_mi || 'Coloca una descripcion tuya.';
 
     const filas = [
@@ -99,8 +107,35 @@ async function GuardarPerfil() {
     error.textContent = res?.message || 'No se pudo guardar el perfil.';
 }
 
+async function SubirFotoPerfil(evento) {
+    const archivo = evento.target.files[0];
+    if (!archivo) return;
+
+    const error = document.getElementById('perfil-error');
+    error.textContent = '';
+
+    if (archivo.size > 2 * 1024 * 1024) {
+        error.textContent = 'La foto pesa más de 2 MB.';
+        evento.target.value = '';
+        return;
+    }
+
+    const formulario = new FormData();
+    formulario.append('foto', archivo);
+    const res = await API.subir('/perfil/foto', formulario);
+
+    evento.target.value = '';
+
+    if (res && res.status === 'ok') {
+        await CargarPerfil();
+        return;
+    }
+    error.textContent = res?.message || 'No se pudo subir la foto.';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     CargarPerfil();
     document.getElementById('btn-editar-perfil')?.addEventListener('click', AbrirEditarPerfil);
     document.getElementById('btn-guardar-perfil')?.addEventListener('click', GuardarPerfil);
+    document.getElementById('perfil-foto-input')?.addEventListener('change', SubirFotoPerfil);
 });

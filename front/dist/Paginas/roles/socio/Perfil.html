@@ -24,13 +24,13 @@
 
     <nav class="nav-group">
       <a href="inicioSocio.html" class="side-link"><i class="bi bi-house-door-fill"></i><span>Inicio</span></a>
-      <a href="#" class="side-link"><i class="bi bi-graph-up-arrow"></i><span>Mi progreso</span></a>
-      <a href="#" class="side-link"><i class="bi bi-list-check"></i><span>Rutinas</span></a>
-      <a href="#" class="side-link"><i class="bi bi-heart-pulse"></i><span>Entrenamientos</span></a>
-      <a href="#" class="side-link"><i class="bi bi-calendar-check"></i><span>Asistencia</span></a>
-      <a href="#" class="side-link"><i class="bi bi-card-checklist"></i><span>Membresía</span></a>
+      <a href="miProgreso.html" class="side-link"><i class="bi bi-graph-up-arrow"></i><span>Mi progreso</span></a>
+      <a href="Rutinas.html" class="side-link"><i class="bi bi-list-check"></i><span>Rutinas</span></a>
+      <a href="Entrenamientos.html" class="side-link"><i class="bi bi-heart-pulse"></i><span>Entrenamientos</span></a>
+      <a href="" class="side-link"><i class="bi bi-calendar-check"></i><span>Asistencia</span></a>
+      <a href="Membresia.html" class="side-link"><i class="bi bi-card-checklist"></i><span>Membresía</span></a>
       <a href="#" class="side-link"><i class="bi bi-box-seam"></i><span>Productos</span></a>
-      <a href="#" class="side-link"><i class="bi bi-trophy-fill"></i><span>Mis logros</span></a>
+      <a href="Objetivos.html" class="side-link"><i class="bi bi-trophy-fill"></i><span>Mis logros</span></a>
       <a href="Perfil.html" class="side-link active"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
     </nav>
 
@@ -54,7 +54,11 @@
                 <h2 id="perfil-nombre">Cargando...</h2>
                 <p id="perfil-email"></p>
             </div>
-            <button class="admin-mini" id="btn-editar-perfil">Editar perfil</button>
+            <div class="d-flex gap-2">
+              <label class="admin-mini" for="perfil-foto-input">Cambiar foto</label>
+              <input type="file" id="perfil-foto-input" class="d-none" accept="image/png, image/jpeg, image/webp">
+              <button class="admin-mini" id="btn-editar-perfil">Editar perfil</button>
+            </div>
         </div>
         <div class="perfil-datos" id="perfil-datos"></div>
         <div class="perfil-sobre">

@@ -20,6 +20,7 @@ class PerfilModel {
                     p.altura,
                     p.especialidad,
                     p.sobre_mi,
+                    p.foto,
                     (SELECT pr.peso
                     FROM PROGRESO AS pr
                     WHERE pr.id_persona = p.id_persona
@@ -64,5 +65,16 @@ class PerfilModel {
             'UPDATE PERSONA SET ' . implode(', ', $campos) . ' WHERE id_usuario = :id'
         );
         $stmt->execute($params);
+    }
+
+    public function fotoActual($idUsuario) {
+        $stmt = $this->db->prepare('SELECT foto FROM PERSONA WHERE id_usuario = :id');
+        $stmt->execute(['id' => $idUsuario]);
+        return $stmt->fetchColumn() ?: null;
+    }
+
+    public function guardarFoto($idUsuario, $archivo) {
+        $stmt = $this->db->prepare('UPDATE PERSONA SET foto = :foto WHERE id_usuario = :id');
+        $stmt->execute(['foto' => $archivo, 'id' => $idUsuario]);
     }
 }

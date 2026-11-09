@@ -56,7 +56,11 @@
                 <h2 id="perfil-nombre">Cargando...</h2>
                 <p id="perfil-email"></p>
             </div>
-            <button class="admin-mini" id="btn-editar-perfil">Editar perfil</button>
+            <div class="d-flex gap-2">
+              <label class="admin-mini" for="perfil-foto-input">Cambiar foto</label>
+              <input type="file" id="perfil-foto-input" class="d-none" accept="image/png, image/jpeg, image/webp">
+              <button class="admin-mini" id="btn-editar-perfil">Editar perfil</button>
+            </div>
         </div>
         <div class="perfil-datos" id="perfil-datos"></div>
         <div class="perfil-sobre">

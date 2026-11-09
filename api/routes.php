@@ -25,6 +25,7 @@ $router->get('/producto/:id/resenas', 'ResenaController@index');
 $router->post('/producto/:id/resenas', 'ResenaController@store');
 $router->get('/perfil', 'PerfilController@ver');
 $router->put('/perfil', 'PerfilController@actualizar');
+$router->post('/perfil/foto', 'PerfilController@subirFoto');
 $router->get('/objetivos', 'ObjetivoController@index');
 $router->post('/objetivos', 'ObjetivoController@store');
 

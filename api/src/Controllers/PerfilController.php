@@ -105,4 +105,60 @@ class PerfilController {
             $this->responder(500, ['status' => 'error', 'message' => 'No se pudo actualizar el perfil']);
         }
     }
-}
+
+    public function subirFoto() {
+        if (empty($_SESSION['usuario_id'])) {
+            $this->responder (401, ['status' => 'error', 'message' => 'Tienes que iniciar sesion']);
+        return;
+        }
+        $idUsuario = (int) $_SESSION['usuario_id'];
+
+        if (!isset($_FILES['foto'])) {
+            $this->responder(400, ['status' => 'error', 'message' => 'No se recibió ninguna foto']);
+            return;
+        }
+        $archivo = $_FILES['foto'];
+
+        if ($archivo['error'] === UPLOAD_ERR_INI_SIZE || $archivo['size'] > 2 * 1024 * 1024) {
+            $this->responder(400, ['status' => 'error', 'message' => 'La foto pesa más de 2 MB']);
+            return;
+        }
+
+        $info = getimagesize($archivo['tmp_name']);
+        $tipos = [IMAGETYPE_PNG => 'png', IMAGETYPE_JPEG => 'jpg', IMAGETYPE_WEBP => 'webp'];
+        if ($info === false || !isset($tipos[$info[2]])) {
+            $this->responder(400, ['status' => 'error', 'message' => 'Solo se aceptan imágenes PNG, JPG o WEBP']);
+            return;
+        }
+
+        $carpeta = __DIR__ . '/../../../front/dist/assets/perfiles/';
+        if (!is_dir($carpeta)) {
+            mkdir($carpeta, 0755, true);
+        }
+
+        $nombre = $idUsuario . '_' . time() . '.' . $tipos[$info[2]];
+        
+    try {
+        $vieja = $this->modelo->fotoActual($idUsuario);
+
+        if (!move_uploaded_file($archivo['tmp_name'], $carpeta . $nombre)) {
+            $this->responder(500, ['status' => 'error', 'message' => 'No se pudo guardar la foto']);
+            return;
+        }
+
+        $this->modelo->guardarFoto($idUsuario, $nombre);
+
+        if ($vieja && $vieja !== $nombre && is_file($carpeta . basename($vieja))) {
+            unlink($carpeta . basename($vieja));
+        }
+
+            $this->responder(200, ['status' => 'ok', 'message' => 'Foto actualizada', 'foto' => $nombre]);
+        } catch (\Exception $e) {
+            if (is_file($carpeta . $nombre)) {
+                unlink($carpeta . $nombre);
+            }
+            error_log('Error al subir foto de perfil: ' . $e->getMessage());
+            $this->responder(500, ['status' => 'error', 'message' => 'No se pudo guardar la foto']);
+        }
+    }
+}   
