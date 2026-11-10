@@ -73,15 +73,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 async function cargarRutinas() {
     try {
-        const d = await API.request('/rutinas', 'GET');
-        rutinas = Array.isArray(d) ? d : (d.data || []);
+        const respuesta = await API.request('/mis-rutinas', 'GET');
+        rutinas = respuesta.status === 'ok' && Array.isArray(respuesta.data) ? respuesta.data : [];
         renderRutinas();
-    } catch (e) {
-        rutinas = [
-            { id: 1, nombre: "Fuerza - Tren superior", cantidad_ejercicios: 5, descripcion: "Enfoque en pecho, espalda y brazos.", ejercicios: [{nombre: "Press de banca"}, {nombre: "Dominadas"}, {nombre: "Remo con barra"}, {nombre: "Curl de bíceps"}, {nombre: "Extensiones de tríceps"}] },
-            { id: 2, nombre: "Full Body", cantidad_ejercicios: 6, descripcion: "Rutina general para todo el cuerpo.", ejercicios: [{nombre: "Sentadillas"}, {nombre: "Peso muerto"}, {nombre: "Press militar"}, {nombre: "Zancadas"}, {nombre: "Plancha abdominal"}, {nombre: "Dominadas"}] },
-            { id: 3, nombre: "Fuerza - Tren inferior", cantidad_ejercicios: 4, descripcion: "Enfoque en piernas y pantorrillas.", ejercicios: [{nombre: "Sentadilla libre"}, {nombre: "Prensa de pierna"}, {nombre: "Extensiones de cuádriceps"}, {nombre: "Curl femoral"}] }
-        ];
+    } catch (error) {
+        rutinas = [];
         renderRutinas();
     }
 }

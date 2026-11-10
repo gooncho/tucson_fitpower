@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Perfil</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="icon" href="../../../assets/logo_fitpower.jpg">
+  <link rel="stylesheet" href="../../../CSS/dashboard.css">
+  <link rel="stylesheet" href="../../../CSS/administrador.css">
+</head>
+<body class="admin-body">
+  <div class="container-fluid">
+    <div class="row min-vh-100">
+      <aside class="admin-sidebar col-md-2 p-3 d-none d-md-block">
+        <img src="../../../assets/logo_fitpower.jpg" class="admin-logo">
+        <nav class="nav flex-column">
+          <a class="nav-link admin-link" href="inicioAdministrador.html"><i class="bi bi-house"></i>Inicio</a>
+          <a class="nav-link admin-link" href="GestionarSocio.html"><i class="bi bi-people"></i>Socios</a>
+          <a class="nav-link admin-link" href="GestionarEntrenadores.html"><i class="bi bi-person-badge"></i>Entrenadores</a>
+          <a class="nav-link admin-link" href="Pagos.html"><i class="bi bi-cash-stack"></i>Pagos e ingresos</a>
+          <a class="nav-link admin-link" href="GestionarProductos.html"><i class="bi bi-bag"></i>Productos</a>
+          <a class="nav-link admin-link" href="GestionarEjercicios.html"><i class="bi bi-activity"></i>Ejercicios</a>
+          <a class="nav-link admin-link activo" href="Perfil.html"><i class="bi bi-person-circle"></i>Mi Perfil</a>
+          <hr class="admin-sidebar-separador">
+        </nav>
+        <a href="#" class="nav-link admin-link" id="btn-logout">
+          <i class="bi bi-box-arrow-right"></i>Cerrar sesión
+        </a>
+      </aside>
+
+      <main class="col-md-10 admin-contenido">
+        <header class="admin-header">
+          <div>
+            <h1>Mi perfil</h1>
+            <p>Tus datos de administrador</p>
+          </div>
+        </header>
+
+        <div class="perfil-card">
+          <div class="perfil-cabecera">
+            <div class="perfil-avatar" id="perfil-avatar">?</div>
+            <div class="perfil-identidad">
+              <h2 id="perfil-nombre">Cargando...</h2>
+              <p id="perfil-email"></p>
+            </div>
+            <div class="d-flex gap-2">
+              <label class="admin-mini" for="perfil-foto-input">Cambiar foto</label>
+              <input type="file" id="perfil-foto-input" class="d-none" accept="image/png, image/jpeg, image/webp">
+              <button class="admin-mini" id="btn-editar-perfil">Editar perfil</button>
+            </div>
+          </div>
+          <div class="perfil-datos" id="perfil-datos"></div>
+          <div class="perfil-sobre">
+            <h3>Sobre mí</h3>
+            <p id="perfil-sobre-mi"></p>
+          </div>
+          <p id="perfil-error" class="text-danger small mt-3 mb-0"></p>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalPerfil" tabindex="-1" aria-hidden="true" data-bs-theme="dark">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar perfil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <label class="form-label" for="pf-apellido">Apellido</label>
+          <input id="pf-apellido" type="text" class="form-control mb-3" maxlength="50">
+
+          <label class="form-label" for="pf-fecha">Fecha de nacimiento</label>
+          <input id="pf-fecha" type="date" class="form-control mb-3">
+
+          <label class="form-label" for="pf-altura">Altura (cm)</label>
+          <input id="pf-altura" type="number" class="form-control mb-3" min="50" max="250">
+
+          <div id="pf-especialidad-grupo">
+            <label class="form-label" for="pf-especialidad">Especialidad</label>
+            <input id="pf-especialidad" type="text" class="form-control mb-3" maxlength="70">
+          </div>
+
+          <label class="form-label" for="pf-sobre-mi">Sobre mí</label>
+          <textarea id="pf-sobre-mi" class="form-control" rows="3" maxlength="500"></textarea>
+
+          <p id="pf-error" class="text-danger small mt-3 mb-0"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" id="btn-guardar-perfil" class="admin-btn">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../../../JS/api.js"></script>
+  <script src="../../../JS/script.js"></script>
+  <script src="../../../JS/perfil.js"></script>
+</body>
+</html>

@@ -32,14 +32,7 @@ function conectar(idsFiltros, render) {
     const el = $(id);
     if (el) el.addEventListener("input", render);
   });
-  const btnLogout = $("btnLogout") || $("btn-logout");
-  if (btnLogout) {
-    btnLogout.addEventListener("click", (ev) => {
-      ev.preventDefault();
-      localStorage.removeItem("token");
-      window.location.href = "acceso.html";
-    });
-  }
+  // El cierre de sesión lo maneja script.js (llama a /logout)
 }
 
 async function cargarSocios() {
@@ -48,6 +41,7 @@ async function cargarSocios() {
         
         if (respuesta.status === 'ok') {
             const tbody = document.getElementById('tablaSocios');
+            if (!tbody) return;
             tbody.innerHTML = ''; 
             
             if (respuesta.data.length === 0) {

@@ -28,10 +28,9 @@
       <a href="miProgreso.html" class="side-link"><i class="bi bi-graph-up-arrow"></i><span>Mi progreso</span></a>
       <a href="Rutinas.html" class="side-link"><i class="bi bi-list-check"></i><span>Rutinas</span></a>
       <a href="Entrenamientos.html" class="side-link"><i class="bi bi-heart-pulse"></i><span>Entrenamientos</span></a>
-      <a href="" class="side-link"><i class="bi bi-calendar-check"></i><span>Asistencia</span></a>
       <a href="Membresia.html" class="side-link"><i class="bi bi-card-checklist"></i><span>Membresía</span></a>
-      <a href="" class="side-link"><i class="bi bi-box-seam"></i><span>Productos</span></a>
-      <a href="Objetivos.html" class="side-link"><i class="bi bi-trophy-fill"></i><span>Mis logros</span></a>
+      <a href="../../Productos.html" class="side-link"><i class="bi bi-box-seam"></i><span>Productos</span></a>
+      <a href="Objetivos.html" class="side-link"><i class="bi bi-bullseye"></i><span>Objetivos</span></a>
       <a href="Perfil.html" class="side-link"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
     </nav>
 
@@ -54,7 +53,7 @@
       <div class="col-6 col-lg-3">
         <div class="metric-card">
           <div class="metric-label">Entrenamientos esta semana</div>
-          <div class="metric-value">4/5</div>
+          <div class="metric-value" id="valorSemana">—</div>
           <div class="metric-foot">
             <span>Completados</span>
             <span class="metric-icon"><i class="bi bi-check-lg"></i></span>
@@ -64,7 +63,7 @@
       <div class="col-6 col-lg-3">
         <div class="metric-card">
           <div class="metric-label">Asistencia este mes</div>
-          <div class="metric-value">12</div>
+          <div class="metric-value" id="valorMes">—</div>
           <div class="metric-foot">
             <span>Días</span>
             <span class="metric-icon"><i class="bi bi-calendar3"></i></span>
@@ -74,7 +73,7 @@
       <div class="col-6 col-lg-3">
         <div class="metric-card">
           <div class="metric-label">Racha actual</div>
-          <div class="metric-value">7</div>
+          <div class="metric-value" id="valorRacha">—</div>
           <div class="metric-foot">
             <span>Días</span>
             <span class="metric-icon"><i class="bi bi-fire"></i></span>
@@ -84,7 +83,7 @@
       <div class="col-6 col-lg-3">
         <div class="metric-card">
           <div class="metric-label">Logros desbloqueados</div>
-          <div class="metric-value">8</div>
+          <div class="metric-value" id="valorLogros">—</div>
           <div class="metric-foot">
             <span>En total</span>
             <span class="metric-icon"><i class="bi bi-trophy-fill"></i></span>
@@ -98,10 +97,10 @@
         <div class="card-panel">
           <div class="section-title">Progreso general</div>
           <div class="progress-card">
-            <div class="progress-ring" style="--pct:0;">
-              <span class="progress-pct">0%</span>
+            <div class="progress-ring" id="anilloProgreso" style="--pct:0;">
+              <span class="progress-pct" id="pctProgreso">0%</span>
             </div>
-            <div class="progress-msg">¡Empieza ahora!</div>
+            <div class="progress-msg" id="msgProgreso">¡Empieza ahora!</div>
           </div>
         </div>
       </div>
@@ -109,10 +108,10 @@
       <div class="col-lg-7">
         <div class="card-panel next-workout">
           <div class="section-title">Próximo entrenamiento</div>
-          <div class="nw-name">Rutina: Pecho y Tríceps</div>
-          <div class="nw-line">Día de entrenamiento: Miércoles</div>
-          <div class="nw-line">Duración: 75 min</div>
-          <a href="#" class="btn-lime mt-3"><i class="bi bi-play-fill"></i> Ver rutina</a>
+          <div class="nw-name" id="nombreRutina">Rutina: —</div>
+          <div class="nw-line" id="diaEntrenamiento">Día de entrenamiento: —</div>
+          <div class="nw-line" id="duracionEntrenamiento">Duración: —</div>
+          <a href="Rutinas.html" class="btn-lime mt-3" id="verRutina"><i class="bi bi-play-fill"></i> Ver rutina</a>
         </div>
       </div>
     </div>
@@ -122,10 +121,10 @@
         <div class="card-panel membership-card">
           <div>
             <div class="mc-title"><i class="bi bi-award-fill"></i> Tu membresía</div>
-            <div class="mc-plan">Básico</div>
-            <div class="mc-until">Válida hasta: 15/09/2026</div>
+            <div class="mc-plan" id="planMembresia">—</div>
+            <div class="mc-until" id="vigenciaMembresia">—</div>
           </div>
-          <a href="#" class="btn-outline">Ver detalles</a>
+          <a href="Membresia.html" class="btn-lime mt-3">Ver detalles</a>
         </div>
       </div>
     </div>
@@ -135,40 +134,13 @@
       <a href="#" class="see-all mt-0">Ver todos <i class="bi bi-arrow-right"></i></a>
     </div>
 
-    <div class="row g-3">
-      <div class="col-6 col-lg-3">
-        <div class="achievement-card">
-          <div class="ac-icon"><i class="bi bi-calendar-check-fill"></i></div>
-          <div class="ac-title">Constancia</div>
-          <div class="ac-desc">Entrena 5 días seguidos</div>
-        </div>
-      </div>
-      <div class="col-6 col-lg-3">
-        <div class="achievement-card">
-          <div class="ac-icon"><i class="bi bi-1-circle-fill"></i></div>
-          <div class="ac-title">Nivel 1</div>
-          <div class="ac-desc">Completa tu primer entrenamiento</div>
-        </div>
-      </div>
-      <div class="col-6 col-lg-3">
-        <div class="achievement-card">
-          <div class="ac-icon"><i class="bi bi-lightning-charge-fill"></i></div>
-          <div class="ac-title">Primeros 5K</div>
-          <div class="ac-desc">Quema 5000kcal en total</div>
-        </div>
-      </div>
-      <div class="col-6 col-lg-3">
-        <div class="achievement-card">
-          <div class="ac-icon"><i class="bi bi-stars"></i></div>
-          <div class="ac-title">Creador</div>
-          <div class="ac-desc">Crea tu primer rutina</div>
-        </div>
-      </div>
-    </div>
+    <div class="row g-3" id="listaLogros"></div>
 
   </main>
   <script src="../../../JS/api.js"></script>
   <script src="../../../JS/script.js"></script>
+  <script src="../../../JS/roles/Socio/inicioSocio.js"></script>
+<script src="../../../JS/i18n.js"></script>
 </body>
 
 </html>

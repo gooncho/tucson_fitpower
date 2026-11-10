@@ -16,25 +16,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function cargarHistorial() {
     try {
         const respuesta = await API.request('/entrenamientos', 'GET');
-        historialEntrenamientos = Array.isArray(respuesta) ? respuesta : (respuesta.data || []);
-        
-        if (historialEntrenamientos.length === 0) {
-            throw new Error("Sin registros");
-        }
+        historialEntrenamientos = respuesta.status === 'ok' && Array.isArray(respuesta.data) ? respuesta.data : [];
         renderTabla();
-    } catch (err) {
-        console.warn("Usando datos de respaldo para entrenamientos:", err);
-        historialEntrenamientos = [
-            { fecha: "2026-10-13", rutina: "Fuerza tren superior", duracion: "52 min", estado: "Completado" },
-            { fecha: "2026-10-14", rutina: "Piernas", duracion: "58 min", estado: "Completado" },
-            { fecha: "2026-10-15", rutina: "Biceps - espalda", duracion: "55 min", estado: "Completado" },
-            { fecha: "2026-10-16", rutina: "Full body", duracion: "60 min", estado: "Incompleto" },
-            { fecha: "2026-10-17", rutina: "Cardio", duracion: "62 min", estado: "Completado" },
-            { fecha: "2026-10-18", rutina: "Piernas", duracion: "57 min", estado: "Completado" }
-        ];
+    } catch (error) {
+        historialEntrenamientos = [];
         renderTabla();
     }
 }
+
 function renderTabla() {
     const texto = (document.getElementById('buscarEntrenamiento')?.value || "").toLowerCase().trim();
     const fechaFiltro = document.getElementById('filtroFecha')?.value || "";

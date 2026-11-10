@@ -97,22 +97,81 @@ function render() {
             if (modalTitle) modalTitle.textContent = "Editar Socio";
             if (modalBody) {
                 modalBody.innerHTML = `
-                    <form onsubmit="event.preventDefault();">
+                    <form id="formEditar">
                         <div class="mb-3">
                             <label class="form-label">Nombre de Usuario</label>
-                            <input type="text" class="admin-input" value="${esc(socio.nombre_usuario)}">
+                            <input type="text" class="admin-input" name="nombre_usuario" value="${esc(socio.nombre_usuario)}" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <input type="email" class="admin-input" value="${esc(socio.email)}">
+                            <input type="email" class="admin-input" name="email" value="${esc(socio.email)}" required>
                         </div>
+                        <p class="text-danger" id="errorEditar"></p>
                         <button type="submit" class="admin-btn">Guardar Cambios</button>
                     </form>
                 `;
+                document.getElementById('formEditar').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const datos = Object.fromEntries(new FormData(ev.target));
+                    const respuesta = await API.request('/socios/' + socio.id_usuario, 'PUT', datos);
+                    if (respuesta.status === 'ok') {
+                        adminModal.hide();
+                        cargarSocios();
+                    } else {
+                        document.getElementById('errorEditar').textContent = respuesta.message || 'No se pudo guardar';
+                    }
+                });
             }
             if (adminModal) adminModal.show();
         });
     });
+}
+
+function abrirNuevo() {
+    modalTitle.textContent = "Nuevo Socio";
+    modalBody.innerHTML = `
+        <form id="formNuevo">
+            <div class="mb-3">
+                <label class="form-label">Nombre de Usuario</label>
+                <input type="text" class="admin-input" name="nombre_usuario" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Apellido</label>
+                <input type="text" class="admin-input" name="apellido" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="admin-input" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Contraseña</label>
+                <input type="password" class="admin-input" name="password" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Plan</label>
+                <select class="admin-select" name="id_plan">
+                    <option value="">Sin plan</option>
+                    <option value="1">Básico</option>
+                    <option value="2">Premium</option>
+                    <option value="3">Trimestral</option>
+                </select>
+            </div>
+            <p class="text-danger" id="errorNuevo"></p>
+            <button type="submit" class="admin-btn">Guardar</button>
+        </form>
+    `;
+    document.getElementById('formNuevo').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const datos = Object.fromEntries(new FormData(e.target));
+        const respuesta = await API.request('/socios', 'POST', datos);
+        if (respuesta.status === 'ok') {
+            adminModal.hide();
+            cargarSocios();
+        } else {
+            document.getElementById('errorNuevo').textContent = respuesta.message || 'No se pudo guardar';
+        }
+    });
+    adminModal.show();
 }
 
 [buscar, filtroPlan, filtroEstado].forEach(el => el.addEventListener('input', render));
@@ -123,6 +182,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     modalTitle = document.getElementById('adminModalLabel');
     modalBody = document.getElementById('adminModalBody');
+
+    document.getElementById('btnNuevo').addEventListener('click', (e) => {
+        e.preventDefault();
+        abrirNuevo();
+    });
 
     cargarSocios();
 });

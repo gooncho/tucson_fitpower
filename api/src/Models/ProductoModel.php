@@ -31,4 +31,23 @@ class ProductoModel {
             return [];
         }
     }
+
+    public function crearProducto($idCategoria, $nombre, $descripcion, $precio, $stock) {
+        $stmt = $this->db->prepare("INSERT INTO PRODUCTO (id_categoria, nombre, descripcion, precio, stock) VALUES (:cat, :nombre, :descripcion, :precio, :stock)");
+        $stmt->execute(['cat' => $idCategoria, 'nombre' => $nombre, 'descripcion' => $descripcion, 'precio' => $precio, 'stock' => $stock]);
+    }
+
+    public function eliminarProducto($id) {
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare("DELETE FROM RESENA WHERE id_producto = :id");
+            $stmt->execute(['id' => $id]);
+            $stmt = $this->db->prepare("DELETE FROM PRODUCTO WHERE id_producto = :id");
+            $stmt->execute(['id' => $id]);
+            $this->db->commit();
+        } catch (\PDOException $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
 }

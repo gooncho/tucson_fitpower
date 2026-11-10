@@ -12,6 +12,7 @@ class SocioModel {
         try {
             $sql = "SELECT 
                         u.id_usuario, 
+                        p.id_persona,
                         u.nombre_usuario, 
                         u.email, 
                         p.apellido, 
@@ -30,6 +31,26 @@ class SocioModel {
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Exception $e) {
             return [];
+        }
+    }
+
+    public function crearSocio($usuario, $apellido, $email, $password, $idPlan) {
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare("INSERT INTO USUARIO (id_rol, nombre_usuario, email, hash) VALUES (3, :usuario, :email, :hash)");
+            $stmt->execute(['usuario' => $usuario, 'email' => $email, 'hash' => $password]);
+            $idUsuario = $this->db->lastInsertId();
+
+            $inicio = $idPlan ? date('Y-m-d') : null;
+            $fin = $idPlan ? date('Y-m-d', strtotime($idPlan == 3 ? '+3 month' : '+1 month')) : null;
+
+            $stmt = $this->db->prepare("INSERT INTO PERSONA (id_usuario, id_plan, apellido, fecha_inicio, fecha_fin) VALUES (:usuario, :plan, :apellido, :inicio, :fin)");
+            $stmt->execute(['usuario' => $idUsuario, 'plan' => $idPlan, 'apellido' => $apellido, 'inicio' => $inicio, 'fin' => $fin]);
+
+            $this->db->commit();
+        } catch (\PDOException $e) {
+            $this->db->rollBack();
+            throw $e;
         }
     }
 }

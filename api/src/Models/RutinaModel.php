@@ -58,6 +58,12 @@ Class RutinaModel {
         return $stmt->fetchColumn();
     }
 
+    public function verificarAsignacion($idRutina, $idPersona) {
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM ASIGNA WHERE id_rutina = :rutina AND id_persona = :persona');
+        $stmt->execute(['rutina' => $idRutina, 'persona' => $idPersona]);
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
     public function esSocioDe($idSocio, $idEntrenador = null) {
         $sql = 'SELECT COUNT(*)
                 FROM PERSONA AS p

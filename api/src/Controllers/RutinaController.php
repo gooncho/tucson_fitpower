@@ -57,7 +57,18 @@ class RutinaController {
     }
 
     public function VerRutina($idRutina) {
-        if (!$this->accesoPermitido()) {
+        if (($_SESSION['rol'] ?? '') === 'Socio') {
+            if (empty($_SESSION['usuario_id'])) {
+                $this->responder(401, ['status' => 'error', 'message' => 'Tienes que iniciar sesión']);
+                return;
+            }
+            $idPersona = $this->modelo->buscarPersonaPorUsuario((int) $_SESSION['usuario_id']);
+            $stmt = $this->modelo->verificarAsignacion((int) $idRutina, (int) $idPersona);
+            if (!$stmt) {
+                $this->responder(403, ['status' => 'error', 'message' => 'Esta rutina no está asignada a tu usuario']);
+                return;
+            }
+        } elseif (!$this->accesoPermitido()) {
             return;
         }
         try {
@@ -102,8 +113,7 @@ class RutinaController {
             $this->responder(201, ['status' => 'ok', 'message' => 'Rutina creada', 'id' => $id]);
         } catch (\Exception $e) {
             error_log('Error al crear rutina: ' . $e->getMessage());
-            // 💡 Muestra el error real temporalmente para depurar:
-            $this->responder(500, ['status' => 'error', 'message' => 'EXCEPCIÓN PHP: ' . $e->getMessage()]);
+            $this->responder(500, ['status' => 'error', 'message' => 'No se pudo crear la rutina']);
         }
     }    
 

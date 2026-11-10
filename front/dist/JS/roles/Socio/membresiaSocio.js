@@ -1,45 +1,26 @@
 document.addEventListener('DOMContentLoaded', async () => {
     await cargarMembresiaSocio();
-
-    const btnRenovar = document.getElementById('btnRenovar');
-    if (btnRenovar) {
-        btnRenovar.addEventListener('click', (e) => {
-            e.preventDefault();
-            alert("Solicitud de renovación enviada a recepción. Un administrador procesará tu pago.");
-        });
-    }
 });
 async function cargarMembresiaSocio() {
-    try {
-        const respuesta = await API.request('/membresia', 'GET');
-        console.log("Datos de membresía:", respuesta);
-
-        const d = respuesta.data || respuesta;
-        if (d) {
-            document.getElementById('nombrePlan').textContent = d.nombre_plan || "Plan Pro";
-            document.getElementById('precioPlan').textContent = `$${d.precio || 1500} / mes`;
-            document.getElementById('estadoMembresia').textContent = d.estado || "Activa";
-            document.getElementById('fechaInicio').textContent = formatearFecha(d.fecha_inicio || "2026-09-15");
-            document.getElementById('fechaVencimiento').textContent = formatearFecha(d.fecha_fin || "2026-10-15");
-
-            if (Array.isArray(d.beneficios) && d.beneficios.length > 0) {
-                const contenedorBeneficios = document.getElementById('listaBeneficios');
-                contenedorBeneficios.innerHTML = d.beneficios.map(b => `
-                    <li class="d-flex align-items-center gap-2">
-                        <i class="bi bi-check-lg fs-5 text-light"></i> ${b}
-                    </li>
-                `).join("");
-            }
-        }
-    } catch (err) {
-        console.warn("Usando datos de respaldo para la membresía:", err);
-        document.getElementById('nombrePlan').textContent = "Plan Pro";
-        document.getElementById('precioPlan').textContent = "$1500 / mes";
-        document.getElementById('estadoMembresia').textContent = "Activa";
-        document.getElementById('fechaInicio').textContent = "15/09/2026";
-        document.getElementById('fechaVencimiento').textContent = "15/10/2026";
+    const respuesta = await API.request('/membresia', 'GET');
+    const d = respuesta.status === 'ok' ? respuesta.data : null;
+    if (!d || !d.nombre_plan) {
+        document.getElementById('nombrePlan').textContent = 'Sin membresía';
+        document.getElementById('precioPlan').textContent = '—';
+        document.getElementById('estadoMembresia').textContent = 'Sin membresía';
+        document.getElementById('fechaInicio').textContent = '—';
+        document.getElementById('fechaVencimiento').textContent = '—';
+        document.getElementById('listaBeneficios').innerHTML = '<li>No hay beneficios asociados a una membresía.</li>';
+        return;
     }
+    document.getElementById('nombrePlan').textContent = d.nombre_plan;
+    document.getElementById('precioPlan').textContent = `$${Number(d.precio).toLocaleString('es-UY')} / ${d.duracion || 'plan'}`;
+    document.getElementById('estadoMembresia').textContent = d.estado;
+    document.getElementById('fechaInicio').textContent = formatearFecha(d.fecha_inicio);
+    document.getElementById('fechaVencimiento').textContent = formatearFecha(d.fecha_fin);
+    document.getElementById('listaBeneficios').innerHTML = d.descripcion ? `<li class="d-flex align-items-center gap-2"><i class="bi bi-check-lg fs-5 text-light"></i>${d.descripcion}</li>` : '<li>El plan no tiene beneficios descriptos.</li>';
 }
+
 function formatearFecha(iso) {
     if (!iso) return "—";
     const d = new Date(iso);

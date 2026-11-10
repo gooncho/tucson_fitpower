@@ -6,10 +6,14 @@ $router->post('/acceso', 'AuthController@login');
 $router->get('/sesion', 'AuthController@sesion');
 $router->post('/logout', 'AuthController@logout');
 $router->get('/socios', 'SocioController@listar');
+$router->post('/socios', 'SocioController@crear');
 $router->get('/ejercicios', 'EjercicioController@listar');
 $router->get('/entrenadores', 'EntrenadorController@listar');
+$router->post('/entrenadores', 'EntrenadorController@crear');
 $router->get('/pagos', 'PagoController@listar');
 $router->get('/productos', 'ProductoController@listar');
+$router->post('/productos', 'ProductoController@crear');
+$router->delete('/productos/:id', 'ProductoController@eliminar');
 $router->get('/mis-socios', 'MissociosController@index');
 $router->get('/rutinas', 'RutinaController@index');
 $router->get('/rutinas/:id', 'RutinaController@verRutina');
@@ -33,3 +37,12 @@ $router->post('/objetivos', 'ObjetivoController@store');
 
 // Próxima clase: login
 // $router->post('/login', 'AuthController@login');
+$router->get('/mis-rutinas', 'SocioDashboardController@rutinas');
+$router->get('/entrenamientos', 'SocioDashboardController@entrenamientos');
+$router->get('/membresia', 'SocioDashboardController@membresia');
+$router->get('/progreso', 'SocioDashboardController@progreso');
+$router->get('/inicio-socio', 'SocioDashboardController@inicio');
+$router->get('/inicio-administrador', 'AdministradorController@inicio');
+$router->get('/entrenadores/:id/socios', 'EntrenadorController@sociosAsignados');
+$router->put('/entrenadores/:id/socios', 'EntrenadorController@guardarAsignaciones');
+$router->put('/entrenadores/:id', 'EntrenadorController@actualizar');

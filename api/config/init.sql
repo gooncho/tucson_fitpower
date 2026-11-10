@@ -215,6 +215,19 @@ CREATE TABLE ASIGNA (
 );
 
 
+CREATE TABLE SUPERVISA (
+    id_entrenador INT NOT NULL,
+    id_persona INT NOT NULL,
+    dia_semana VARCHAR(20) DEFAULT NULL,
+    hora_inicio TIME DEFAULT NULL,
+    hora_fin TIME DEFAULT NULL,
+    fecha_asignacion DATE DEFAULT NULL,
+    PRIMARY KEY (id_entrenador, id_persona),
+    KEY id_persona (id_persona),
+    FOREIGN KEY (id_entrenador) REFERENCES PERSONA(id_persona),
+    FOREIGN KEY (id_persona) REFERENCES PERSONA(id_persona)
+);
+
 -- ======================================================================
 -- TIPOUSUARIO
 -- ======================================================================
@@ -10771,3 +10784,20 @@ INSERT INTO ASIGNA (id_rutina, id_persona, fecha_asignacion) VALUES
 (19, 309, '2026-04-02'),
 (21, 310, '2026-07-31'),
 (22, 310, '2026-07-30');
+
+-- ======================================================================
+-- SUPERVISA (horario de cada socio con su entrenador)
+-- ======================================================================
+INSERT INTO SUPERVISA (id_entrenador, id_persona, dia_semana, hora_inicio, hora_fin, fecha_asignacion) VALUES
+(2, 4, 'Lunes', '18:30:00', '19:30:00', '2026-08-01'),
+(2, 5, 'Martes', '17:30:00', '18:30:00', '2026-08-05'),
+(3, 6, 'Miércoles', '20:00:00', '21:00:00', '2026-07-15'),
+(3, 7, 'Jueves', '16:30:00', '17:30:00', '2026-08-10'),
+(3, 8, 'Viernes', '19:00:00', '20:00:00', '2026-08-01');
+
+-- El resto de los socios que ya tienen entrenador (PERSONA.id_entrenador) quedan en SUPERVISA sin horario
+INSERT INTO SUPERVISA (id_entrenador, id_persona, fecha_asignacion)
+SELECT p.id_entrenador, p.id_persona, COALESCE(p.fecha_inicio, CURDATE())
+FROM PERSONA AS p
+WHERE p.id_entrenador IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM SUPERVISA AS s WHERE s.id_persona = p.id_persona);

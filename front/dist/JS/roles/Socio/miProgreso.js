@@ -11,45 +11,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function cargarProgresoSocio() {
-    try {
-        const respuesta = await API.request('/progreso', 'GET');
-        console.log("Datos de progreso:", respuesta);
+    const respuesta = await API.request('/progreso', 'GET');
+    const data = respuesta.status === 'ok' ? respuesta.data : null;
+    if (!data) return;
 
-        const data = respuesta.data || respuesta;
+    document.getElementById('valorPeso').textContent = data.peso_actual !== null ? `${data.peso_actual} kg` : 'Sin mediciones';
+    document.getElementById('fechaPeso').textContent = data.fecha_medicion ? `Última medición: ${formatearFecha(data.fecha_medicion)}` : 'Sin mediciones registradas';
+    document.getElementById('valorRutinas').textContent = `${data.asistencias_semana} días`;
+    document.getElementById('valorAsistencia').textContent = `${data.asistencias_mes} días`;
+    document.getElementById('nombreObjetivo').textContent = data.objetivo ? data.objetivo.titulo : 'Sin objetivo activo';
+    document.getElementById('metaObjetivo').textContent = data.objetivo ? data.objetivo.descripcion || data.objetivo.estado : '—';
+    document.getElementById('labelMin').textContent = data.peso_actual !== null ? `${data.peso_actual} kg` : '—';
+    document.getElementById('labelMax').textContent = data.objetivo ? data.objetivo.estado : '—';
+    const porcentaje = Number(data.porcentaje_cumplimiento || 0);
+    document.getElementById('porcentajeObjetivos').textContent = `${porcentaje}%`;
+    document.getElementById('mensajeObjetivos').textContent = data.objetivo ? data.objetivo.estado : 'Todavía no tenés objetivos';
+    const barra = document.getElementById('barraProgreso');
+    barra.style.width = `${porcentaje}%`;
+    barra.setAttribute('aria-valuenow', porcentaje);
+}
 
-        if (data) {
-            document.getElementById('valorPeso').textContent = `${data.peso_actual || 72} kg`;
-            document.getElementById('fechaPeso').textContent = `Última medición: ${data.fecha_medicion || '12/09/2026'}`;
-            document.getElementById('valorRutinas').textContent = `${data.rutinas_completadas || 4}/${data.rutinas_totales || 5}`;
-            document.getElementById('valorAsistencia').textContent = `${data.asistencia_dias || 12} días`;
-            
-            if (data.objetivo) {
-                document.getElementById('nombreObjetivo').textContent = data.objetivo.nombre || "Bajar de peso";
-                document.getElementById('metaObjetivo').textContent = `${data.objetivo.meta || 70} kg`;
-                document.getElementById('labelMin').textContent = `${data.peso_actual || 72} kg`;
-                document.getElementById('labelMax').textContent = `${data.objetivo.meta || 70} kg`;
-            }
-
-            const porcentaje = data.porcentaje_cumplimiento || 0;
-            document.getElementById('porcentajeObjetivos').textContent = `${porcentaje}%`;
-            document.getElementById('mensajeObjetivos').textContent = porcentaje > 0 ? "¡Vas por buen camino!" : "¡Empieza ahora!";
-            
-            const barra = document.getElementById('barraProgreso');
-            if (barra) {
-                barra.style.width = `${porcentaje}%`;
-                barra.setAttribute('aria-valuenow', porcentaje);
-            }
-        }
-    } catch (err) {
-        console.warn("Usando datos de respaldo para el progreso:", err);
-        document.getElementById('valorPeso').textContent = "72 kg";
-        document.getElementById('fechaPeso').textContent = "Última medición: 12/09/2026";
-        document.getElementById('valorRutinas').textContent = "4/5";
-        document.getElementById('valorAsistencia').textContent = "12 días";
-        document.getElementById('nombreObjetivo').textContent = "Bajar de peso";
-        document.getElementById('metaObjetivo').textContent = "70 kg";
-        document.getElementById('porcentajeObjetivos').textContent = "0%";
-        document.getElementById('mensajeObjetivos').textContent = "¡Empieza ahora!";
-        document.getElementById('barraProgreso').style.width = "25%";
-    }
+function formatearFecha(fecha) {
+    if (!fecha) return '—';
+    const d = new Date(fecha);
+    return isNaN(d) ? fecha : d.toLocaleDateString('es-UY', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' });
 }

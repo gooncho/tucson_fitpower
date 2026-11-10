@@ -40,24 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 async function cargarObjetivos() {
-    try {
-        const respuesta = await API.request('/objetivos', 'GET');
-        listaObjetivos = Array.isArray(respuesta) ? respuesta : (respuesta.data || []);
-        
-        if (listaObjetivos.length === 0) {
-            throw new Error("Sin objetivos en API");
-        }
-        renderObjetivos();
-    } catch (err) {
-        console.warn("Usando datos de respaldo de la base de datos para objetivos:", err);
-        listaObjetivos = [
-            { id_objetivo: 1, titulo: "Ganar masa muscular", descripcion: "Aumentar la masa muscular mediante entrenamiento de fuerza.", estado: "En curso", fecha_inicio: "2026-08-01", fecha_fin: "2026-12-01", porcentaje: 65 },
-            { id_objetivo: 2, titulo: "Bajar de peso", descripcion: "Reducir el porcentaje de grasa corporal.", estado: "En curso", fecha_inicio: "2026-08-05", fecha_fin: "2026-11-05", porcentaje: 40 },
-            { id_objetivo: 3, titulo: "Aumentar fuerza", descripcion: "Mejorar los niveles de fuerza en ejercicios básicos.", estado: "En curso", fecha_inicio: "2026-08-01", fecha_fin: "2026-12-01", porcentaje: 80 },
-            { id_objetivo: 4, titulo: "Mejorar resistencia", descripcion: "Aumentar la resistencia cardiovascular y muscular.", estado: "Pausado", fecha_inicio: "2026-08-10", fecha_fin: "2026-11-10", porcentaje: 20 }
-        ];
-        renderObjetivos();
-    }
+    const respuesta = await API.request('/objetivos', 'GET');
+    listaObjetivos = respuesta.status === 'ok' && Array.isArray(respuesta.data) ? respuesta.data : [];
+    renderObjetivos();
 }
 
 async function guardarNuevoObjetivo() {
@@ -74,11 +59,7 @@ async function guardarNuevoObjetivo() {
     }
 
     try {
-        const perfilRes = await API.request('/perfil', 'GET');
-        const idPersona = perfilRes.id_persona || perfilRes.data?.id_persona || 1;
-
         const payload = {
-            id_persona: idPersona,
             titulo: titulo,
             descripcion: descripcion,
             estado: estado,
@@ -95,21 +76,7 @@ async function guardarNuevoObjetivo() {
             alert("Error al guardar el objetivo: " + (respuesta.message || "Desconocido"));
         }
     } catch (err) {
-        console.error("Error al conectar con el servidor:", err);
-        const nuevoLocal = {
-            id_objetivo: Date.now(),
-            titulo,
-            descripcion,
-            estado,
-            fecha_inicio,
-            fecha_fin,
-            porcentaje
-        };
-        listaObjetivos.unshift(nuevoLocal);
-        renderObjetivos();
-        
-        if (modalObjetivoInstance) modalObjetivoInstance.hide();
-        alert("¡Objetivo registrado localmente (simulación offline)!");
+        alert("No se pudo conectar con el servidor. El objetivo no fue guardado.");
     }
 }
 function renderObjetivos() {
@@ -132,7 +99,7 @@ function renderObjetivos() {
         const badgeStyle = esPausado 
             ? 'background: rgba(255, 180, 0, 0.1); color: #ffb400; border: 1px solid #ffb400;' 
             : 'background: rgba(205, 250, 63, 0.1); color: #cdfa3f; border: 1px solid #cdfa3f;';
-        const porcentaje = obj.porcentaje || (est.includes('COMPLETADO') ? 100 : 50);
+        const porcentaje = est.includes('COMPLETADO') ? 100 : 0;
         const fechaFinFormateada = formatearFecha(obj.fecha_fin);
         return `
             <div class="card-panel p-4 d-flex align-items-center justify-content-between flex-wrap gap-4" style="background: #151515; border: 1px solid #2a2a2a; border-radius: 14px;">
@@ -141,9 +108,9 @@ function renderObjetivos() {
                 </div>
                 <div class="flex-grow-1" style="min-width: 240px;">
                     <div class="d-flex align-items-center justify-content-between mb-1">
-                        <h4 class="mb-0 text-light" style="font-size: 18px; font-weight: 700; font-family: 'Montserrat', sans-serif;">${obj.titulo}</h4>
+                        <h4 class="mb-0 text-light" style="font-size: 18px; font-weight: 700; font-family: 'Montserrat', sans-serif;">${esc(obj.titulo)}</h4>
                     </div>
-                    <p class="text-whit mb-2" style="font-size: 13.5px;">${obj.descripcion || "Sin descripción"}</p>
+                    <p class="text-whit mb-2" style="font-size: 13.5px;">${esc(obj.descripcion || "Sin descripción")}</p>
                     <div class="d-flex align-items-center gap-2 text-whit mb-2" style="font-size: 12.5px;">
                         <i class="bi bi-calendar-event"></i>
                         <span>Fecha límite: ${fechaFinFormateada}</span>
@@ -154,7 +121,7 @@ function renderObjetivos() {
                 </div>
                 <div class="text-end d-flex flex-column align-items-end justify-content-center" style="min-width: 120px;">
                     <span class="px-3 py-1 rounded-pill fw-bold mb-2" style="font-size: 11px; ${badgeStyle}">
-                        ${obj.estado.toUpperCase()}
+                        ${esc((obj.estado || "Sin estado").toUpperCase())}
                     </span>
                     <span class="fw-bold text-light" style="font-size: 20px; font-family: 'Montserrat', sans-serif;">${porcentaje}%</span>
                     <span class="text-whit" style="font-size: 11.5px;">COMPLETADO</span>

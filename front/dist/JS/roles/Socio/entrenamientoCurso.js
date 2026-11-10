@@ -39,20 +39,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderEjercicioActual();
 
     } catch (err) {
-        console.warn("Usando datos de respaldo para el entrenamiento:", err);
-        rutinaActual = {
-            nombre: "Fuerza - Tren superior",
-            ejercicios: [
-                { nombre: "Press de banca", series: 4, repeticiones: 10, descanso: 120 },
-                { nombre: "Jalón al pecho", series: 4, repeticiones: 10, descanso: 120 },
-                { nombre: "Press militar", series: 3, repeticiones: 12, descanso: 90 },
-                { nombre: "Remo con barra", series: 4, repeticiones: 10, descanso: 120 },
-                { nombre: "Fondos en paralelas", series: 3, repeticiones: 10, descanso: 90 }
-            ]
-        };
-        ejercicios = rutinaActual.ejercicios;
-        renderEjercicioActual();
+        clearInterval(timerInterval);
+        document.getElementById('nombreRutina').textContent = 'No se pudo cargar la rutina';
+        document.getElementById('nombreEjercicio').textContent = 'Rutina no disponible';
+        document.getElementById('infoEjercicio').textContent = 'Verificá que tengas una rutina asignada.';
+        return;
     }
+
     document.getElementById('btnSiguiente').addEventListener('click', () => {
         if (indiceEjercicioActual < ejercicios.length - 1) {
             indiceEjercicioActual++;

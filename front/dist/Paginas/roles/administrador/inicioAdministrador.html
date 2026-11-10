@@ -22,7 +22,7 @@
                     <a href="Pagos.html" class="nav-link admin-link"><i class="bi bi-cash-stack"></i>Pagos e ingresos</a>
                     <a class="nav-link admin-link" href="GestionarProductos.html"><i class="bi bi-bag"></i>Productos</a>
                     <a class="nav-link admin-link" href="GestionarEjercicios.html"><i class="bi bi-activity"></i>Ejercicios</a>
-                    <a class="nav-link admin-link" href=""><i class="bi bi-person-circle"></i>Mi Perfil</a>
+                    <a class="nav-link admin-link" href="Perfil.html"><i class="bi bi-person-circle"></i>Mi Perfil</a>
                 <hr class="admin-sidebar-separador">
         
                 </nav>
@@ -43,32 +43,32 @@
                         <div class="col-sm-6 col-xl-3">
                             <div class="admin-card">
                                 <small>Socios registrados</small>
-                                <h2>356</h2>
-                                <span>+12 este mes</span>
+                                <h2 id="totalSocios">0</h2>
+                                <span>Socios registrados</span>
                                 <i class="bi bi-people"></i>
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-3">
                             <div class="admin-card">
                                 <small>Entrenadores disponibles</small>
-                                <h2>8</h2>
-                                <span>+0 este mes</span>
+                                <h2 id="totalEntrenadores">0</h2>
+                                <span>Entrenadores registrados</span>
                                 <i class="bi bi-person-badge"></i>
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-3">
                             <div class="admin-card">
                                 <small>Membresías activas</small>
-                                <h2>202</h2>
-                                <span>-2 este mes</span>
+                                <h2 id="totalMembresias">0</h2>
+                                <span>Membresías vigentes</span>
                                 <i class="bi bi-card-checklist"></i>
                             </div>
                         </div>
                         <div class="col-sm-6 col-xl-3">
                             <div class="admin-card">
                                 <small>Ingresos este mes</small>
-                                <h2>$45.230</h2>
-                                <span>+15% este mes</span>
+                                <h2 id="ingresosMes">$0</h2>
+                                <span>Ingresos registrados este mes</span>
                                 <i class="bi bi-cash-stack"></i>
                             </div>
                         </div>
@@ -79,43 +79,13 @@
                         <section class="admin-seccion h-100">
                             <h3>Distribución de membresías</h3>
                             <p>Por tipo de membresía</p>
-                            <div class="admin-membresias">
-                                <div class="admin-circulo">
-                                    <strong>202</strong>
-                                    <span>Activas</span>
-                                </div>
-                                <div>
-                                    <p>● Básica 92 (43%)</p>
-                                    <p>● Pro 78 (37%)</p>
-                                    <p>● Elite 32 (15%)</p>
-                                </div>
-                            </div>
+                            <div class="admin-membresias" id="distribucionMembresias"></div>
                         </section>
                     </div>
                     <div class="col-lg-6">
                         <section class="admin-seccion h-100">
                             <h3>Productos bajos de stock</h3>
-                            <div class="admin-producto">
-                                <div>
-                                    <strong>Proteína Whey</strong>
-                                    <small>Stock actual: 6</small>
-                                </div>
-                                <span>Bajo</span>
-                            </div>
-                            <div class="admin-producto">
-                                <div>
-                                    <strong>Botellas de agua</strong>
-                                    <small>Stock actual: 32</small>
-                                </div>
-                                <span>Alto</span>
-                            </div>
-                            <div class="admin-producto">
-                                <div>
-                                    <strong>Creatina Whey</strong>
-                                    <small>Stock actual: 2</small>
-                                </div>
-                                <span>Crítico</span>
-                            </div>
+                            <div id="productosBajoStock"></div>
                             <a href="#" class="admin-ver">Ver todos los productos →</a>
                         </section>
                     </div>
@@ -125,44 +95,7 @@
                         <h3><i class="bi bi-crown"></i>Membresías próximas a vencer</h3>
                         <a href="#" class="admin-ver">Ver todas →</a>
                     </div>
-                    <div class="row g-2">
-                        <div class="col-md-4 col-lg-2">
-                            <div class="admin-membresia">
-                                <strong>Andrés Trujillo</strong>
-                                <small>Básico · 5 días</small>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-lg-2">
-                            <div class="admin-membresia">
-                                <strong>Brian Gonzatto</strong>
-                                <small>Básico · 7 días</small>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-lg-2">
-                            <div class="admin-membresia">
-                                <strong>Tomás Melo</strong>
-                                <small>Pro · 4 días</small>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-lg-2">
-                            <div class="admin-membresia">
-                                <strong>Enzo Ríos</strong>
-                                <small>Básico · 2 días</small>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-lg-2">
-                            <div class="admin-membresia">
-                                <strong>Santiago Fiore</strong>
-                                <small>Elite · 3 días</small>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-lg-2">
-                            <div class="admin-membresia">
-                                <strong>Gonzalo Pisón</strong>
-                                <small>Elite · 5 días</small>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="row g-2" id="membresiasPorVencer"></div>
                 </section>
                 <section class="admin-seccion mt-3">
                     <h3>Accesos rápidos</h3>
@@ -193,6 +126,8 @@
             <script src="../../../JS/api.js"></script>
             <script src="../../../JS/script.js"></script>
             <script src="../../../JS/roles/Administrador/administrador.js"></script>
+            <script src="../../../JS/roles/Administrador/inicioAdministrador.js"></script>
+<script src="../../../JS/i18n.js"></script>
 </body>
 
 </html>

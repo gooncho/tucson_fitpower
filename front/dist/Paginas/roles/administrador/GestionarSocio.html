@@ -23,7 +23,7 @@
                 <a href="Pagos.html" class="nav-link admin-link"><i class="bi bi-cash-stack"></i>Pagos e ingresos</a>
                 <a class="nav-link admin-link" href="GestionarProductos.html"><i class="bi bi-bag"></i>Productos</a>
                 <a class="nav-link admin-link" href="GestionarEjercicios.html"><i class="bi bi-activity"></i>Ejercicios</a>
-                <a class="nav-link admin-link" href="#"><i class="bi bi-person-circle"></i>Mi Perfil</a>
+                <a class="nav-link admin-link" href="Perfil.html"><i class="bi bi-person-circle"></i>Mi Perfil</a>
             <hr> 
             </nav>
            
@@ -39,7 +39,7 @@
                     <h1>Gestionar socios</h1>
                     <p>Administrar socios del gimnasio</p>
                 </div>
-                <a href="#" class="admin-btn"><i class="bi bi-plus-lg"></i>Nuevo socio</a>
+                <a href="#" class="admin-btn" id="btnNuevo"><i class="bi bi-plus-lg"></i>Nuevo socio</a>
             </header>
  
             <div class="admin-herramientas">
@@ -51,8 +51,8 @@
                 <select id="filtroPlan" class="admin-select" aria-label="Filtrar por plan">
                     <option value="">Todos los planes</option>
                     <option value="basico">Básico</option>
-                    <option value="pro">Pro</option>
-                    <option value="elite">Elite</option>
+                    <option value="premium">Premium</option>
+                    <option value="trimestral">Trimestral</option>
                 </select>
  
                 <select id="filtroEstado" class="admin-select" aria-label="Filtrar por estado">
@@ -105,6 +105,7 @@
         </div>
     </div>
 </div>
+<script src="../../../JS/i18n.js"></script>
 </body>
 
 </html>

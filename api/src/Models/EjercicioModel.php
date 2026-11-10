@@ -12,7 +12,8 @@ class EjercicioModel {
         try {
             $stmt = $this->db->prepare(
                 'SELECT id_ejercicio, nombre, descripcion, nivel AS dificultad, grupo_muscular 
-                 FROM EJERCICIO'
+                 FROM EJERCICIO
+                 WHERE activo = 1'
             );
             $stmt->execute();
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);

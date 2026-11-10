@@ -65,13 +65,84 @@ function render() {
                           <label class="form-label">Stock</label>
                           <input type="number" class="admin-input" value="${esc(p.stock)}">
                       </div>
+                      <p class="text-danger" id="errorEditar"></p>
                       <button type="submit" class="admin-btn">Guardar Cambios</button>
+                      <button type="button" class="admin-mini" id="btnEliminar">Eliminar</button>
                   </form>
               `;
+              let confirmar = false;
+              document.getElementById('btnEliminar').addEventListener('click', async (ev) => {
+                  if (!confirmar) {
+                      confirmar = true;
+                      ev.target.textContent = "¿Seguro? Confirmar";
+                      return;
+                  }
+                  const respuesta = await API.request('/productos/' + p.id_producto, 'DELETE');
+                  if (respuesta.status === 'ok') {
+                      adminModal.hide();
+                      cargar();
+                  } else {
+                      document.getElementById('errorEditar').textContent = respuesta.message || 'No se pudo eliminar';
+                  }
+              });
           }
           if (adminModal) adminModal.show();
       });
   });
+}
+
+function cargar() {
+    API.request('/productos', 'GET').then(d => {
+      productos = Array.isArray(d) ? d : (d.data || []);
+      llenarSelect("filtroCategoria", productos.map(p => p.categoria), "Todas las categorías");
+      render();
+    }).catch(() => aviso("No se pudo conectar con la API"));
+}
+
+function abrirNuevo() {
+    modalTitle.textContent = "Nuevo Producto";
+    modalBody.innerHTML = `
+        <form id="formNuevo">
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" class="admin-input" name="nombre" maxlength="50" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Categoría</label>
+                <select class="admin-select" name="id_categoria" required>
+                    <option value="1">Suplementos</option>
+                    <option value="2">Indumentaria</option>
+                    <option value="3">Accesorios</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Descripción</label>
+                <input type="text" class="admin-input" name="descripcion">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Precio ($)</label>
+                <input type="number" class="admin-input" name="precio" min="0" step="any" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Stock</label>
+                <input type="number" class="admin-input" name="stock" min="0" required>
+            </div>
+            <p class="text-danger" id="errorNuevo"></p>
+            <button type="submit" class="admin-btn">Guardar</button>
+        </form>
+    `;
+    document.getElementById('formNuevo').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const datos = Object.fromEntries(new FormData(e.target));
+        const respuesta = await API.request('/productos', 'POST', datos);
+        if (respuesta.status === 'ok') {
+            adminModal.hide();
+            cargar();
+        } else {
+            document.getElementById('errorNuevo').textContent = respuesta.message || 'No se pudo guardar';
+        }
+    });
+    adminModal.show();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -84,9 +155,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     conectar(["buscar", "filtroCategoria", "filtroEstado"], render);
 
-    API.request('/productos', 'GET').then(d => {
-      productos = Array.isArray(d) ? d : (d.data || []);
-      llenarSelect("filtroCategoria", productos.map(p => p.categoria), "Todas las categorías");
-      render();
-    }).catch(() => aviso("No se pudo conectar con la API"));
+    document.getElementById('btnNuevo').addEventListener('click', (e) => {
+        e.preventDefault();
+        abrirNuevo();
+    });
+
+    cargar();
 });
