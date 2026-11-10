@@ -59,10 +59,11 @@ Class RutinaModel {
     }
 
     public function esSocioDe($idSocio, $idEntrenador = null) {
-        $sql = 'SELECT p.id_persona, p.id_entrenador, u.id_rol
+        $sql = 'SELECT COUNT(*)
                 FROM PERSONA AS p
                 INNER JOIN USUARIO AS u ON u.id_usuario = p.id_usuario
-                WHERE p.id_persona = 5';
+                INNER JOIN TIPOUSUARIO AS t ON t.id_rol = u.id_rol
+                WHERE p.id_persona = :socio AND t.nombre_rol = \'Socio\'';
         $params = ['socio' => $idSocio];
 
         if ($idEntrenador !== null) {
