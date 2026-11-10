@@ -67,6 +67,7 @@
       <tbody id="listar-rutinas">
       </tbody>
     </table>
+    <div id="pag-rutinas" class="paginacion"></div>
   </div>
   </main>
 
@@ -130,10 +131,33 @@
       </div>
       </div>
     </div>
+
+    <div class="modal fade" id="modalEliminarRutina" tabindex="-1" aria-hidden="true" data-bs-theme="dark">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Eliminar rutina</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <p>¿Seguro que querés eliminar <strong id="elim-rut-nombre"></strong> de <strong id="elim-rut-socio"></strong>?</p>
+            <p class="text-secondary small mb-0">
+              Se borra la rutina con todos sus ejercicios. Esta acción no se puede deshacer.
+            </p>
+            <p id="elim-rut-error" class="text-danger small mt-3 mb-0"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="admin-mini" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" id="btn-confirmar-eliminar-rutina" class="admin-mini peligro">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
     
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>  
   <script src="../../../JS/api.js"></script>
   <script src="../../../JS/script.js"></script>
+  <script src="../../../JS/paginacion.js"></script>
   <script src="../../../JS/roles/Entrenador/rutinas.js"></script>
 </body>
 

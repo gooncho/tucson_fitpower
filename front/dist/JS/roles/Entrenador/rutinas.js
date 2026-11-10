@@ -1,5 +1,10 @@
 let TodasLasRutinas = [];
 let RutinaEditada = null;
+let RutinaAEliminar = null;
+
+const PagRutinas = CrearPaginacion('pag-rutinas', 10, lista => {
+    document.getElementById('listar-rutinas').replaceChildren(...lista.map(CrearFila));
+});
 
 function MostrarMensaje(tbody, texto) {
     const fila = document.createElement('tr');
@@ -41,15 +46,29 @@ async function AbrirRutina(r) {
     tbody.replaceChildren(...res.data.map(CrearFilaEjercicio));
 }
 
-async function EliminarRutina(r) {
+function EliminarRutina(r) {
+    RutinaAEliminar = r;
+    document.getElementById('elim-rut-nombre').textContent = r.rutina;
+    document.getElementById('elim-rut-socio').textContent = `${r.usuario} ${r.apellido || ''}`.trim();
+    document.getElementById('elim-rut-error').textContent = '';
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalEliminarRutina')).show();
+}
 
-    const res = await API.request(`/rutinas/${r.id_rutina}`, 'DELETE');
+async function ConfirmarEliminarRutina() {
+    if (!RutinaAEliminar) return;
 
-    if (!res || res.status !== 'ok') {
-        alert(res?.message || 'No se pudo eliminar la rutina');
+    const boton = document.getElementById('btn-confirmar-eliminar-rutina');
+    boton.disabled = true;
+    const res = await API.request(`/rutinas/${RutinaAEliminar.id_rutina}`, 'DELETE');
+    boton.disabled = false;
+
+    if (res && res.status === 'ok') {
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalEliminarRutina')).hide();
+        RutinaAEliminar = null;
+        await CargarRutinas();
         return;
     }
-    await CargarRutinas();
+    document.getElementById('elim-rut-error').textContent = res?.message || 'No se pudo eliminar la rutina';
 }
 
 function CrearFila(r) {
@@ -89,12 +108,10 @@ function normalizar(texto) {
 }
 
 function MostrarRutinas(lista) {
-    const tbody = document.getElementById('listar-rutinas');
+    PagRutinas.mostrar(lista);
     if (lista.length === 0) {
-        MostrarMensaje(tbody, 'No se encontraron rutinas');
-        return;
+        MostrarMensaje(document.getElementById('listar-rutinas'), 'No se encontraron rutinas');
     }
-    tbody.replaceChildren(...lista.map(CrearFila));
 }
 
 function FiltrarRutinas() {
@@ -116,6 +133,8 @@ async function CargarRutinas() {
         return;
     }
     if (res.data.length === 0) {
+        TodasLasRutinas = [];
+        PagRutinas.mostrar([]);
         MostrarMensaje(tbody, 'No hay rutinas cargadas');
         return;
     }
@@ -314,8 +333,13 @@ function AgregarFilaEjercicio() {
 
 document.addEventListener('DOMContentLoaded', () => {
     CargarRutinas();
-    document.getElementById('buscar-rutina').addEventListener('input', FiltrarRutinas);
+    
+    document.getElementById('buscar-rutina').addEventListener('input', () => {
+        PagRutinas.reiniciar();
+        FiltrarRutinas();
+    });
     document.getElementById('btn-nueva-rutina').addEventListener('click', () => AbrirNuevaRutina());
     document.getElementById('btn-guardar-rutina').addEventListener('click', GuardarRutina);
     document.getElementById('btn-agregar-ejercicio').addEventListener('click', () => AgregarFilaEjercicio ());
+    document.getElementById('btn-confirmar-eliminar-rutina').addEventListener('click', ConfirmarEliminarRutina);
 });

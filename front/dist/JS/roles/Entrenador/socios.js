@@ -1,3 +1,7 @@
+const PagSocios = CrearPaginacion('pag-socios', 10, lista => {
+    document.getElementById('listar-socios').replaceChildren(...lista.map(CrearFila));
+});
+
 function MostrarMensaje(tbody, texto) {
     const fila = document.createElement('tr');
     const celda = document.createElement('td');
@@ -82,12 +86,10 @@ function Normalizar(texto) {
 }
 
 function MostrarSocios(lista) {
-    const tbody = document.getElementById('listar-socios');
+    PagSocios.mostrar(lista);
     if (lista.length === 0) {
-        MostrarMensaje(tbody, 'No se encontraron socios');
-        return;
+        MostrarMensaje(document.getElementById('listar-socios'), 'No se encontraron socios');
     }
-    tbody.replaceChildren(...lista.map(CrearFila));
 }
 
 function FiltrarSocios() {
@@ -100,5 +102,8 @@ function FiltrarSocios() {
 
 document.addEventListener('DOMContentLoaded', () => {
     CargarSocios();
-    document.getElementById('buscar-socio').addEventListener('input', FiltrarSocios);
+    document.getElementById('buscar-socio').addEventListener('input', () => {
+        PagSocios.reiniciar();
+        FiltrarSocios();
+    });
 });

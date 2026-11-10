@@ -474,3 +474,20 @@ h6 {
     height: 100%;
     object-fit: cover;
 }
+
+.paginacion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #9a9a9a;
+}
+.paginacion:empty {
+    display: none;
+}
+.paginacion .admin-mini:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}

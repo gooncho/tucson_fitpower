@@ -38,7 +38,8 @@ class EjerciciosController {
         }
 
         try {
-            $this->responder(200, ['status' => 'ok', 'data' => $this->modelo->listar()]);
+            $activos = ($_GET['estado'] ?? '') !== 'inactivos';
+            $this->responder(200, ['status' => 'ok', 'data' => $this->modelo->listar($activos)]);
         } catch (\Exception $e) {
             error_log('Error al listar ejercicios: ' . $e->getMessage());
             $this->responder(500, ['status' => 'error', 'message' => 'No se pudieron cargar los ejercicios']);
@@ -88,6 +89,13 @@ class EjerciciosController {
         }
 
         try {
+            if ($this->modelo->existeInactivoConNombre($d['nombre'])) {
+                $this->responder(409, [
+                    'status' => 'error',
+                    'message' => 'Ya existe un ejercicio desactivado con ese nombre. Reactivalo desde "Desactivados".'
+                ]);
+                return;
+            }
             $id = $this->modelo->crear($d['nombre'], $d['grupo'], $d['nivel'], $d['descripcion']);
             $this->responder(201, ['status' => 'ok', 'message' => 'Ejercicio creado', 'id' => (int) $id]);
         } catch (\Exception $e) {
@@ -174,6 +182,36 @@ class EjerciciosController {
         } catch (\Exception $e) {
             error_log('Error al subir imagen: ' . $e->getMessage());
             $this->responder(500, ['status' => 'error', 'message' => 'No se pudo guardar la imagen']);
+        }
+    }
+
+    public function destroy($idEjercicio) {
+        $this->cambiarActivo($idEjercicio, false);
+    }
+
+    public function reactivar($idEjercicio) {
+        $this->cambiarActivo($idEjercicio, true);
+    }
+
+    private function cambiarActivo($idEjercicio, $activo) {
+        if (!$this->accesoPermitido()) {
+            return;
+        }
+        $idEjercicio = (int) $idEjercicio;
+
+        try {
+            if ($idEjercicio <= 0 || !$this->modelo->existe($idEjercicio)) {
+                $this->responder(404, ['status' => 'error', 'message' => 'Ejercicio no encontrado']);
+                return;
+            }
+            $this->modelo->cambiarEstado($idEjercicio, $activo);
+            $this->responder(200, [
+                'status' => 'ok',
+                'message' => $activo ? 'Ejercicio reactivado' : 'Ejercicio desactivado'
+            ]);
+        } catch (\Exception $e) {
+            error_log('Error al cambiar estado del ejercicio: ' . $e->getMessage());
+            $this->responder(500, ['status' => 'error', 'message' => 'No se pudo cambiar el estado del ejercicio']);
         }
     }
 }

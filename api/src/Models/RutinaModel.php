@@ -1,170 +1,221 @@
-<?php 
+<?php
 
-namespace App\Models;
+namespace App\Controllers;
 
-Class RutinaModel {
-    private $db;
+use App\Models\RutinaModel;
 
-    public function __construct($db) {
-        $this->db = $db;
+class RutinaController {
+        private $modelo;
+      
+        public function __construct($db) {
+            $this->modelo  = new RutinaModel($db);
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+        }
+    private function responder($codigo, $payload) {
+        http_response_code($codigo);
+        echo json_encode($payload, JSON_UNESCAPED_UNICODE);
+    }
+    private function accesoPermitido() {
+            if (empty($_SESSION['usuario_id'])) {
+                $this->responder(401, ['status' => 'error', 'message' => 'Tienes que iniciar sesion']);
+                return false;
+            }
+            if (!in_array($_SESSION['rol'] ?? '', ['Entrenador', 'Administrador'])) {
+                $this->responder(403, ['status' => 'error', 'message' => 'No tienes permisos de acceso']);
+                return false;
+            }
+            return true;
     }
 
-    public function listar($idEntrenador = null) {
-        $sql =  'SELECT a.id_rutina,
-                    r.descripcion,
-                    a.id_persona,
-                    r.nombre AS rutina,
-                    u.nombre_usuario AS usuario,
-                    p.apellido,
-                    COUNT(d.id_ejercicio) AS total_ejercicios
-                    FROM ASIGNA AS a
-                    INNER JOIN RUTINA AS r ON r.id_rutina = a.id_rutina
-                    INNER JOIN PERSONA AS p ON p.id_persona = a.id_persona
-                    INNER JOIN USUARIO AS u ON u.id_usuario = p.id_usuario
-                    LEFT JOIN DETALLERUTINA AS d ON d.id_rutina = r.id_rutina';
-        $params = [];
-
-        if ($idEntrenador !== null) {
-            $sql .= ' WHERE p.id_entrenador = :entrenador';
-            $params['entrenador'] = $idEntrenador;
+    private function entrenadorActual() {
+        if (($_SESSION['rol'] ?? '') !== 'Entrenador')  {
+            return null;
         }
-        $sql .= ' GROUP BY a.id_rutina, a.id_persona, r.nombre, r.descripcion, u.nombre_usuario, p.apellido
-                ORDER BY a.id_persona, a.id_rutina';
+        $id = $this->modelo->buscarPersonaPorUsuario((int) $_SESSION['usuario_id']);
+        return $id ? (int) $id : 0;
+    }
 
-        $stmt = $this->db->prepare($sql); 
-        $stmt->execute($params);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    public function index() {
+        if (!$this->accesoPermitido()) {
+            return;
+        }
+
+        $idEntrenador = $this->entrenadorActual();
+        if($idEntrenador === 0) {
+            $this->responder(403, ['status' => 'error', 'message' => 'Tu usuario no tiene un perfil']);
+            return;
+        }
+
+        try {
+            $this->responder(200, ['status' => 'ok', 'data' => $this->modelo->listar($idEntrenador)]);
+        } catch (\Exception $e) {
+            error_log('Error al listar socios: ' . $e->getMessage());
+            $this->responder(500, ['status' => 'error', 'message' => 'No se pudieron cargar las rutinas']);
+        }
     }
 
     public function VerRutina($idRutina) {
-        $stmt = $this->db->prepare(
-            'SELECT d.id_ejercicio,
-                    e.nombre,
-                    d.series,
-                    d.repeticiones,
-                    d.descanso
-            FROM DETALLERUTINA AS d
-            INNER JOIN EJERCICIO AS e ON e.id_ejercicio = d.id_ejercicio
-            WHERE d.id_rutina = :id
-            ORDER BY d.orden_ejercicios'
-        );
-        $stmt->execute(['id' => $idRutina]);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    }
-
-    public function buscarPersonaPorUsuario ($idUsuario) {
-        $stmt = $this->db->prepare('SELECT id_persona FROM PERSONA WHERE id_usuario = :id LIMIT 1');
-        $stmt->execute(['id' => $idUsuario]);
-        return $stmt->fetchColumn();
-    }
-
-    public function esSocioDe($idSocio, $idEntrenador = null) {
-        $sql = 'SELECT p.id_persona, p.id_entrenador, u.id_rol
-                FROM PERSONA AS p
-                INNER JOIN USUARIO AS u ON u.id_usuario = p.id_usuario
-                WHERE p.id_persona = 5';
-        $params = ['socio' => $idSocio];
-
-        if ($idEntrenador !== null) {
-            $sql .= ' AND p.id_entrenador = :entrenador';
-            $params['entrenador'] = $idEntrenador;
+        if (!$this->accesoPermitido()) {
+            return;
         }
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        return (int) $stmt->fetchColumn() > 0;
-    }
-
-    public function crear($nombre, $descripcion, $idEntrenador, $idSocio, $ejercicios) {
         try {
-            $this->db->beginTransaction();
-
-            $stmt = $this->db->prepare('INSERT INTO RUTINA (nombre, descripcion) VALUES (:nombre, :descripcion)');
-            $stmt->execute(['nombre' => $nombre, 'descripcion' => $descripcion]);
-            $idRutina = (int) $this->db->lastInsertId();
-
-            $stmt = $this->db->prepare('INSERT INTO CREA (id_rutina, id_persona) VALUES (:rutina, :persona)');
-            $stmt->execute(['rutina' => $idRutina, 'persona' => $idEntrenador]);
-            
-            $stmt = $this->db->prepare(
-                'INSERT INTO ASIGNA (id_rutina, id_persona, fecha_asignacion) VALUES (:rutina, :persona, CURDATE())'
-            );
-            $stmt->execute(['rutina' => $idRutina, 'persona' => $idSocio]);
-
-            $this->guardarEjercicios($idRutina, $ejercicios);
-
-            $this->db->commit();
-            return $idRutina;
-            } catch (\Exception $e) {
-                $this->db->rollBack();
-                throw $e;
-            }
-    }
-
-    public function puedeEliminar($idRutina, $idEntrenador = null) {
-        if ($idEntrenador === null) {
-            $stmt = $this->db->prepare('SELECT COUNT(*) FROM RUTINA WHERE id_rutina = :rutina');
-            $stmt->execute(['rutina' => $idRutina]);
-        } else {
-            $stmt = $this->db->prepare(
-                'SELECT COUNT(*)
-                FROM ASIGNA AS a
-                INNER JOIN PERSONA AS p ON p.id_persona = a.id_persona
-                WHERE a.id_rutina = :rutina AND p.id_entrenador = :entrenador'
-            );
-            $stmt->execute(['rutina' => $idRutina, 'entrenador' => $idEntrenador]);
-        }
-        return (int) $stmt->fetchColumn() > 0;
-    }
-
-    public function eliminar($idRutina) {
-        try {
-            $this->db->beginTransaction();
-            foreach(['DETALLERUTINA', 'ASIGNA', 'CREA', 'RUTINA'] as $tabla) {
-                $stmt = $this->db->prepare("DELETE FROM $tabla WHERE id_rutina = :id");
-                $stmt->execute(['id' => $idRutina]);
-            }
-            $this->db->commit();
+            $datos = $this->modelo->VerRutina((int) $idRutina);
+            $this->responder(200, ['status' => 'ok', 'data' => $datos]);
         } catch (\Exception $e) {
-            $this->db->rollBack();
-            throw $e;
+            error_log('Error al cargar la rutina: ' . $e->getMessage());
+            $this->responder(500, ['status' => 'error', 'message' => 'No se pudo cargar la rutina']);
         }
     }
 
-    private function guardarEjercicios($idRutina, $ejercicios) {
-        $stmt = $this->db->prepare(
-            'INSERT INTO DETALLERUTINA (id_rutina, id_ejercicio, series, repeticiones, descanso, orden_ejercicios)
-            VALUES (:rutina, :ejercicio, :series, :repeticiones, :descanso, :orden)'
-        );
-        foreach ($ejercicios as $i => $item) {
-            $stmt->execute ([
-                'rutina' => $idRutina,
-                'ejercicio' => $item['id_ejercicio'],
-                'series' => $item['series'],
-                'repeticiones' => $item['repeticiones'],
-                'descanso' => $item['descanso'],
-                'orden' => $i + 1,
-            ]);
+    public function store() {
+        if (!$this->accesoPermitido()) {
+            return;
         }
-    }
 
-    public function actualizar($idRutina, $nombre, $descripcion, $ejercicios) {
+        $d = $this->leerRutina();
+        if ($d === null) {
+            return;
+        }
+
+        $idPersona = $this->modelo->buscarPersonaPorUsuario((int) $_SESSION['usuario_id']);
+        if (!$idPersona) {
+            $this->responder(403, ['status' => 'error', 'message' => 'Tu usuario no tiene perfil']);
+            return;
+        }
+
+        $filtro = (($_SESSION['rol'] ?? '') === 'Entrenador') ? (int) $idPersona : null;
+        if ($d['id_persona'] <= 0 || !$this->modelo->esSocioDe($d['id_persona'], $filtro)) {
+            $this->responder(400, ['status' => 'error', 'message' => 'El socio no es valido']);
+            return;
+        }
+
         try {
-            $this->db->beginTransaction();
-
-            $stmt = $this->db->prepare(
-                'UPDATE RUTINA SET nombre = :nombre, descripcion = :descripcion WHERE id_rutina = :id'
+            $id = $this->modelo->crear(
+                $d['nombre'],
+                $d['descripcion'],
+                (int) $idPersona,
+                $d['id_persona'],
+                $d['ejercicios']
             );
-            $stmt->execute(['nombre' => $nombre, 'descripcion' => $descripcion, 'id' => $idRutina]);
-
-            $stmt = $this->db->prepare('DELETE FROM DETALLERUTINA WHERE id_rutina = :id');
-            $stmt->execute(['id' => $idRutina]);
-
-            $this->guardarEjercicios($idRutina, $ejercicios);
-
-            $this->db->commit();
+            $this->responder(201, ['status' => 'ok', 'message' => 'Rutina creada', 'id' => $id]);
         } catch (\Exception $e) {
-            $this->db->rollBack();
-            throw $e;
+            error_log('Error al crear rutina: ' . $e->getMessage());
+            // 💡 Muestra el error real temporalmente para depurar:
+            $this->responder(500, ['status' => 'error', 'message' => 'EXCEPCIÓN PHP: ' . $e->getMessage()]);
+        }
+    }    
+
+    public function destroy($idRutina) {
+        if (!$this->accesoPermitido()) {
+            return;
+        }
+
+        $idRutina = (int) $idRutina;
+        $idEntrenador = $this->entrenadorActual();
+        if ($idEntrenador === 0) {
+            $this->responder(403, ['status' => 'error', 'message' => 'rutina no encontrada']);
+            return;
+        }
+
+        if ($idRutina <= 0 || !$this->modelo->puedeEliminar($idRutina, $idEntrenador)) {
+            $this->responder(404, ['status' => 'error', 'message' => 'Rutina no encontrada']);
+            return;
+        }
+        try {
+            $this->modelo->eliminar($idRutina);
+            $this->responder(200, ['status' => 'ok', 'message' => 'Rutina eliminada']);
+        } catch (\Exception $e) {
+            error_log('Error al eliminar la rutina: ' . $e->getMessage());
+            $this->responder(500, ['status' => 'error', 'message' => 'No se pudo eliminar la rutina']);
         }
     }
-}
+
+    private function leerRutina() {
+        $datos = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($datos)) {
+            $datos = [];
+        }
+
+        $nombre = trim((string) ($datos['nombre'] ?? ''));
+        $descripcion = trim((string) ($datos['descripcion'] ?? ''));
+        $ejercicios = $datos['ejercicios'] ?? []; 
+
+        if ($nombre === '' || mb_strlen($nombre) > 50) {
+            $this->responder(400, ['status' => 'error', 'message' => 'El nombre es obligatorio']);
+            return null;
+        }
+
+        if(!is_array($ejercicios) || count($ejercicios) === 0) {
+            $this->responder(400, ['status' => 'error', 'message' => 'Agrega al menos un ejercicio']);
+            return null;
+        }
+
+        $limpios = [];
+        $usados = [];
+
+        foreach ($ejercicios as $item) {
+            $item = is_array($item) ? $item : [];
+            $idEjercicio = (int) ($item['id_ejercicio'] ?? 0);
+            $series = (int) ($item['series'] ?? 0);
+            $repeticiones = (int) ($item['repeticiones'] ?? 0);
+            $descanso = (int) ($item['descanso'] ?? 0);
+
+            if ($idEjercicio <= 0 || $series < 1 || $repeticiones < 1 || $descanso < 0) {
+                $this->responder(400, ['status' => 'error', 'message' => 'Revisa los datos de los ejercicios']);
+                return null;
+            }
+            if (isset($usados[$idEjercicio])) {
+                $this->responder(400, ['status' => 'error', 'message' => 'No repitas un ejercicio en la misma rutina']);
+                return null;
+            }
+            $usados[$idEjercicio] = true;
+
+            $limpios[] = [
+                'id_ejercicio' => $idEjercicio,
+                'series' => $series,
+                'repeticiones' => $repeticiones,
+                'descanso' => $descanso,
+            ];
+        }
+
+        return [
+            'nombre' => $nombre,
+            'descripcion' => $descripcion === '' ? null : $descripcion,
+            'id_persona' => (int) ($datos['id_persona'] ?? 0),
+            'ejercicios' => $limpios,
+        ];
+    }
+
+    public function actualizar($idRutina) {
+        if (!$this->accesoPermitido()) {
+            return;
+        }
+
+        $idRutina = (int) $idRutina;
+        $idEntrenador = $this->entrenadorActual();
+        if ($idEntrenador === 0) {
+            $this->responder(403, ['status' => 'error', 'message' => 'Tu usuario no tiene un perfil']);
+            return;
+        }
+
+        $d = $this->leerRutina();
+        if ($d === null) {
+            return;
+        }
+
+        try {
+            if ($idRutina <= 0 || !$this->modelo->puedeEliminar($idRutina, $idEntrenador)) {
+                $this->responder(404, ['status' => 'error', 'message' => 'Rutina no encontrada']);
+                return;
+            }
+
+            $this->modelo->actualizar($idRutina, $d['nombre'], $d['descripcion'], $d['ejercicios']);
+            $this->responder(200, ['status' => 'ok', 'message' => 'Rutina actualizada']);
+        } catch (\Exception $e) {
+            error_log('Error al actualizar rutina: ' . $e->getMessage());
+            $this->responder(500, ['status' => 'error', 'message' => 'No se pudo actualizar la rutina']);
+        }
+    }
+}   

@@ -1,5 +1,10 @@
 let Todoslosejercicios = [];
 let EjercicioEditado = null;
+let EjercicioAEliminar = null;
+
+const PagEjercicios = CrearPaginacion('pag-ejercicios', 10, lista => {
+    document.getElementById('listar-ejercicios').replaceChildren(...lista.map(CrearFila));
+});
 
 function MostrarMensaje(tbody, texto) {
     const fila = document.createElement('tr');
@@ -65,13 +70,28 @@ function CrearFila(e) {
     ver.textContent = 'Ver';
     ver.addEventListener('click', () => AbrirEjercicio(e));
 
-    const editar = document.createElement('button');
-    editar.className = 'admin-mini';
-    editar.textContent = 'Editar';
-    acciones.append(ver, editar);
-    editar.addEventListener('click', () => AbrirFormularioEjercicio(e));
-    
+        const enDesactivados = document.getElementById('estado-ejercicio').value === 'inactivos';
 
+    if (enDesactivados) {
+        const reactivar = document.createElement('button');
+        reactivar.className = 'admin-mini';
+        reactivar.textContent = 'Reactivar';
+        reactivar.addEventListener('click', () => ReactivarEjercicio(e));
+        acciones.append(ver, reactivar);
+    } else {
+        const editar = document.createElement('button');
+        editar.className = 'admin-mini';
+        editar.textContent = 'Editar';
+        editar.addEventListener('click', () => AbrirFormularioEjercicio(e));
+
+        const eliminar = document.createElement('button');
+        eliminar.className = 'admin-mini peligro';
+        eliminar.textContent = 'Eliminar';
+        eliminar.addEventListener('click', () => AbrirEliminarEjercicio(e));
+
+        acciones.append(ver, editar, eliminar);
+    }
+    
     fila.appendChild(acciones);
     return fila;
 }
@@ -81,12 +101,10 @@ function normalizar(texto) {
 }
 
 function Mostrarejercicios(lista) {
-    const tbody = document.getElementById('listar-ejercicios');
+    PagEjercicios.mostrar(lista);
     if (lista.length === 0) {
-        MostrarMensaje(tbody, 'No se encontraron ejercicios');
-        return;
+        MostrarMensaje(document.getElementById('listar-ejercicios'), 'No se encontraron ejercicios');
     }
-    tbody.replaceChildren(...lista.map(CrearFila));
 }
 
 function FiltrarEjercicios() {
@@ -101,19 +119,23 @@ async function CargarEjercicios() {
     const tbody = document.getElementById('listar-ejercicios');
     if (!tbody) return;
 
-    const res = await API.request('/ejercicio');
+    const estado = document.getElementById('estado-ejercicio').value;
+    const res = await API.request(`/ejercicio?estado=${estado}`);
 
     if (!res || res.status !== 'ok') {
         MostrarMensaje(tbody, res?.message || 'Los ejercicios no cargan');
         return;
     }
     if (res.data.length === 0) {
-        MostrarMensaje(tbody, 'No hay ejercicios cargados');
+        Todoslosejercicios = [];
+        PagEjercicios.mostrar([]);
+        MostrarMensaje(tbody, estado === 'inactivos' ? 'No hay ejercicios desactivados' : 'No hay ejercicios cargados');
         return;
     }
     Todoslosejercicios = res.data;
     FiltrarEjercicios();
 }
+
 function LimpiarFormularioEjercicio() {
     document.getElementById('ej-nombre').value = '';
     document.getElementById('ej-grupo').value = '';
@@ -166,13 +188,39 @@ async function GuardarEjercicio() {
     error.textContent = res?.message || 'No se pudo guardar el ejercicio.';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    CargarEjercicios();
+function AbrirEliminarEjercicio(e) {
+    EjercicioAEliminar = e;
+    document.getElementById('elim-ej-nombre').textContent = e.nombre;
+    document.getElementById('elim-ej-error').textContent = '';
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalEliminarEjercicio')).show();
+}
 
-    document.getElementById('btn-nuevo-ejercicio').addEventListener('click', () => AbrirFormularioEjercicio());
-    document.getElementById('btn-guardar-ejercicio').addEventListener('click', GuardarEjercicio);
-    document.getElementById('buscar-ejercicio').addEventListener('input', FiltrarEjercicios);
-});
+async function ConfirmarEliminarEjercicio() {
+    if (!EjercicioAEliminar) return;
+
+    const boton = document.getElementById('btn-confirmar-eliminar');
+    boton.disabled = true;
+    const res = await API.request(`/ejercicio/${EjercicioAEliminar.id_ejercicio}`, 'DELETE');
+    boton.disabled = false;
+
+    if (res && res.status === 'ok') {
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalEliminarEjercicio')).hide();
+        EjercicioAEliminar = null;
+        await CargarEjercicios();
+        return;
+    }
+    document.getElementById('elim-ej-error').textContent = res?.message || 'No se pudo eliminar el ejercicio';
+}
+
+async function ReactivarEjercicio(e) {
+    const res = await API.request(`/ejercicio/${e.id_ejercicio}/reactivar`, 'PUT');
+
+    if (!res || res.status !== 'ok') {
+        alert(res?.message || 'No se pudo reactivar el ejercicio');
+        return;
+    }
+    await CargarEjercicios();
+}
 
 function AbrirFormularioEjercicio(e = null) {
     LimpiarFormularioEjercicio();
@@ -190,3 +238,20 @@ function AbrirFormularioEjercicio(e = null) {
 
     bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevoEjercicio')).show();
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    CargarEjercicios();
+    
+    document.getElementById('buscar-ejercicio').addEventListener('input', () => {
+        PagEjercicios.reiniciar();
+        FiltrarEjercicios();
+    });
+    document.getElementById('estado-ejercicio').addEventListener('change', () => {
+        PagEjercicios.reiniciar();
+        CargarEjercicios();
+    });
+    document.getElementById('btn-nuevo-ejercicio').addEventListener('click', () => AbrirFormularioEjercicio());
+    document.getElementById('btn-guardar-ejercicio').addEventListener('click', GuardarEjercicio);
+    document.getElementById('estado-ejercicio').addEventListener('change', CargarEjercicios);
+    document.getElementById('btn-confirmar-eliminar').addEventListener('click', ConfirmarEliminarEjercicio);
+});

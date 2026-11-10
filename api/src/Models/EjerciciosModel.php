@@ -9,13 +9,14 @@ class EjerciciosModel {
         $this->db = $db;
     }
 
-    public function listar() {
+    public function listar($activos = true) {
         $stmt = $this->db->prepare(
             'SELECT id_ejercicio, nombre, descripcion, grupo_muscular, nivel
-            FROM EJERCICIO 
+            FROM EJERCICIO
+            WHERE activo = :activo
             ORDER BY nombre'
         );
-        $stmt->execute();
+        $stmt->execute(['activo' => $activos ? 1 : 0]);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
@@ -55,5 +56,23 @@ class EjerciciosModel {
             'grupo' => $grupo,
             'id' => $idEjercicio,
         ]);
+    }
+    public function estaActivo($idEjercicio) {
+        $stmt = $this->db->prepare('SELECT activo FROM EJERCICIO WHERE id_ejercicio = :id');
+        $stmt->execute(['id' => $idEjercicio]);
+        return (int) $stmt->fetchColumn() === 1;
+    }
+
+    public function cambiarEstado($idEjercicio, $activo) {
+        $stmt = $this->db->prepare('UPDATE EJERCICIO SET activo = :activo WHERE id_ejercicio = :id');
+        $stmt->execute(['activo' => $activo ? 1 : 0, 'id' => $idEjercicio]);
+    }
+
+    public function existeInactivoConNombre($nombre) {
+        $stmt = $this->db->prepare(
+            'SELECT COUNT(*) FROM EJERCICIO WHERE activo = 0 AND LOWER(nombre) = LOWER(:nombre)'
+        );
+        $stmt->execute(['nombre' => $nombre]);
+        return (int) $stmt->fetchColumn() > 0;
     }
 }
