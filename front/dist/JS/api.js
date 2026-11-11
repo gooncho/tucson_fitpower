@@ -1,26 +1,23 @@
-// front/dist/js/api.js
-// El mensajero: el HTML nunca habla con PHP directo. Pasa por acá.
-
 const API = {
-    // En Docker: http://localhost:8080/api
     urlBase: '/api',
-
     async request(endpoint, method = 'GET', data = null) {
-        const url = this.urlBase + endpoint;
-
         const opciones = {
             method: method,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin'
         };
-
-        // GET no lleva body. POST/PUT sí.
-        if (data) {
-            opciones.body = JSON.stringify(data);
-        }
-
+        if (data !== null) opciones.body = JSON.stringify(data);
         try {
-            const respuesta = await fetch(url, opciones);
-            const json = await respuesta.json();
+            const respuesta = await fetch(this.urlBase + endpoint, opciones);
+            const texto = await respuesta.text();
+            let json;
+            try {
+                json = JSON.parse(texto);
+            } catch (error) {
+                console.error('La API devolvió una respuesta que no es JSON:', texto);
+                return { status: 'error', message: 'El servidor devolvió un error. Revisá el registro de PHP.' };
+            }
+            if (!respuesta.ok && json.status === 'ok') json.status = 'error';
             return json;
         } catch (error) {
             console.error('Error de conexión con la API:', error);
@@ -31,9 +28,16 @@ const API = {
         try {
             const respuesta = await fetch(this.urlBase + endpoint, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'same-origin'
             });
-            return await respuesta.json();
+            const texto = await respuesta.text();
+            try {
+                return JSON.parse(texto);
+            } catch (error) {
+                console.error('La API devolvió una respuesta que no es JSON:', texto);
+                return { status: 'error', message: 'El servidor devolvió un error.' };
+            }
         } catch (error) {
             console.error('Error de conexión con la API:', error);
             return { status: 'error', message: 'No se pudo conectar con la API' };

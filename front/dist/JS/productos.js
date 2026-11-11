@@ -71,7 +71,17 @@ function abrirModal(p) {
 document.addEventListener('DOMContentLoaded', async () => {
     const lista = document.getElementById('lista-productos');
     const botonMas = document.getElementById('MasProductos');
+    const cuenta = document.getElementById('navCuenta');
     if (!lista) return;
+
+    if (cuenta) {
+        const sesion = await API.request('/sesion');
+        if (sesion.status === 'ok' && sesion.data?.rol === 'Socio') {
+            cuenta.href = 'roles/socio/Perfil.html';
+            cuenta.textContent = 'Mi perfil';
+            cuenta.className = 'btn btn-outline';
+        }
+    }
 
     const productos = await API.request('/producto');
   if (!Array.isArray(productos)) {

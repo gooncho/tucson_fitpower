@@ -12,13 +12,24 @@
   <link rel="icon" href="../../../assets/logo_fitpower.jpg">
   <link rel="stylesheet" href="../../../CSS/dashboard.css">
   <link rel="stylesheet" href="../../../CSS/Socio.css">
+<style>
+.calendario-semana{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.calendario-dia{background:#101010;border:1px solid #303030;border-radius:10px;min-height:92px;padding:10px;text-align:center;color:#9c9c98}
+.calendario-dia strong{display:block;color:#f4f4f2;font-size:19px;margin:8px 0}
+.calendario-dia small{font-size:11px}
+.calendario-dia.asistio{background:rgba(205,250,63,.10);border-color:#cdfa3f;color:#cdfa3f}
+.calendario-dia.asistio strong{color:#cdfa3f}
+.calendario-leyenda{width:10px;height:10px;border-radius:50%;background:#cdfa3f;display:inline-block}
+@media(max-width:600px){.calendario-semana{gap:4px}.calendario-dia{padding:7px 2px;min-height:78px}.calendario-dia small{font-size:9px}.calendario-dia strong{font-size:16px}}
+</style>
 </head>
 
 <body>
+  <input type="checkbox" id="menu-toggle" class="menu-toggle">
+  <label for="menu-toggle" class="hamburger-btn" aria-label="Abrir menú"><i class="bi bi-list"></i></label>
+  <label for="menu-toggle" class="sidebar-overlay"></label>
   <aside class="sidebar">
-    <div class="sidebar-logo">
-      <img src="../../../assets/logo_fitpower.jpg" width="130" alt="Logo FitPower">
-    </div>
+    <div class="sidebar-logo"><img src="../../../assets/logo_fitpower.jpg" width="130" alt="Logo FitPower"></div>
     <nav class="nav-group">
       <a href="inicioSocio.html" class="side-link"><i class="bi bi-house-door-fill"></i><span>Inicio</span></a>
       <a href="miProgreso.html" class="side-link active"><i class="bi bi-graph-up-arrow"></i><span>Mi progreso</span></a>
@@ -30,11 +41,7 @@
       <a href="Objetivos.html" class="side-link"><i class="bi bi-bullseye"></i><span>Objetivos</span></a>
       <a href="Perfil.html" class="side-link"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
     </nav>
-    <div class="sidebar-footer">
-      <a href="#" class="logout-link" id="btn-logout">
-        <i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span>
-      </a>
-    </div>
+    <div class="sidebar-footer"><a href="#" class="logout-link" id="btn-logout"><i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span></a></div>
   </aside>
   <main class="main">
     
@@ -74,6 +81,36 @@
         </div>
       </div>
     </div>
+    <section class="card-panel mb-4" style="max-width: 1050px;">
+      <div class="d-flex flex-wrap align-items-end justify-content-between gap-3">
+        <div>
+          <h3 class="mb-1" style="font-size: 19px; font-weight: 700;">Registrar peso</h3>
+          <p class="text-with mb-0" style="font-size: 13px;">Guardá una nueva medición en tu progreso</p>
+        </div>
+        <form id="formPeso" class="d-flex flex-wrap gap-2 align-items-end">
+          <div>
+            <label for="inputPeso" class="form-label text-with mb-1">Peso en kg</label>
+            <input type="number" id="inputPeso" class="form-control bg-dark text-light border-secondary" min="1" max="500" step="0.1" placeholder="Ej. 75.5" required>
+          </div>
+          <button type="submit" class="btn-lime">Guardar peso</button>
+        </form>
+      </div>
+      <p id="mensajePeso" class="small mt-2 mb-0"></p>
+    </section>
+
+    <section class="card-panel mb-4" style="max-width: 1050px;">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div><h3 class="mb-1" style="font-size: 19px; font-weight: 700;">Almanaque de asistencias</h3><p class="text-with mb-0" style="font-size: 13px;">Tus visitas al gimnasio organizadas por semana</p><p class="text-with mb-0 mt-2" style="font-size: 13px;">Racha actual: <strong id="valorRacha" class="text-light">0 días</strong></p></div>
+        <div class="d-flex align-items-center gap-2"><button id="semanaAnterior" class="admin-mini" type="button"><i class="bi bi-chevron-left"></i></button><strong id="rangoSemana" class="text-light"></strong><button id="semanaSiguiente" class="admin-mini" type="button"><i class="bi bi-chevron-right"></i></button></div>
+      </div>
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+        <span class="text-with small">Marcá tu visita al gimnasio de hoy</span>
+        <button type="button" id="btnMarcarAsistencia" class="btn-lime">Marcar asistencia de hoy</button>
+      </div>
+      <p id="mensajeAsistencia" class="small mb-2"></p>
+      <div class="calendario-semana" id="calendarioSemana"></div>
+      <div class="d-flex align-items-center gap-2 mt-3 text-with" style="font-size: 12px;"><span class="calendario-leyenda"></span> Día con asistencia registrada</div>
+    </section>
     <div class="row g-3" style="max-width: 1050px;">
       <div class="col-lg-7">
         <div class="p-4 h-100 d-flex flex-column justify-content-between" style="background: #151515; border: 1px solid #2a2a2a; border-radius: 14px; min-height: 240px;">

@@ -30,6 +30,12 @@ async function cargarSocios() {
     }
 }
 
+function obtenerEstado(socio) {
+    const tieneMembresia = Boolean(socio.nombre_plan && socio.fecha_fin);
+    const vigente = socio.fecha_fin && new Date(socio.fecha_fin + 'T23:59:59') >= new Date();
+    return Number(socio.activo) === 1 && tieneMembresia && vigente ? 'activo' : 'inactivo';
+}
+
 function render() {
     const texto = buscar.value.trim().toLowerCase();
     const plan = filtroPlan.value.toLowerCase();
@@ -37,7 +43,7 @@ function render() {
     const tbody = document.getElementById('tablaSocios');
         
     const listaFiltrada = listaSocios.filter(socio => {
-        let estadoClase = 'activo';
+        const estadoClase = obtenerEstado(socio);
         const coincide =
             (socio.id_usuario.toString().includes(texto) || socio.nombre_usuario.toLowerCase().includes(texto) || socio.email.toLowerCase().includes(texto)) &&
             (!plan || (socio.nombre_plan && socio.nombre_plan.toLowerCase().includes(plan))) &&
@@ -54,8 +60,8 @@ function render() {
     sinResultados.classList.remove('visible');
 
     tbody.innerHTML = listaFiltrada.map((socio) => {
-        let estadoClase = 'activo';
-        let estadoTexto = 'Activo';
+        const estadoClase = obtenerEstado(socio);
+        const estadoTexto = estadoClase === 'activo' ? 'Activo' : 'Inactivo';
         return `
             <tr data-plan="${socio.nombre_plan ? socio.nombre_plan.toLowerCase() : ''}" data-estado="${estadoClase}">
                 <td class="col-id">${socio.id_usuario}</td>
@@ -76,6 +82,7 @@ function render() {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             const socio = listaSocios.find(s => s.id_usuario == btn.dataset.id);
+            const estadoTexto = obtenerEstado(socio) === 'activo' ? 'Activo' : 'Inactivo';
             if (modalTitle) modalTitle.textContent = "Detalles del Socio";
             if (modalBody) {
                 modalBody.innerHTML = `
@@ -84,6 +91,7 @@ function render() {
                     <p><strong>Email:</strong> ${esc(socio.email)}</p>
                     <p><strong>Plan:</strong> ${esc(socio.nombre_plan || '—')}</p>
                     <p><strong>Vencimiento:</strong> ${socio.fecha_fin ? fecha(socio.fecha_fin) : '—'}</p>
+                    <p><strong>Estado:</strong> ${estadoTexto}</p>
                 `;
             }
             if (adminModal) adminModal.show();
@@ -106,6 +114,13 @@ function render() {
                             <label class="form-label">Email</label>
                             <input type="email" class="admin-input" name="email" value="${esc(socio.email)}" required>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Estado del socio</label>
+                            <select class="admin-select" name="activo" required>
+                                <option value="1" ${obtenerEstado(socio) === 'activo' ? 'selected' : ''}>Activo</option>
+                                <option value="0" ${obtenerEstado(socio) !== 'activo' ? 'selected' : ''}>Inactivo / En suspenso</option>
+                            </select>
+                        </div>
                         <p class="text-danger" id="errorEditar"></p>
                         <button type="submit" class="admin-btn">Guardar Cambios</button>
                     </form>
@@ -113,12 +128,20 @@ function render() {
                 document.getElementById('formEditar').addEventListener('submit', async (ev) => {
                     ev.preventDefault();
                     const datos = Object.fromEntries(new FormData(ev.target));
-                    const respuesta = await API.request('/socios/' + socio.id_usuario, 'PUT', datos);
-                    if (respuesta.status === 'ok') {
-                        adminModal.hide();
-                        cargarSocios();
-                    } else {
-                        document.getElementById('errorEditar').textContent = respuesta.message || 'No se pudo guardar';
+                    const boton = ev.target.querySelector('button[type="submit"]');
+                    boton.disabled = true;
+                    try {
+                        const respuesta = await API.request('/socios/' + socio.id_usuario, 'PUT', datos);
+                        if (respuesta.status === 'ok') {
+                            await cargarSocios();
+                            adminModal.hide();
+                        } else {
+                            document.getElementById('errorEditar').textContent = respuesta.message || 'No se pudo guardar';
+                        }
+                    } catch (error) {
+                        document.getElementById('errorEditar').textContent = 'No se pudo conectar con el servidor';
+                    } finally {
+                        boton.disabled = false;
                     }
                 });
             }

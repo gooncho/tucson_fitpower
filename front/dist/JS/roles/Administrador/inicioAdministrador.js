@@ -2,15 +2,24 @@ const escAdmin = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;'
 
 document.addEventListener('DOMContentLoaded', async () => {
     const respuesta = await API.request('/inicio-administrador', 'GET');
-    if (respuesta.status !== 'ok' || !respuesta.data) return;
+    if (respuesta.status !== 'ok' || !respuesta.data) {
+        const mensaje = document.getElementById('errorDashboard');
+        if (mensaje) mensaje.textContent = respuesta.message || 'No se pudo cargar la información del panel.';
+        console.error('No se pudo cargar el inicio del administrador:', respuesta.message);
+        return;
+    }
 
     const d = respuesta.data;
-    document.getElementById('totalSocios').textContent = d.socios;
-    document.getElementById('totalEntrenadores').textContent = d.entrenadores;
-    document.getElementById('totalMembresias').textContent = d.membresias_activas;
-    document.getElementById('ingresosMes').textContent = `$${Number(d.ingresos_mes).toLocaleString('es-UY')}`;
+    document.getElementById('totalSocios').textContent = d.socios ?? 0;
+    document.getElementById('totalEntrenadores').textContent = d.entrenadores ?? 0;
+    document.getElementById('totalMembresias').textContent = d.membresias_activas ?? 0;
+    document.getElementById('ejerciciosDisponibles').textContent = d.ejercicios_disponibles ?? 0;
 
-    document.getElementById('distribucionMembresias').innerHTML = d.planes.length ? d.planes.map(p => `<p>${escAdmin(p.nombre)}: ${p.cantidad}</p>`).join('') : '<p>No hay membresías registradas.</p>';
-    document.getElementById('productosBajoStock').innerHTML = d.productos_bajo_stock.length ? d.productos_bajo_stock.map(p => `<div class="admin-producto"><div><strong>${escAdmin(p.nombre)}</strong><small>Stock actual: ${escAdmin(p.stock)}</small></div><span>${p.stock <= 3 ? 'Crítico' : 'Bajo'}</span></div>`).join('') : '<p>No hay productos con stock bajo.</p>';
-    document.getElementById('membresiasPorVencer').innerHTML = d.por_vencer.length ? d.por_vencer.map(p => `<div class="col-md-4 col-lg-2"><div class="admin-membresia"><strong>${escAdmin(p.nombre_usuario)} ${escAdmin(p.apellido || '')}</strong><small>${escAdmin(p.plan || 'Sin plan')} · ${escAdmin(p.dias)} días</small></div></div>`).join('') : '<p>No hay membresías próximas a vencer.</p>';
+    const planes = Array.isArray(d.planes) ? d.planes : [];
+    const productos = Array.isArray(d.productos_bajo_stock) ? d.productos_bajo_stock : [];
+    const porVencer = Array.isArray(d.por_vencer) ? d.por_vencer : [];
+
+    document.getElementById('distribucionMembresias').innerHTML = planes.length ? planes.map(p => `<p>${escAdmin(p.nombre)}: ${p.cantidad}</p>`).join('') : '<p>No hay membresías registradas.</p>';
+    document.getElementById('productosBajoStock').innerHTML = productos.length ? productos.map(p => `<div class="admin-producto"><div><strong>${escAdmin(p.nombre)}</strong><small>Stock actual: ${escAdmin(p.stock)}</small></div><span>${Number(p.stock) < 10 ? 'Crítico' : 'Bajo'}</span></div>`).join('') : '<p>No hay productos con stock bajo.</p>';
+    document.getElementById('membresiasPorVencer').innerHTML = porVencer.length ? porVencer.map(p => `<div class="col-md-4 col-lg-2"><div class="admin-membresia"><strong>${escAdmin(p.nombre_usuario)} ${escAdmin(p.apellido || '')}</strong><small>${escAdmin(p.plan || 'Sin plan')} · ${escAdmin(p.dias)} días</small></div></div>`).join('') : '<p>No hay membresías próximas a vencer.</p>';
 });

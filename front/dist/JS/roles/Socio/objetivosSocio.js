@@ -1,3 +1,4 @@
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 let listaObjetivos = [];
 let filtroActual = 'todos';
 let modalObjetivoInstance = null;
@@ -99,7 +100,7 @@ function renderObjetivos() {
         const badgeStyle = esPausado 
             ? 'background: rgba(255, 180, 0, 0.1); color: #ffb400; border: 1px solid #ffb400;' 
             : 'background: rgba(205, 250, 63, 0.1); color: #cdfa3f; border: 1px solid #cdfa3f;';
-        const porcentaje = est.includes('COMPLETADO') ? 100 : 0;
+        const porcentaje = est.includes('COMPLETADO') ? 100 : Math.max(0, Math.min(100, Number(obj.porcentaje || 0)));
         const fechaFinFormateada = formatearFecha(obj.fecha_fin);
         return `
             <div class="card-panel p-4 d-flex align-items-center justify-content-between flex-wrap gap-4" style="background: #151515; border: 1px solid #2a2a2a; border-radius: 14px;">
@@ -109,6 +110,7 @@ function renderObjetivos() {
                 <div class="flex-grow-1" style="min-width: 240px;">
                     <div class="d-flex align-items-center justify-content-between mb-1">
                         <h4 class="mb-0 text-light" style="font-size: 18px; font-weight: 700; font-family: 'Montserrat', sans-serif;">${esc(obj.titulo)}</h4>
+                        <button type="button" class="btn btn-outline-danger btn-sm btn-eliminar-objetivo" data-id="${obj.id_objetivo}"><i class="bi bi-trash"></i> Eliminar</button>
                     </div>
                     <p class="text-whit mb-2" style="font-size: 13.5px;">${esc(obj.descripcion || "Sin descripción")}</p>
                     <div class="d-flex align-items-center gap-2 text-whit mb-2" style="font-size: 12.5px;">
@@ -130,6 +132,18 @@ function renderObjetivos() {
             </div>
         `;
     }).join("");
+
+    document.querySelectorAll('.btn-eliminar-objetivo').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            if (!confirm('¿Querés eliminar este objetivo?')) return;
+            const respuesta = await API.request('/objetivos/' + btn.dataset.id, 'DELETE');
+            if (respuesta.status === 'ok') {
+                await cargarObjetivos();
+            } else {
+                alert(respuesta.message || 'No se pudo eliminar el objetivo.');
+            }
+        });
+    });
 }
 function formatearFecha(iso) {
     if (!iso) return "—";

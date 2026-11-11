@@ -11,9 +11,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    document.getElementById('btnEliminarRutina')?.addEventListener('click', async () => {
+        if (!confirm('¿Querés quitar esta rutina de tu lista?')) return;
+        const boton = document.getElementById('btnEliminarRutina');
+        boton.disabled = true;
+        const respuesta = await API.request(`/mis-rutinas/${idRutina}`, 'DELETE');
+        if (respuesta.status === 'ok') {
+            window.location.href = 'Rutinas.html';
+        } else {
+            document.getElementById('mensajeEliminarRutina').textContent = respuesta.message || 'No se pudo eliminar la rutina.';
+            boton.disabled = false;
+        }
+    });
+
     try {
         const respuesta = await API.request(`/rutinas/${idRutina}`, 'GET');
-        const ejercicios = Array.isArray(respuesta) ? respuesta : (respuesta.data || []);
+        const ejercicios = Array.isArray(respuesta.data) ? respuesta.data : [];
 
         document.getElementById('nombreRutina').textContent = `Rutina #${idRutina}`;
         document.getElementById('infoEjercicios').textContent = `${ejercicios.length} ejercicios`;
@@ -35,7 +48,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             </div>
         `).join("");
-
     } catch (err) {
         document.getElementById('nombreRutina').textContent = 'No se pudo cargar la rutina';
         document.getElementById('infoEjercicios').textContent = '—';

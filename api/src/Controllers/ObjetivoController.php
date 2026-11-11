@@ -34,6 +34,29 @@ class ObjetivoController {
         echo json_encode(['status' => 'ok', 'data' => $this->model->obtenerPorPersona($idPersona)], JSON_UNESCAPED_UNICODE);
     }
 
+
+    public function destroy($id) {
+        $idPersona = $this->personaActual();
+        if (!$idPersona || ($_SESSION['rol'] ?? '') !== 'Socio') {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'No autorizado']);
+            return;
+        }
+        try {
+            $eliminado = $this->model->eliminar((int) $id, $idPersona);
+            if (!$eliminado) {
+                http_response_code(404);
+                echo json_encode(['status' => 'error', 'message' => 'Objetivo no encontrado']);
+                return;
+            }
+            echo json_encode(['status' => 'ok', 'message' => 'Objetivo eliminado']);
+        } catch (\Throwable $e) {
+            error_log('Error al eliminar objetivo: ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'No se pudo eliminar el objetivo']);
+        }
+    }
+
     public function store() {
         $idPersona = $this->personaActual();
         if (!$idPersona || ($_SESSION['rol'] ?? '') !== 'Socio') {

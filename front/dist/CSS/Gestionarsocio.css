@@ -202,4 +202,7 @@
         align-items: flex-start;
         gap: 14px;
     }
+}.admin-estado.inactivo {
+    color: #ff7777;
+    border-color: #ff7777;
 }

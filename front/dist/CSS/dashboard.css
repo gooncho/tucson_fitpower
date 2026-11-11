@@ -491,3 +491,13 @@ h6 {
     opacity: 0.4;
     cursor: not-allowed;
 }
+@media (max-width: 767px) {
+    .sidebar { width: 260px; max-width: 85vw; overflow-y: auto; }
+    .main { width: 100%; padding: 82px 16px 36px; }
+    .main h1 { font-size: 25px !important; }
+    .main .row { --bs-gutter-x: 1rem; }
+    .main .card-panel, .main .metric-card { padding: 16px; }
+    .hamburger-btn { display: flex; }
+    .menu-toggle:checked ~ .sidebar { transform: translateX(0); }
+    .menu-toggle:checked ~ .sidebar-overlay { display: block; }
+}

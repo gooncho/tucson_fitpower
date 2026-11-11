@@ -36,7 +36,9 @@
                         <h1>¡Hola <span id="nombre-usuario"></span>!</h1>
                         <p>Resumen del sistema</p>
                     </div>
+                    <button type="button" id="btnIdioma" class="btn btn-outline-light">EN</button>
                 </div>
+                <p id="errorDashboard" class="text-danger"></p>
                 <section class="admin-seccion">
                     <h3>Resumen</h3>
                     <div class="row g-3">
@@ -66,10 +68,10 @@
                         </div>
                         <div class="col-sm-6 col-xl-3">
                             <div class="admin-card">
-                                <small>Ingresos este mes</small>
-                                <h2 id="ingresosMes">$0</h2>
-                                <span>Ingresos registrados este mes</span>
-                                <i class="bi bi-cash-stack"></i>
+                                <small>Ejercicios Disponibles</small>
+                                <h2 id="ejerciciosDisponibles">0</h2>
+                                <span>Ejercicios activos en el sistema</span>
+                                <i class="bi bi-activity"></i>
                             </div>
                         </div>
                     </div>
@@ -86,7 +88,7 @@
                         <section class="admin-seccion h-100">
                             <h3>Productos bajos de stock</h3>
                             <div id="productosBajoStock"></div>
-                            <a href="#" class="admin-ver">Ver todos los productos →</a>
+                            <a href="GestionarProductos.html" class="admin-ver">Ver todos los productos →</a>
                         </section>
                     </div>
                 </div>

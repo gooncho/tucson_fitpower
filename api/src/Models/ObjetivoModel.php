@@ -14,6 +14,12 @@ class ObjetivoModel {
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    public function eliminar($idObjetivo, $idPersona) {
+        $stmt = $this->db->prepare('DELETE FROM OBJETIVO WHERE id_objetivo = :id AND id_persona = :persona');
+        $stmt->execute(['id' => $idObjetivo, 'persona' => $idPersona]);
+        return $stmt->rowCount();
+    }
+
     public function crear($datos, $idPersona) {
         $stmt = $this->db->prepare('INSERT INTO OBJETIVO (id_persona, titulo, descripcion, estado, fecha_inicio, fecha_fin) VALUES (:persona, :titulo, :descripcion, :estado, :inicio, :fin)');
         $stmt->execute([

@@ -34,6 +34,33 @@ class SocioController {
         ], JSON_UNESCAPED_UNICODE);
     }
 
+    public function actualizar($id) {
+        if (($_SESSION['rol'] ?? '') !== 'Administrador') {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'No autorizado'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        $datos = json_decode(file_get_contents('php://input'), true);
+        $datos = is_array($datos) ? $datos : [];
+        $nombre = trim((string) ($datos['nombre_usuario'] ?? ''));
+        $email = trim((string) ($datos['email'] ?? ''));
+        $activo = filter_var($datos['activo'] ?? null, FILTER_VALIDATE_INT);
+        if ($nombre === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || !in_array($activo, [0, 1], true)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Completá nombre, email y estado con datos válidos'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        try {
+            $modelo = new SocioModel($this->db);
+            $modelo->actualizarSocio((int) $id, ['nombre_usuario' => $nombre, 'email' => $email, 'activo' => $activo]);
+            echo json_encode(['status' => 'ok', 'message' => 'Socio actualizado'], JSON_UNESCAPED_UNICODE);
+        } catch (\Throwable $e) {
+            error_log('Error al actualizar socio: ' . $e->getMessage());
+            http_response_code($e->getCode() == 23000 ? 409 : 500);
+            echo json_encode(['status' => 'error', 'message' => $e->getCode() == 23000 ? 'El email o usuario ya está registrado' : 'No se pudo actualizar el socio'], JSON_UNESCAPED_UNICODE);
+        }
+    }
+
     public function crear() {
 
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
