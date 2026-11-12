@@ -13,10 +13,12 @@ class MissociosController {
                 session_start();
             }
         }
+        
         private function responder($codigo, $payload) {
             http_response_code($codigo);
             echo json_encode($payload, JSON_UNESCAPED_UNICODE);
         }
+
         private function accesoPermitido() {
             if (empty($_SESSION['usuario_id'])) {
                 $this->responder(401, ['status' => 'error', 'message' => 'Tienes que iniciar sesion']);
@@ -28,6 +30,7 @@ class MissociosController {
             }
             return true;
         }
+
         public function index() {
             if (!$this->accesoPermitido()) {
                 return;
@@ -46,6 +49,23 @@ class MissociosController {
             } catch (\Exception $e) {
                 error_log('Error al listar socios: ' . $e->getMessage());
                 $this->responder(500, ['status' => 'error', 'message' => 'No se pudieron cargar los socios']);
+            }
+        }
+                public function agenda() {
+            if (empty($_SESSION['usuario_id']) || ($_SESSION['rol'] ?? '') !== 'Entrenador') {
+                $this->responder(403, ['status' => 'error', 'message' => 'Solo los entrenadores tienen agenda']);
+                return;
+            }
+            try {
+                $idEntrenador = $this->modelo->buscarPersonaPorUsuario((int) $_SESSION['usuario_id']);
+                if (!$idEntrenador) {
+                    $this->responder(403, ['status' => 'error', 'message' => 'Tu usuario no tiene un perfil asociado']);
+                    return;
+                }
+                $this->responder(200, ['status' => 'ok', 'data' => $this->modelo->agenda((int) $idEntrenador)]);
+            } catch (\Exception $e) {
+                error_log('Error al cargar la agenda: ' . $e->getMessage());
+                $this->responder(500, ['status' => 'error', 'message' => 'No se pudo cargar la agenda']);
             }
         }
 }

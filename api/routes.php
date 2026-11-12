@@ -19,6 +19,7 @@ $router->get('/productos', 'ProductoController@listar');
 $router->post('/productos', 'ProductoController@crear');
 $router->delete('/productos/:id', 'ProductoController@eliminar');
 $router->get('/mis-socios', 'MissociosController@index');
+$router->get('/mi-agenda', 'MissociosController@agenda');
 $router->get('/rutinas', 'RutinaController@index');
 $router->get('/rutinas/:id', 'RutinaController@verRutina');
 $router->post('/rutinas', 'RutinaController@store');

@@ -39,4 +39,28 @@ class SociosModel {
             $stmt->execute(['id' =>  $idUsuario]);
             return $stmt->fetchColumn();
             }
+            public function agenda($idEntrenador) {
+            $stmt = $this->db->prepare(
+                "SELECT s.id_persona,
+                        u.nombre_usuario AS usuario,
+                        p.apellido,
+                        s.dia_semana,
+                        TIME_FORMAT(s.hora_inicio, '%H:%i') AS hora_inicio,
+                        TIME_FORMAT(s.hora_fin, '%H:%i') AS hora_fin,
+                        (SELECT r.nombre
+                         FROM ASIGNA AS a
+                         INNER JOIN RUTINA AS r ON r.id_rutina = a.id_rutina
+                         WHERE a.id_persona = p.id_persona
+                         ORDER BY a.fecha_asignacion DESC
+                         LIMIT 1) AS rutina
+                FROM SUPERVISA AS s
+                INNER JOIN PERSONA AS p ON p.id_persona = s.id_persona
+                INNER JOIN USUARIO AS u ON u.id_usuario = p.id_usuario
+                WHERE s.id_entrenador = :entrenador AND u.activo = 1
+                ORDER BY FIELD(s.dia_semana, 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'),
+                         s.hora_inicio"
+            );
+            $stmt->execute(['entrenador' => $idEntrenador]);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        }
 }
