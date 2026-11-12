@@ -6,10 +6,11 @@ function render() {
   const q = norm($("buscar").value.trim());
   const razon = norm($("filtroRazon").value);
   const est = $("filtroEstado").value;
-  const lista = pagos.filter(p =>
+  const filtrados = pagos.filter(p =>
     (!q || norm(p.nombre_usuario).includes(q)) &&
     (!razon || norm(p.razon).startsWith(razon)) &&
     (!est || p.estado === est));
+  const lista = paginar(filtrados, render);
 
   $("tbody").innerHTML = lista.map((p, index) => `
     <tr>

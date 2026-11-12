@@ -16,6 +16,45 @@ const fecha = (iso) => {
 
 let listaSocios = [];
 
+const POR_PAGINA = 15;
+let paginaActual = 1;
+
+function paginar(lista, render) {
+    const total = Math.max(1, Math.ceil(lista.length / POR_PAGINA));
+    if (paginaActual > total) paginaActual = total;
+
+    const controles = document.getElementById('paginacion');
+    if (controles) {
+        if (lista.length <= POR_PAGINA) {
+            controles.replaceChildren();
+        } else {
+            const boton = (icono, etiqueta, deshabilitado, cambio) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'admin-mini';
+                b.disabled = deshabilitado;
+                b.setAttribute('aria-label', etiqueta);
+                b.innerHTML = `<i class="bi ${icono}"></i>`;
+                b.addEventListener('click', () => {
+                    paginaActual += cambio;
+                    render();
+                });
+                return b;
+            };
+            const texto = document.createElement('span');
+            texto.textContent = `Página ${paginaActual} de ${total} · ${lista.length} resultados`;
+            controles.replaceChildren(
+                boton('bi-chevron-left', 'Página anterior', paginaActual === 1, -1),
+                texto,
+                boton('bi-chevron-right', 'Página siguiente', paginaActual === total, 1)
+            );
+        }
+    }
+
+    const inicio = (paginaActual - 1) * POR_PAGINA;
+    return lista.slice(inicio, inicio + POR_PAGINA);
+}
+
 async function cargarSocios() {
     try {
         const respuesta = await API.request('/socios', 'GET');
@@ -42,7 +81,7 @@ function render() {
     const estado = filtroEstado.value.toLowerCase();
     const tbody = document.getElementById('tablaSocios');
         
-    const listaFiltrada = listaSocios.filter(socio => {
+        const listaFiltrada = listaSocios.filter(socio => {
         const estadoClase = obtenerEstado(socio);
         const coincide =
             (socio.id_usuario.toString().includes(texto) || socio.nombre_usuario.toLowerCase().includes(texto) || socio.email.toLowerCase().includes(texto)) &&
@@ -50,6 +89,8 @@ function render() {
             (!estado || estadoClase === estado);
         return coincide;
     });
+
+    const pagina = paginar(listaFiltrada, render);
 
     if (listaFiltrada.length === 0) {
         sinResultados.classList.add('visible');
@@ -59,7 +100,7 @@ function render() {
 
     sinResultados.classList.remove('visible');
 
-    tbody.innerHTML = listaFiltrada.map((socio) => {
+    tbody.innerHTML = pagina.map((socio) => {
         const estadoClase = obtenerEstado(socio);
         const estadoTexto = estadoClase === 'activo' ? 'Activo' : 'Inactivo';
         return `
@@ -219,7 +260,10 @@ function abrirNuevo() {
     adminModal.show();
 }
 
-[buscar, filtroPlan, filtroEstado].forEach(el => el.addEventListener('input', render));
+[buscar, filtroPlan, filtroEstado].forEach(el => el.addEventListener('input', () => {
+    paginaActual = 1;
+    render();
+}));
 document.addEventListener('DOMContentLoaded', () => {
     const modalEl = document.getElementById('adminModal');
     if (modalEl) {

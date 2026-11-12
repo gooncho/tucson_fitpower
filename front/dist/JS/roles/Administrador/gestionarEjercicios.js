@@ -30,9 +30,10 @@ function mostrarImagenEjercicio(img, id) {
 function render() {
   const q = norm($("buscar").value.trim());
   const g = $("filtroGrupo").value;
-  const lista = ejercicios.filter(e =>
+  const filtrados = ejercicios.filter(e =>
     (!q || norm(e.nombre).includes(q)) &&
     (!g || grupos(e).includes(g)));
+  const lista = paginar(filtrados, render);
 
   const enDesactivados = $("filtroEstado").value === 'inactivos';
 
@@ -223,7 +224,10 @@ document.addEventListener('DOMContentLoaded', () => {
   modalTitle = document.getElementById('adminModalLabel');
   modalBody = document.getElementById('adminModalBody');
   conectar(["buscar", "filtroGrupo"], render);
-  $("filtroEstado").addEventListener('change', cargar);
+      $("filtroEstado").addEventListener('change', () => {
+      paginaActual = 1;
+      cargar();
+    });
   document.getElementById('btnNuevo').addEventListener('click', event => {
     event.preventDefault();
     abrirNuevo();

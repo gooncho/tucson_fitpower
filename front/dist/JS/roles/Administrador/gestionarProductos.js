@@ -7,10 +7,11 @@ function render() {
   const cat = $("filtroCategoria").value;
   const est = $("filtroEstado").value;
 
-  const lista = productos.filter(p =>
+    const filtrados = productos.filter(p =>
     (!q || norm(p.nombre).includes(q)) &&
     (!cat || p.categoria === cat) &&
     (!est || p.estado === est));
+  const lista = paginar(filtrados, render);
 
   $("tbody").innerHTML = lista.map((p, index) => `
     <tr>

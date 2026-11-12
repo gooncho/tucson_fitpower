@@ -30,9 +30,11 @@ function llenarSelect(id, valores, textoTodos) {
 function conectar(idsFiltros, render) {
   idsFiltros.forEach(id => {
     const el = $(id);
-    if (el) el.addEventListener("input", render);
+        if (el) el.addEventListener("input", () => {
+      paginaActual = 1;
+      render();
+    });
   });
-  // El cierre de sesión lo maneja script.js (llama a /logout)
 }
 
 async function cargarSocios() {
@@ -77,6 +79,44 @@ async function cargarSocios() {
     } catch (error) {
         console.error("Hubo un error en la petición:", error);
     }
+}
+const POR_PAGINA = 10;
+let paginaActual = 1;
+
+function paginar(lista, render) {
+  const total = Math.max(1, Math.ceil(lista.length / POR_PAGINA));
+  if (paginaActual > total) paginaActual = total;
+
+  const controles = $("paginacion");
+  if (controles) {
+    if (lista.length <= POR_PAGINA) {
+      controles.replaceChildren();
+    } else {
+      const boton = (icono, etiqueta, deshabilitado, cambio) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "admin-mini";
+        b.disabled = deshabilitado;
+        b.setAttribute("aria-label", etiqueta);
+        b.innerHTML = `<i class="bi ${icono}"></i>`;
+        b.addEventListener("click", () => {
+          paginaActual += cambio;
+          render();
+        });
+        return b;
+      };
+      const texto = document.createElement("span");
+      texto.textContent = `Página ${paginaActual} de ${total} · ${lista.length} resultados`;
+      controles.replaceChildren(
+        boton("bi-chevron-left", "Página anterior", paginaActual === 1, -1),
+        texto,
+        boton("bi-chevron-right", "Página siguiente", paginaActual === total, 1)
+      );
+    }
+  }
+
+  const inicio = (paginaActual - 1) * POR_PAGINA;
+  return lista.slice(inicio, inicio + POR_PAGINA);
 }
 
 document.addEventListener('DOMContentLoaded', cargarSocios);
