@@ -675,6 +675,7 @@
         "Rutina actualizada": "Routine updated",
         "Página anterior": "Previous page",
         "Página siguiente": "Next page",
+        "Tu sesión se cerró por inactividad. Iniciá sesión de nuevo.": "Your session was closed due to inactivity. Please log in again.",
     };
 
     const unidades = { "día": "day", "días": "days", "semana": "week", "semanas": "weeks", "mes": "month", "meses": "months", "año": "year", "años": "years" };
@@ -712,6 +713,7 @@
         [/^Elegí una cantidad entre 1 y (\d+)\.$/, (n) => `Choose a quantity between 1 and ${n}.`],
         [/^Solo quedan (\d+) unidades$/, (n) => `Only ${n} units left`],
         [/^Página (\d+) de (\d+) · (\d+) resultados$/, (a, b, c) => `Page ${a} of ${b} · ${c} results`],
+                [/^Tu sesión se cerrará en (\d+) segundos por inactividad\. Mové el mouse o tocá una tecla para seguir\.$/, (n) => `Your session will close in ${n} seconds due to inactivity. Move the mouse or press a key to continue.`],
     ];
 
     const atributos = ["placeholder", "title", "aria-label", "alt"];

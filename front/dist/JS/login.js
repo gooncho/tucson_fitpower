@@ -6,6 +6,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const form = document.getElementById('form-login');
     const alerta = document.getElementById('alerta-login');
+    if (new URLSearchParams(window.location.search).get('motivo') === 'inactividad') {
+        alerta.textContent = 'Tu sesión se cerró por inactividad. Iniciá sesión de nuevo.';
+        alerta.classList.remove('d-none');
+    }
+    
     form.addEventListener('submit', async (evento) => {
         evento.preventDefault();
         alerta.classList.add('d-none');
