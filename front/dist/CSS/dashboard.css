@@ -501,3 +501,86 @@ h6 {
     .menu-toggle:checked ~ .sidebar { transform: translateX(0); }
     .menu-toggle:checked ~ .sidebar-overlay { display: block; }
 }
+
+.rut-panel {
+    background: #151515;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 16px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.rut-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 340px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+.rut-item {
+    border: 1px solid #3a3a3a;
+    border-radius: 10px;
+    padding: 8px 12px;
+    background: #1e1f22;
+}
+.rut-item-fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.rut-item small {
+    color: #9a9a9a;
+    margin-left: 6px;
+}
+.rut-btn-redondo {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1px solid #555;
+    background: transparent;
+    color: #f4f4f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.rut-btn-redondo:hover {
+    border-color: #cdfa3f;
+    color: #cdfa3f;
+}
+.rut-btn-quitar {
+    background: none;
+    border: none;
+    color: #ff6b6b;
+}
+.rut-campos {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+.rut-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 12px;
+    color: #9a9a9a;
+}
+.rut-campo input {
+    width: 80px;
+}
+.rut-total {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid #2a2a2a;
+    color: #9a9a9a;
+    font-size: 14px;
+}
+.rut-vacio {
+    text-align: center;
+    color: #9a9a9a;
+    padding: 24px 0;
+}

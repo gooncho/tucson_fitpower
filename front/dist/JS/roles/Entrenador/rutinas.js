@@ -1,6 +1,7 @@
 let TodasLasRutinas = [];
 let RutinaEditada = null;
 let RutinaAEliminar = null;
+let RutSeleccionados = [];
 
 const PagRutinas = CrearPaginacion('pag-rutinas', 10, lista => {
     document.getElementById('listar-rutinas').replaceChildren(...lista.map(CrearFila));
@@ -35,7 +36,7 @@ async function AbrirRutina(r) {
     bootstrap.Modal.getOrCreateInstance(document.getElementById('modalRutina')).show();
     const res = await API.request(`/rutinas/${r.id_rutina}`);
 
-    if (!res || res.status !== 'ok'){
+    if (!res || res.status !== 'ok') {
         MostrarMensaje(tbody, res?.message || 'No se pudieron cargar los ejercicios');
         return;
     }
@@ -172,12 +173,14 @@ select.replaceChildren(vacia, ...opciones);
 
 async function AbrirNuevaRutina(r = null) {
     RutinaEditada = r;
+    RutSeleccionados = [];
 
     document.getElementById('rut-modal-titulo').textContent = r ? 'Editar rutina' : 'Crear rutina';
     document.getElementById('rut-nombre').value = r ? r.rutina : '';
     document.getElementById('rut-descripcion').value = r ? (r.descripcion || '') : '';
-    document.getElementById('rut-error').textContent = '';
-    document.getElementById('rut-ejercicios').replaceChildren();
+    document.getElementById('rut-buscar-ej').value = '';
+    const error = document.getElementById('rut-error');
+    error.textContent = '';
 
     await Promise.all([CargarSociosSelect(), CargarEjerciciosDisponibles()]);
 
@@ -186,19 +189,26 @@ async function AbrirNuevaRutina(r = null) {
     if (r) {
         select.value = r.id_persona;
         select.disabled = true;
+
         const res = await API.request(`/rutinas/${r.id_rutina}`);
-        if (res && res.status === 'ok' && res.data.length > 0) {
-            res.data.forEach(e => AgregarFilaEjercicio(e));
+        if (res && res.status === 'ok') {
+            RutSeleccionados = res.data.map(e => ({
+                id_ejercicio: Number(e.id_ejercicio),
+                nombre: e.nombre,
+                series: e.series,
+                repeticiones: e.repeticiones,
+                descanso: e.descanso
+            }));
         } else {
-            AgregarFilaEjercicio();
+            error.textContent = 'No se pudieron cargar los ejercicios de esta rutina.';
         }
     } else {
         select.disabled = false;
-        AgregarFilaEjercicio();
     }
-    
-     bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevaRutina')).show();
-}   
+
+    RenderEjerciciosRutina();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevaRutina')).show();
+}
 
 async function GuardarRutina() {
     const error = document.getElementById('rut-error');
@@ -213,50 +223,45 @@ async function GuardarRutina() {
         return;
     }
 
-    const filas = document.querySelectorAll('#rut-ejercicios .rut-ejercicio-fila');
     const ejercicios = [];
-    const usados = new Set();
 
-    for (const fila of filas) {
+    for (const s of RutSeleccionados) {
         const item = {
-            id_ejercicio: Number(fila.querySelector('.rut-ej-id').value),
-            series: Number(fila.querySelector('.rut-ej-series').value),
-            repeticiones: Number(fila.querySelector('.rut-ej-reps').value),
-            descanso: Number(fila.querySelector('.rut-ej-descanso').value)
+            id_ejercicio: s.id_ejercicio,
+            series: Number(s.series),
+            repeticiones: Number(s.repeticiones),
+            descanso: Number(s.descanso)
         };
 
-    if (!item.id_ejercicio || item.series < 1 || item.repeticiones < 1 || item.descanso < 0) {
-        error.textContent = 'Revisa los ejercicios, elige uno y completa la rutina';
-        return;
+        if (!Number.isInteger(item.series) || item.series < 1 ||
+            !Number.isInteger(item.repeticiones) || item.repeticiones < 1 ||
+            !Number.isInteger(item.descanso) || item.descanso < 0) {
+            error.textContent = `Revisá las series, repeticiones y descanso de "${s.nombre}".`;
+            return;
+        }
+        ejercicios.push(item);
     }
 
-    if(usados.has(item.id_ejercicio)) {
-        error.textContent = 'No repitas un ejercicio en la misma rutina';
-        return;
-    }
-    usados.add(item.id_ejercicio);
-    ejercicios.push(item);
-}
-   if (ejercicios.length === 0) {
+    if (ejercicios.length === 0) {
         error.textContent = 'Agrega al menos un ejercicio.';
         return;
-   }
+    }
 
-   const boton = document.getElementById('btn-guardar-rutina');
-   boton.disabled = true;
+    const boton = document.getElementById('btn-guardar-rutina');
+    boton.disabled = true;
 
-   const res =  RutinaEditada
-    ? await API.request(`/rutinas/${RutinaEditada.id_rutina}`, 'PUT', { nombre, descripcion, ejercicios })
-    : await API.request('/rutinas', 'POST', {nombre, descripcion, id_persona: idSocio, ejercicios });
+    const res = RutinaEditada
+        ? await API.request(`/rutinas/${RutinaEditada.id_rutina}`, 'PUT', { nombre, descripcion, ejercicios })
+        : await API.request('/rutinas', 'POST', { nombre, descripcion, id_persona: idSocio, ejercicios });
 
-   boton.disabled = false;
+    boton.disabled = false;
 
-   if (res && res.status === 'ok') {
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevaRutina')).hide();
-    await CargarRutinas();
-    return;
-   }
-   error.textContent = res?.message || 'No se pudo guardar la rutina';
+    if (res && res.status === 'ok') {
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevaRutina')).hide();
+        await CargarRutinas();
+        return;
+    }
+    error.textContent = res?.message || 'No se pudo guardar la rutina';
 }
 
 let EjerciciosDisponible = [];
@@ -266,69 +271,134 @@ async function CargarEjerciciosDisponibles() {
     EjerciciosDisponible = (res && res.status === 'ok') ? res.data : [];
 }
 
-function CrearFilaFormulario(e = null) {
-    const fila = document.createElement('div');
-    fila.className = 'row g-2 align-items-center mb-2 rut-ejercicio-fila';
-
-    const colSelect = document.createElement('div');
-    colSelect.className = 'col-5';
-    const select = document.createElement('select');
-    select.className = 'form-select form-select-sm rut-ej-id';
-
-    const vacia = document.createElement('option');
-    vacia.value = '';
-    vacia.textContent = 'Elige un ejercicio';
-
-    const opciones = EjerciciosDisponible.map(e => {
-        const op = document.createElement('option');
-        op.value = e.id_ejercicio
-        op.textContent = e.nombre;
-        return op;   
-    });
-    select.append(vacia, ...opciones);
-    colSelect.appendChild(select);
-
-    const campos = [
-        { clase: 'rut-ej-series', placeholder: 'Series', min: 1},
-        { clase: 'rut-ej-reps', placeholder: 'Repeticiones', min: 1},
-        { clase: 'rut-ej-descanso', placeholder: 'Descanso (s)', min: 0},
-    ];
-
-    const columnas = campos.map(c => {
-        const col = document.createElement('div');
-        col.className = 'col-2';
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.min = c.min;
-        input.placeholder = c.placeholder;
-        input.className = `form-control form-control-sm ${c.clase}`;
-        col.appendChild(input);
-        return col;
-    });
-
-    const colQuitar = document.createElement('div');
-    colQuitar.className ='col-1';
-    const quitar = document.createElement('button');
-    quitar.type = 'button';
-    quitar.className = 'btn btn-sm btn-outline-danger';
-    quitar.textContent = 'x';
-    quitar.addEventListener('click', () => fila.remove());
-    colQuitar.appendChild(quitar);
-
-    fila.append(colSelect, ...columnas, colQuitar);
-
-    if (e) {
-        select.value = e.id_ejercicio;
-        columnas[0].querySelector('input').value = e.series;
-        columnas[1].querySelector('input').value = e.repeticiones;
-        columnas[2].querySelector('input').value = e.descanso;
-    }
-
-    return fila
+function MensajeVacio(contenedor, texto) {
+    const div = document.createElement('div');
+    div.className = 'rut-vacio';
+    div.textContent = texto;
+    contenedor.replaceChildren(div);
 }
 
-function AgregarFilaEjercicio() {
-    document.getElementById('rut-ejercicios').appendChild(CrearFilaFormulario());
+function RenderDisponibles() {
+    const contenedor = document.getElementById('rut-disponibles');
+    const texto = normalizar(document.getElementById('rut-buscar-ej').value.trim());
+    const usados = new Set(RutSeleccionados.map(s => s.id_ejercicio));
+
+    const lista = EjerciciosDisponible.filter(e =>
+        !usados.has(Number(e.id_ejercicio)) &&
+        normalizar(`${e.nombre} ${e.grupo_muscular || ''}`).includes(texto)
+    );
+
+    if (lista.length === 0) {
+        MensajeVacio(contenedor, 'No hay ejercicios disponibles');
+        return;
+    }
+
+    contenedor.replaceChildren(...lista.map(e => {
+        const item = document.createElement('div');
+        item.className = 'rut-item rut-item-fila';
+
+        const nombre = document.createElement('span');
+        nombre.textContent = e.nombre;
+        if (e.grupo_muscular) {
+            const grupo = document.createElement('small');
+            grupo.textContent = e.grupo_muscular;
+            nombre.appendChild(grupo);
+        }
+
+        const agregar = document.createElement('button');
+        agregar.type = 'button';
+        agregar.className = 'rut-btn-redondo';
+        agregar.setAttribute('aria-label', `Agregar ${e.nombre}`);
+        agregar.innerHTML = '<i class="bi bi-plus-lg"></i>';
+        agregar.addEventListener('click', () => AgregarEjercicio(e));
+
+        item.append(nombre, agregar);
+        return item;
+    }));
+}
+
+function CrearCampo(item, campo, etiqueta, min) {
+    const label = document.createElement('label');
+    label.className = 'rut-campo';
+
+    const texto = document.createElement('span');
+    texto.textContent = etiqueta;
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = min;
+    input.className = 'form-control form-control-sm';
+    input.value = item[campo] ?? '';
+    input.addEventListener('input', () => {
+        item[campo] = input.value;
+    });
+
+    label.append(texto, input);
+    return label;
+}
+
+function RenderSeleccionados() {
+    const contenedor = document.getElementById('rut-seleccionados');
+    const cantidad = RutSeleccionados.length;
+    document.getElementById('rut-total').textContent =
+        `Total: ${cantidad} ejercicio${cantidad === 1 ? '' : 's'}`;
+
+    if (cantidad === 0) {
+        MensajeVacio(contenedor, 'No hay ejercicios seleccionados');
+        return;
+    }
+
+    contenedor.replaceChildren(...RutSeleccionados.map(s => {
+        const item = document.createElement('div');
+        item.className = 'rut-item';
+
+        const fila = document.createElement('div');
+        fila.className = 'rut-item-fila';
+
+        const nombre = document.createElement('span');
+        nombre.textContent = s.nombre;
+
+        const quitar = document.createElement('button');
+        quitar.type = 'button';
+        quitar.className = 'rut-btn-quitar';
+        quitar.setAttribute('aria-label', `Quitar ${s.nombre}`);
+        quitar.innerHTML = '<i class="bi bi-x-lg"></i>';
+        quitar.addEventListener('click', () => QuitarEjercicio(s.id_ejercicio));
+
+        fila.append(nombre, quitar);
+
+        const campos = document.createElement('div');
+        campos.className = 'rut-campos';
+        campos.append(
+            CrearCampo(s, 'series', 'Series', 1),
+            CrearCampo(s, 'repeticiones', 'Repeticiones', 1),
+            CrearCampo(s, 'descanso', 'Descanso (s)', 0)
+        );
+
+        item.append(fila, campos);
+        return item;
+    }));
+}
+
+function RenderEjerciciosRutina() {
+    RenderDisponibles();
+    RenderSeleccionados();
+}
+
+function AgregarEjercicio(e) {
+    RutSeleccionados.push({
+        id_ejercicio: Number(e.id_ejercicio),
+        nombre: e.nombre,
+        series: 4,
+        repeticiones: 10,
+        descanso: 60
+    });
+    RenderEjerciciosRutina();
+}
+
+function QuitarEjercicio(idEjercicio) {
+    RutSeleccionados = RutSeleccionados.filter(s => s.id_ejercicio !== idEjercicio);
+    RenderEjerciciosRutina();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -340,6 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('btn-nueva-rutina').addEventListener('click', () => AbrirNuevaRutina());
     document.getElementById('btn-guardar-rutina').addEventListener('click', GuardarRutina);
-    document.getElementById('btn-agregar-ejercicio').addEventListener('click', () => AgregarFilaEjercicio ());
+    document.getElementById('rut-buscar-ej').addEventListener('input', RenderDisponibles);
     document.getElementById('btn-confirmar-eliminar-rutina').addEventListener('click', ConfirmarEliminarRutina);
 });
