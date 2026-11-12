@@ -19,7 +19,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const productos = Array.isArray(d.productos_bajo_stock) ? d.productos_bajo_stock : [];
     const porVencer = Array.isArray(d.por_vencer) ? d.por_vencer : [];
 
-    document.getElementById('distribucionMembresias').innerHTML = planes.length ? planes.map(p => `<p>${escAdmin(p.nombre)}: ${p.cantidad}</p>`).join('') : '<p>No hay membresías registradas.</p>';
+    const totalPlanes = planes.reduce((total, plan) => total + Number(plan.cantidad || 0), 0);
+    document.getElementById('distribucionMembresias').innerHTML = planes.length ? planes.map(p => {
+        const cantidad = Number(p.cantidad || 0);
+        const porcentaje = totalPlanes ? Math.round(cantidad * 100 / totalPlanes) : 0;
+        return `<div class="admin-membresia-resumen">
+            <strong>${escAdmin(p.nombre)}</strong>
+            <span>${cantidad}</span>
+            <small>${porcentaje}% de las membresías</small>
+        </div>`;
+    }).join('') : '<p>No hay membresías registradas.</p>';
     document.getElementById('productosBajoStock').innerHTML = productos.length ? productos.map(p => `<div class="admin-producto"><div><strong>${escAdmin(p.nombre)}</strong><small>Stock actual: ${escAdmin(p.stock)}</small></div><span>${Number(p.stock) < 10 ? 'Crítico' : 'Bajo'}</span></div>`).join('') : '<p>No hay productos con stock bajo.</p>';
     document.getElementById('membresiasPorVencer').innerHTML = porVencer.length ? porVencer.map(p => `<div class="col-md-4 col-lg-2"><div class="admin-membresia"><strong>${escAdmin(p.nombre_usuario)} ${escAdmin(p.apellido || '')}</strong><small>${escAdmin(p.plan || 'Sin plan')} · ${escAdmin(p.dias)} días</small></div></div>`).join('') : '<p>No hay membresías próximas a vencer.</p>';
 });

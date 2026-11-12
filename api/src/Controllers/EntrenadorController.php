@@ -112,6 +112,29 @@ class EntrenadorController {
         }
     }
 
+
+    public function eliminar($idUsuario) {
+        if (($_SESSION['rol'] ?? '') !== 'Administrador') {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'No autorizado'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        try {
+            $modelo = new EntrenadorModel($this->db);
+            if (!$modelo->eliminarEntrenador((int) $idUsuario)) {
+                http_response_code(404);
+                echo json_encode(['status' => 'error', 'message' => 'Entrenador no encontrado'], JSON_UNESCAPED_UNICODE);
+                return;
+            }
+            echo json_encode(['status' => 'ok', 'message' => 'Entrenador eliminado'], JSON_UNESCAPED_UNICODE);
+        } catch (\Throwable $e) {
+            error_log('Error al eliminar entrenador: ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'No se pudo eliminar el entrenador'], JSON_UNESCAPED_UNICODE);
+        }
+    }
+
     public function actualizar($idUsuario) {
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
             http_response_code(403);

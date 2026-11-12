@@ -31,6 +31,45 @@ class SocioModel {
         return $stmt->rowCount();
     }
 
+
+    public function eliminarSocio($id) {
+        $this->db->beginTransaction();
+        try {
+            $stmt = $this->db->prepare("SELECT p.id_persona FROM PERSONA p INNER JOIN USUARIO u ON u.id_usuario = p.id_usuario INNER JOIN TIPOUSUARIO t ON t.id_rol = u.id_rol WHERE u.id_usuario = :id AND t.nombre_rol = 'Socio'");
+            $stmt->execute(['id' => $id]);
+            $idPersona = $stmt->fetchColumn();
+
+            if (!$idPersona) {
+                $this->db->rollBack();
+                return false;
+            }
+
+            $stmt = $this->db->prepare('UPDATE PERSONA SET id_entrenador = NULL WHERE id_entrenador = :id');
+            $stmt->execute(['id' => $idPersona]);
+            $stmt = $this->db->prepare('DELETE FROM SUPERVISA WHERE id_persona = :id OR id_entrenador = :id');
+            $stmt->execute(['id' => $idPersona]);
+            $stmt = $this->db->prepare('DELETE FROM DETALLECOMPRA WHERE id_compra IN (SELECT id_compra FROM COMPRA WHERE id_persona = :id)');
+            $stmt->execute(['id' => $idPersona]);
+
+            foreach (['CREA', 'PROGRESO', 'OBJETIVO', 'OBTIENE', 'RESENA', 'ASISTENCIA', 'MENSAJE', 'ASIGNA'] as $tabla) {
+                $stmt = $this->db->prepare('DELETE FROM ' . $tabla . ' WHERE id_persona = :id');
+                $stmt->execute(['id' => $idPersona]);
+            }
+
+            $stmt = $this->db->prepare('DELETE FROM COMPRA WHERE id_persona = :id');
+            $stmt->execute(['id' => $idPersona]);
+            $stmt = $this->db->prepare('DELETE FROM PERSONA WHERE id_persona = :id');
+            $stmt->execute(['id' => $idPersona]);
+            $stmt = $this->db->prepare('DELETE FROM USUARIO WHERE id_usuario = :id');
+            $stmt->execute(['id' => $id]);
+            $this->db->commit();
+            return true;
+        } catch (\Throwable $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
+
     public function crearSocio($usuario, $apellido, $email, $password, $idPlan) {
         $this->db->beginTransaction();
         try {

@@ -24,6 +24,7 @@ function render() {
       <td class="col-acciones">
         <a href="#" class="admin-mini btn-ver" data-index="${index}">Ver</a>
         <a href="#" class="admin-mini btn-editar" data-index="${index}">Editar</a>
+        <a href="#" class="admin-mini btn-eliminar" data-index="${index}">Eliminar</a>
       </td>
     </tr>`).join("");
 
@@ -49,6 +50,27 @@ function render() {
       });
   });
 
+  document.querySelectorAll('.btn-eliminar').forEach(btn => {
+      btn.addEventListener('click', async ev => {
+          ev.preventDefault();
+          const entrenador = lista[btn.dataset.index];
+          btn.style.pointerEvents = 'none';
+          try {
+              const respuesta = await API.request('/entrenadores/' + entrenador.id_usuario, 'DELETE');
+              if (respuesta.status === 'ok') {
+                  entrenadores = entrenadores.filter(item => item.id_usuario !== entrenador.id_usuario);
+                  render();
+              } else {
+                  btn.style.pointerEvents = '';
+                  console.error(respuesta.message || 'No se pudo eliminar el entrenador');
+              }
+          } catch (error) {
+              btn.style.pointerEvents = '';
+              console.error(error);
+          }
+      });
+  });
+
   document.querySelectorAll('.btn-editar').forEach(btn => {
       btn.addEventListener('click', (ev) => {
           ev.preventDefault();
@@ -70,6 +92,10 @@ function render() {
                           <input type="text" class="admin-input" name="especialidad" value="${esc(e.especialidad || '')}">
                       </div>
                       <h6 class="mt-4">Asignar socios y horarios</h6>
+                      <div class="admin-campo mb-3">
+                          <i class="bi bi-search"></i>
+                          <input type="search" class="admin-input" id="buscarSocioAsignado" placeholder="Buscar socio por nombre...">
+                      </div>
                       <div id="listaAsignar">Cargando socios...</div>
                       <p class="text-danger" id="errorEditar"></p>
                       <button type="submit" class="admin-btn">Guardar Cambios</button>
@@ -96,7 +122,7 @@ async function cargarAsignaciones(e) {
     contenedor.innerHTML = listaSocios.length ? listaSocios.map(s => {
         const a = actuales.find(x => x.id_persona == s.id_persona);
         return `
-            <div class="d-flex align-items-center gap-2 mb-2 fila-asignar" data-id="${s.id_persona}">
+            <div class="d-flex align-items-center gap-2 mb-2 fila-asignar" data-id="${s.id_persona}" data-nombre="${esc((s.nombre_usuario || '') + ' ' + (s.apellido || ''))}">
                 <label class="flex-grow-1">
                     <input type="checkbox" class="chk-asignar" ${a ? 'checked' : ''}> ${esc(s.nombre_usuario)} ${esc(s.apellido || '')}
                 </label>
@@ -108,6 +134,16 @@ async function cargarAsignaciones(e) {
                 <input type="time" class="admin-input inp-fin" style="width: 120px;" value="${a && a.hora_fin ? a.hora_fin : ''}">
             </div>`;
     }).join("") : "No hay socios registrados";
+
+    const buscarSocio = document.getElementById('buscarSocioAsignado');
+    if (buscarSocio) {
+        buscarSocio.addEventListener('input', () => {
+            const texto = norm(buscarSocio.value.trim());
+            document.querySelectorAll('.fila-asignar').forEach(fila => {
+                fila.classList.toggle('d-none', !norm(fila.dataset.nombre).includes(texto));
+            });
+        });
+    }
 
     document.getElementById('formEditar').addEventListener('submit', async (ev) => {
         ev.preventDefault();

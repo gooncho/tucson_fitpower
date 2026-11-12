@@ -61,6 +61,29 @@ class SocioController {
         }
     }
 
+
+    public function eliminar($id) {
+        if (($_SESSION['rol'] ?? '') !== 'Administrador') {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'No autorizado'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        try {
+            $modelo = new SocioModel($this->db);
+            if (!$modelo->eliminarSocio((int) $id)) {
+                http_response_code(404);
+                echo json_encode(['status' => 'error', 'message' => 'Socio no encontrado'], JSON_UNESCAPED_UNICODE);
+                return;
+            }
+            echo json_encode(['status' => 'ok', 'message' => 'Socio eliminado'], JSON_UNESCAPED_UNICODE);
+        } catch (\Throwable $e) {
+            error_log('Error al eliminar socio: ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'No se pudo eliminar el socio'], JSON_UNESCAPED_UNICODE);
+        }
+    }
+
     public function crear() {
 
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {

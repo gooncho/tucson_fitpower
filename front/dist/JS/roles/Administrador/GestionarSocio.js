@@ -73,6 +73,7 @@ function render() {
                 <td class="col-acciones">
                     <a href="#" class="admin-mini btn-ver" data-id="${socio.id_usuario}">Ver</a>
                     <a href="#" class="admin-mini btn-editar" data-id="${socio.id_usuario}">Editar</a>
+                    <a href="#" class="admin-mini btn-eliminar" data-id="${socio.id_usuario}">Eliminar</a>
                 </td>
             </tr>
         `;
@@ -95,6 +96,27 @@ function render() {
                 `;
             }
             if (adminModal) adminModal.show();
+        });
+    });
+
+    document.querySelectorAll('.btn-eliminar').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const socio = listaSocios.find(s => s.id_usuario == btn.dataset.id);
+            btn.style.pointerEvents = 'none';
+            try {
+                const respuesta = await API.request('/socios/' + socio.id_usuario, 'DELETE');
+                if (respuesta.status === 'ok') {
+                    listaSocios = listaSocios.filter(item => item.id_usuario != socio.id_usuario);
+                    render();
+                } else {
+                    btn.style.pointerEvents = '';
+                    console.error(respuesta.message || 'No se pudo eliminar al socio');
+                }
+            } catch (error) {
+                btn.style.pointerEvents = '';
+                console.error(error);
+            }
         });
     });
 
