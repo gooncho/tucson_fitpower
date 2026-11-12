@@ -1,22 +1,27 @@
 const PRODUCTOS_VISIBLES = 6;
+const CARPETA_PRODUCTOS = '/front/dist/assets/productos/';
+const IMAGEN_POR_DEFECTO = '/front/dist/assets/FITPOWER.png';
 let ProductoActual = null;
 
 const IMAGENES = [
-    { clave: 'proteina', archivo: 'Prote.png' },
-    { clave: 'creatina', archivo: 'Crea.png' },
-    { clave: 'remera',   archivo: 'Remera.png' },
-    { clave: 'short', archivo: 'Short.png' },
-    { clave: 'shaker',   archivo: 'Bote.png' },
-    { clave: 'toalla',  archivo: 'Toalla.png' },
-    { clave: 'barra',    archivo: 'mancu.png' },
+    { clave: 'isolate',     archivo: 'ProteIsolate.png' },
+    { clave: 'micronizada', archivo: 'CreaMicro.png' },
+    { clave: 'dry fit',     archivo: 'RemeraDry.png' },
+    { clave: 'compresion',  archivo: 'ShortCompresion.png' },
+    { clave: 'metalico',    archivo: 'ShakerMetal.png' },
+    { clave: 'microfibra',  archivo: 'ToallaMicro.png' },
+    { clave: 'proteina',    archivo: 'Prote.png' },
+    { clave: 'creatina',    archivo: 'Crea.png' },
+    { clave: 'remera',      archivo: 'Remera.png' },
+    { clave: 'short',       archivo: 'Short.png' },
+    { clave: 'shaker',      archivo: 'Bote.png' },
+    { clave: 'toalla',      archivo: 'Toalla.png' },
 ];
-
-const IMAGEN_POR_DEFECTO = 'FITPOWER.png';
 
 function imagenDe(nombre) {
     const n = nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     const hallada = IMAGENES.find(i => n.includes(i.clave));
-    return '/front/dist/assets/' + (hallada ? hallada.archivo : IMAGEN_POR_DEFECTO);
+    return hallada ? CARPETA_PRODUCTOS + hallada.archivo : IMAGEN_POR_DEFECTO;
 }
 
 function formatearPrecio(valor) {
@@ -33,6 +38,10 @@ function crearTarjeta(p, oculta) {
     const img = document.createElement('img');
     img.className = 'img-producto';
     img.src = imagenDe(p.nombre);
+    img.onerror = () => {
+        img.onerror = null;
+        img.src = IMAGEN_POR_DEFECTO;
+    };
     img.alt = p.nombre;
 
     const titulo = document.createElement('h3');
@@ -52,19 +61,27 @@ function crearTarjeta(p, oculta) {
 }
 
 function abrirModal(p) {
-    document.getElementById('modal-imagen').src = imagenDe(p.nombre);
-    document.getElementById('modal-imagen').alt = p.nombre;
+    const imagen = document.getElementById('modal-imagen');
+    imagen.onerror = () => {
+        imagen.onerror = null;
+        imagen.src = IMAGEN_POR_DEFECTO;
+    };
+    imagen.src = imagenDe(p.nombre);
+    imagen.alt = p.nombre;
+
     document.getElementById('modal-nombre').textContent = p.nombre;
     document.getElementById('modal-categoria').textContent = p.categoria || '';
     document.getElementById('modal-precio').textContent = formatearPrecio(p.precio);
     document.getElementById('modal-descripcion').textContent = p.descripcion || '';
 
-    document.getElementById('modalProducto').dataset.idProducto = p.id_producto;
-    
+    const modal = document.getElementById('modalProducto');
+    modal.dataset.idProducto = p.id_producto;
+
     ProductoActual = p;
+    MostrarStock();
     PrepararCompra();
 
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('modalProducto')).show();
+    bootstrap.Modal.getOrCreateInstance(modal).show();
 }
 
 function MaximoCompra() {
