@@ -13,6 +13,20 @@ function cargar() {
   }).catch(() => aviso("No se pudo conectar con la API"));
 }
 
+function mostrarImagenEjercicio(img, id) {
+  const extensiones = ['png', 'jpg', 'webp'];
+  let intento = 0;
+  img.onerror = () => {
+    intento++;
+    if (intento < extensiones.length) {
+      img.src = `/front/dist/assets/Ejercicios/${id}.${extensiones[intento]}`;
+    } else {
+      img.remove();
+    }
+  };
+  img.src = `/front/dist/assets/Ejercicios/${id}.${extensiones[0]}`;
+}
+
 function render() {
   const q = norm($("buscar").value.trim());
   const g = $("filtroGrupo").value;
@@ -45,10 +59,12 @@ function render() {
       const e = lista[btn.dataset.index];
       modalTitle.textContent = "Detalles del Ejercicio";
       modalBody.innerHTML = `
+        <img id="imagenVerEjercicio" class="img-fluid rounded mb-3" alt="${esc(e.nombre)}">
         <p><strong>Nombre:</strong> ${esc(e.nombre)}</p>
         <p><strong>Grupo muscular:</strong> ${esc(e.grupo_muscular)}</p>
         <p><strong>Dificultad:</strong> ${esc(e.nivel)}</p>
         <p><strong>Descripción:</strong> ${esc(e.descripcion || 'Sin descripción')}</p>`;
+        mostrarImagenEjercicio(document.getElementById('imagenVerEjercicio'), e.id_ejercicio);
       adminModal.show();
     });
   });
@@ -160,6 +176,10 @@ function abrirNuevo() {
         <label class="form-label">Descripción</label>
         <textarea class="admin-input" name="descripcion" rows="3"></textarea>
       </div>
+      <div class="mb-3">
+        <label class="form-label">Imagen (opcional)</label>
+        <input type="file" class="admin-input" id="imagenNuevoEjercicio" accept="image/png, image/jpeg, image/webp">
+      </div>
       <p id="errorNuevoEjercicio" class="text-danger"></p>
       <button type="submit" class="admin-btn">Guardar ejercicio</button>
     </form>`;
@@ -171,6 +191,15 @@ function abrirNuevo() {
     const respuesta = await API.request('/ejercicio', 'POST', datos);
     boton.disabled = false;
     if (respuesta.status === 'ok') {
+      const archivo = document.getElementById('imagenNuevoEjercicio').files[0];
+      if (archivo) {
+        const formulario = new FormData();
+        formulario.append('imagen', archivo);
+        const resImg = await API.subir(`/ejercicio/${respuesta.id}/imagen`, formulario);
+        if (!resImg || resImg.status !== 'ok') {
+          alert('El ejercicio se creó, pero la imagen no: ' + (resImg?.message || 'error desconocido'));
+        }
+      }
       adminModal.hide();
       cargar();
     } else {
