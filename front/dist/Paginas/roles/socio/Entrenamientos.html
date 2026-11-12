@@ -37,18 +37,15 @@
     <div class="mb-4">
       <h1 class="mb-0" style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 28px;">Entrenamientos</h1>
     </div>
-    <div class="row g-3 mb-4" style="max-width: 950px;">
+        <div class="row g-3 mb-4" style="max-width: 950px;" data-bs-theme="dark">
       <div class="col-md-7">
         <div class="position-relative">
-          <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-          <input type="search" id="buscarEntrenamiento" class="form-control bg-whit text-dark border-secondary ps-5 py-2" placeholder="Buscar entrenamiento...">
+          <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
+          <input type="search" id="buscarEntrenamiento" class="form-control ps-5 py-2" placeholder="Buscar entrenamiento...">
         </div>
       </div>
       <div class="col-md-5">
-        <div class="position-relative">
-          <i class="bi bi-calendar-event position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-          <input type="text" id="filtroFecha" class="form-control bg-whit text-dark border-secondary ps-5 py-2" placeholder="Fecha">
-        </div>
+        <input type="date" id="filtroFecha" class="form-control py-2" aria-label="Fecha">
       </div>
     </div>
     <h3 class="mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 19px;">Historial de tus entrenamientos recientes</h3>
