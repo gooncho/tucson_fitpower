@@ -13,11 +13,11 @@ Proyecto de egreso de 3.° BT Tecnologías de la Información - **Tucson S.R.L.*
 ---
 ## Integrantes
 
-- **Gonzalo Pisón** — Coordinador y diseñador
-- **Enzo Ríos** — Secretario y programador full stack
-- **Andrés Trujillo** — Programador full stack
-- **Santiago Fiore** — Administrador de sistemas operativos
-- **Brian Gonzatto** — Administrador de sistemas operativos
+- **Gonzalo Pisón** - Coordinador y diseñador
+- **Enzo Ríos** - Secretario y programador full stack
+- **Andrés Trujillo** - Programador full stack
+- **Santiago Fiore** - Administrador de sistemas operativos
+- **Brian Gonzatto** - Administrador de sistemas operativos
 
 ## Índice
 
