@@ -9,12 +9,15 @@ class SocioModel {
     }
 
     public function obtenerSocios() {
-        $sql = "SELECT u.id_usuario, p.id_persona, u.nombre_usuario, u.email, u.activo, p.apellido, pl.nombre AS nombre_plan, p.fecha_inicio, p.fecha_fin, t.nombre_rol
-                FROM USUARIO u
-                INNER JOIN TIPOUSUARIO t ON u.id_rol = t.id_rol
-                INNER JOIN PERSONA p ON u.id_usuario = p.id_usuario
-                LEFT JOIN PLAN pl ON p.id_plan = pl.id_plan
-                WHERE t.nombre_rol = 'Socio'";
+        $sql = "SELECT u.id_usuario, p.id_persona, u.nombre_usuario, u.email, u.activo, p.apellido, pl.nombre AS nombre_plan, p.fecha_inicio, p.fecha_fin, t.nombre_rol,
+            p.id_entrenador, ue.nombre_usuario AS entrenador
+            FROM USUARIO u
+            INNER JOIN TIPOUSUARIO t ON u.id_rol = t.id_rol
+            INNER JOIN PERSONA p ON u.id_usuario = p.id_usuario
+            LEFT JOIN PLAN pl ON p.id_plan = pl.id_plan
+            LEFT JOIN PERSONA pe ON pe.id_persona = p.id_entrenador
+            LEFT JOIN USUARIO ue ON ue.id_usuario = pe.id_usuario
+            WHERE t.nombre_rol = 'Socio'";
         return $this->db->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
     }
 

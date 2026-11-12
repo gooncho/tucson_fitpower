@@ -91,12 +91,14 @@ function render() {
                           <label class="form-label">Especialidad</label>
                           <input type="text" class="admin-input" name="especialidad" value="${esc(e.especialidad || '')}">
                       </div>
-                      <h6 class="mt-4">Asignar socios y horarios</h6>
-                      <div class="admin-campo mb-3">
+                        <h6 class="mt-4">Socios asignados <span id="totalAsignados" class="admin-nulo"></span></h6>
+                        <div id="listaAsignados" class="mb-3 pe-2" style="max-height: 320px; overflow-y: auto;">Cargando socios...</div>
+                      <h6 class="mt-3">Agregar socios</h6>
+                      <div class="admin-campo mb-2">
                           <i class="bi bi-search"></i>
                           <input type="search" class="admin-input" id="buscarSocioAsignado" placeholder="Buscar socio por nombre...">
                       </div>
-                      <div id="listaAsignar">Cargando socios...</div>
+                      <div id="resultadosSocios"></div>
                       <p class="text-danger" id="errorEditar"></p>
                       <button type="submit" class="admin-btn">Guardar Cambios</button>
                   </form>
@@ -115,40 +117,110 @@ async function cargarAsignaciones(e) {
         API.request('/socios', 'GET'),
         API.request('/entrenadores/' + e.id_persona + '/socios', 'GET')
     ]);
-    const listaSocios = socios.data || [];
-    const actuales = asignaciones.data || [];
-    const contenedor = document.getElementById('listaAsignar');
+    const listaSocios = (socios.data || []).filter(s => Number(s.activo) === 1);
+    const nombreDe = s => `${s.nombre_usuario || ''} ${s.apellido || ''}`.trim();
 
-    contenedor.innerHTML = listaSocios.length ? listaSocios.map(s => {
-        const a = actuales.find(x => x.id_persona == s.id_persona);
-        return `
-            <div class="d-flex align-items-center gap-2 mb-2 fila-asignar" data-id="${s.id_persona}" data-nombre="${esc((s.nombre_usuario || '') + ' ' + (s.apellido || ''))}">
-                <label class="flex-grow-1">
-                    <input type="checkbox" class="chk-asignar" ${a ? 'checked' : ''}> ${esc(s.nombre_usuario)} ${esc(s.apellido || '')}
-                </label>
-                <select class="admin-select sel-dia" style="width: 130px;">
+   
+    let asignados = (asignaciones.data || []).map(a => {
+        const s = (socios.data || []).find(x => Number(x.id_persona) === Number(a.id_persona));
+        return {
+            id_persona: Number(a.id_persona),
+            nombre: s ? nombreDe(s) : 'Socio #' + a.id_persona,
+            dia_semana: a.dia_semana || '',
+            hora_inicio: a.hora_inicio || '',
+            hora_fin: a.hora_fin || ''
+        };
+    });
+
+    const contAsignados = document.getElementById('listaAsignados');
+    const contResultados = document.getElementById('resultadosSocios');
+    const buscar = document.getElementById('buscarSocioAsignado');
+
+    function dibujarAsignados() {
+        document.getElementById('totalAsignados').textContent = `(${asignados.length})`;
+
+        if (asignados.length === 0) {
+            contAsignados.innerHTML = '<p class="admin-nulo mb-0">Este entrenador no tiene socios asignados.</p>';
+            return;
+        }
+
+        contAsignados.innerHTML = asignados.map((a, i) => `
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="flex-grow-1">${esc(a.nombre)}</span>
+                <select class="admin-select sel-dia" data-i="${i}" style="width: 130px;">
                     <option value="">Día</option>
-                    ${diasSemana.map(d => `<option value="${d}" ${a && a.dia_semana === d ? 'selected' : ''}>${d}</option>`).join("")}
+                    ${diasSemana.map(d => `<option value="${d}" ${a.dia_semana === d ? 'selected' : ''}>${d}</option>`).join("")}
                 </select>
-                <input type="time" class="admin-input inp-inicio" style="width: 120px;" value="${a && a.hora_inicio ? a.hora_inicio : ''}">
-                <input type="time" class="admin-input inp-fin" style="width: 120px;" value="${a && a.hora_fin ? a.hora_fin : ''}">
-            </div>`;
-    }).join("") : "No hay socios registrados";
+                <input type="time" class="admin-input inp-inicio" data-i="${i}" style="width: 120px;" value="${esc(a.hora_inicio)}">
+                <input type="time" class="admin-input inp-fin" data-i="${i}" style="width: 120px;" value="${esc(a.hora_fin)}">
+                <button type="button" class="admin-mini peligro btn-quitar" data-i="${i}" aria-label="Quitar">✕</button>
+            </div>`).join("");
 
-    const buscarSocio = document.getElementById('buscarSocioAsignado');
-    if (buscarSocio) {
-        buscarSocio.addEventListener('input', () => {
-            const texto = norm(buscarSocio.value.trim());
-            document.querySelectorAll('.fila-asignar').forEach(fila => {
-                fila.classList.toggle('d-none', !norm(fila.dataset.nombre).includes(texto));
-            });
-        });
+        contAsignados.querySelectorAll('.sel-dia').forEach(el =>
+            el.addEventListener('change', () => { asignados[el.dataset.i].dia_semana = el.value; }));
+        contAsignados.querySelectorAll('.inp-inicio').forEach(el =>
+            el.addEventListener('input', () => { asignados[el.dataset.i].hora_inicio = el.value; }));
+        contAsignados.querySelectorAll('.inp-fin').forEach(el =>
+            el.addEventListener('input', () => { asignados[el.dataset.i].hora_fin = el.value; }));
+        contAsignados.querySelectorAll('.btn-quitar').forEach(el =>
+            el.addEventListener('click', () => {
+                asignados.splice(Number(el.dataset.i), 1);
+                dibujarAsignados();
+                dibujarResultados();
+            }));
     }
+
+    function dibujarResultados() {
+        const texto = norm(buscar.value.trim());
+        if (texto === '') {
+            contResultados.innerHTML = '<p class="admin-nulo mb-0">Escribí un nombre para buscar socios.</p>';
+            return;
+        }
+
+        const usados = new Set(asignados.map(a => a.id_persona));
+        const encontrados = listaSocios
+            .filter(s => !usados.has(Number(s.id_persona)) && norm(nombreDe(s)).includes(texto))
+            .slice(0, 8);
+
+        if (encontrados.length === 0) {
+            contResultados.innerHTML = '<p class="admin-nulo mb-0">No se encontraron socios.</p>';
+            return;
+        }
+
+        contResultados.innerHTML = encontrados.map(s => {
+            const otro = s.entrenador && Number(s.id_entrenador) !== Number(e.id_persona);
+            const detalle = otro ? `con ${esc(s.entrenador)} (se le quitará)` : 'sin entrenador';
+            return `
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="flex-grow-1">${esc(nombreDe(s))} <small class="admin-nulo">· ${detalle}</small></span>
+                    <button type="button" class="admin-mini btn-asignar" data-id="${s.id_persona}">+ Asignar</button>
+                </div>`;
+        }).join("");
+
+        contResultados.querySelectorAll('.btn-asignar').forEach(btn =>
+            btn.addEventListener('click', () => {
+                const s = listaSocios.find(x => Number(x.id_persona) === Number(btn.dataset.id));
+                asignados.push({ id_persona: Number(s.id_persona), nombre: nombreDe(s), dia_semana: '', hora_inicio: '', hora_fin: '' });
+                dibujarAsignados();
+                dibujarResultados();
+            }));
+    }
+
+    buscar.addEventListener('input', dibujarResultados);
+    dibujarAsignados();
+    dibujarResultados();
 
     document.getElementById('formEditar').addEventListener('submit', async (ev) => {
         ev.preventDefault();
         const datos = Object.fromEntries(new FormData(ev.target));
         const error = document.getElementById('errorEditar');
+        error.textContent = '';
+
+        const malHorario = asignados.find(a => a.hora_inicio && a.hora_fin && a.hora_fin <= a.hora_inicio);
+        if (malHorario) {
+            error.textContent = `La hora de fin de ${malHorario.nombre} tiene que ser después de la de inicio.`;
+            return;
+        }
 
         const respuesta = await API.request('/entrenadores/' + e.id_usuario, 'PUT', datos);
         if (respuesta.status !== 'ok') {
@@ -156,20 +228,16 @@ async function cargarAsignaciones(e) {
             return;
         }
 
-        if (listaSocios.length) {
-            const lista = [...document.querySelectorAll('.fila-asignar')]
-                .filter(f => f.querySelector('.chk-asignar').checked)
-                .map(f => ({
-                    id_persona: f.dataset.id,
-                    dia_semana: f.querySelector('.sel-dia').value,
-                    hora_inicio: f.querySelector('.inp-inicio').value,
-                    hora_fin: f.querySelector('.inp-fin').value
-                }));
-            const resp2 = await API.request('/entrenadores/' + e.id_persona + '/socios', 'PUT', { asignaciones: lista });
-            if (resp2.status !== 'ok') {
-                error.textContent = resp2.message || 'No se pudieron guardar las asignaciones';
-                return;
-            }
+        const lista = asignados.map(a => ({
+            id_persona: a.id_persona,
+            dia_semana: a.dia_semana,
+            hora_inicio: a.hora_inicio,
+            hora_fin: a.hora_fin
+        }));
+        const resp2 = await API.request('/entrenadores/' + e.id_persona + '/socios', 'PUT', { asignaciones: lista });
+        if (resp2.status !== 'ok') {
+            error.textContent = resp2.message || 'No se pudieron guardar las asignaciones';
+            return;
         }
 
         adminModal.hide();
