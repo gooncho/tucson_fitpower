@@ -5,7 +5,8 @@ let modalTitle, modalBody;
 const grupos = (e) => String(e.grupo_muscular ?? "").split(/[-,\\/]/).map(g => g.trim()).filter(Boolean);
 
 function cargar() {
-  API.request('/ejercicio', 'GET').then(respuesta => {
+  const estado = $("filtroEstado").value;
+  API.request(`/ejercicio?estado=${estado}`, 'GET').then(respuesta => {
     ejercicios = respuesta.status === 'ok' && Array.isArray(respuesta.data) ? respuesta.data : [];
     llenarSelect("filtroGrupo", ejercicios.flatMap(grupos), "Todos los grupos musculares");
     render();
@@ -19,6 +20,8 @@ function render() {
     (!q || norm(e.nombre).includes(q)) &&
     (!g || grupos(e).includes(g)));
 
+  const enDesactivados = $("filtroEstado").value === 'inactivos';
+
   $("tbody").innerHTML = lista.map((e, index) => `
     <tr>
       <td>${esc(e.nombre)}</td>
@@ -26,12 +29,15 @@ function render() {
       <td><span class="admin-estado ${slug(e.nivel)}">${esc(e.nivel)}</span></td>
       <td class="col-acciones">
         <a href="#" class="admin-mini btn-ver" data-index="${index}">Ver</a>
-        <a href="#" class="admin-mini btn-editar" data-index="${index}">Editar</a>
-        <a href="#" class="admin-mini btn-eliminar" data-index="${index}">Eliminar</a>
+        ${enDesactivados
+          ? `<a href="#" class="admin-mini btn-reactivar" data-index="${index}">Reactivar</a>`
+          : `<a href="#" class="admin-mini btn-editar" data-index="${index}">Editar</a>
+             <a href="#" class="admin-mini btn-eliminar" data-index="${index}">Eliminar</a>`}
       </td>
     </tr>`).join("");
 
-  aviso(lista.length ? "" : (ejercicios.length ? "No hay ejercicios que coincidan con la búsqueda" : "Todavía no hay ejercicios registrados"));
+  const vacio = enDesactivados ? "No hay ejercicios desactivados" : "Todavía no hay ejercicios registrados";
+  aviso(lista.length ? "" : (ejercicios.length ? "No hay ejercicios que coincidan con la búsqueda" : vacio));
 
   document.querySelectorAll('.btn-ver').forEach(btn => {
     btn.addEventListener('click', ev => {
@@ -54,26 +60,38 @@ function render() {
     });
   });
 
-  document.querySelectorAll('.btn-eliminar').forEach(btn => {
-    btn.addEventListener('click', async ev => {
+    document.querySelectorAll('.btn-eliminar').forEach(btn => {
+    btn.addEventListener('click', ev => {
       ev.preventDefault();
-      const e = lista[btn.dataset.index];
-      btn.style.pointerEvents = 'none';
-      try {
-        const respuesta = await API.request('/ejercicio/' + e.id_ejercicio, 'DELETE');
-        if (respuesta.status === 'ok') {
-          ejercicios = ejercicios.filter(item => item.id_ejercicio !== e.id_ejercicio);
-          render();
-        } else {
-          btn.style.pointerEvents = '';
-          console.error(respuesta.message || 'No se pudo eliminar el ejercicio');
-        }
-      } catch (error) {
-        btn.style.pointerEvents = '';
-        console.error(error);
-      }
+      cambiarEstado(btn, lista[btn.dataset.index], 'DELETE', '/ejercicio/');
     });
   });
+
+  document.querySelectorAll('.btn-reactivar').forEach(btn => {
+    btn.addEventListener('click', ev => {
+      ev.preventDefault();
+      const e = lista[btn.dataset.index];
+      cambiarEstado(btn, e, 'PUT', '/ejercicio/', '/reactivar');
+    });
+  });
+}
+
+async function cambiarEstado(btn, e, metodo, ruta, sufijo = '') {
+  btn.style.pointerEvents = 'none';
+  try {
+    const respuesta = await API.request(ruta + e.id_ejercicio + sufijo, metodo);
+    if (respuesta.status === 'ok') {
+      // Sale de la lista actual: al desactivar deja "Activos", al reactivar deja "Desactivados"
+      ejercicios = ejercicios.filter(item => item.id_ejercicio !== e.id_ejercicio);
+      render();
+    } else {
+      btn.style.pointerEvents = '';
+      aviso(respuesta.message || 'No se pudo cambiar el estado del ejercicio');
+    }
+  } catch (error) {
+    btn.style.pointerEvents = '';
+    aviso('No se pudo conectar con la API');
+  }
 }
 
 function abrirEditar(e) {
@@ -168,6 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
   modalTitle = document.getElementById('adminModalLabel');
   modalBody = document.getElementById('adminModalBody');
   conectar(["buscar", "filtroGrupo"], render);
+  $("filtroEstado").addEventListener('change', cargar);
   document.getElementById('btnNuevo').addEventListener('click', event => {
     event.preventDefault();
     abrirNuevo();
