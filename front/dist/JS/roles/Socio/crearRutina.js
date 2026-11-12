@@ -1,52 +1,68 @@
 let ejerciciosDisponibles = [];
 let ejerciciosSeleccionados = [];
 
+const RutinaEditada = Number(new URLSearchParams(window.location.search).get('id')) || null;
+
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 document.addEventListener('DOMContentLoaded', async () => {
     await cargarEjerciciosDisponibles();
 
-    const inputBuscar = document.getElementById('buscarEjercicio');
-    if (inputBuscar) {
-        inputBuscar.addEventListener('input', renderEjerciciosDisponibles);
+    if (RutinaEditada) {
+        await cargarRutinaParaEditar();
     }
 
-    const btnGuardar = document.getElementById('btnGuardarRutina');
-    if (btnGuardar) {
-        btnGuardar.addEventListener('click', guardarRutina);
-    }
+    document.getElementById('buscarEjercicio')?.addEventListener('input', renderEjerciciosDisponibles);
+    document.getElementById('btnGuardarRutina')?.addEventListener('click', guardarRutina);
 });
 
 async function cargarEjerciciosDisponibles() {
-    try {
-        const respuesta = await API.request('/ejercicios', 'GET');
-        ejerciciosDisponibles = Array.isArray(respuesta) ? respuesta : (respuesta.data || []);
-        renderEjerciciosDisponibles();
-    } catch (err) {
-        ejerciciosDisponibles = [
-            { id_ejercicio: 1, nombre: "Press de banca" },
-            { id_ejercicio: 2, nombre: "Jalón al pecho" },
-            { id_ejercicio: 3, nombre: "Press militar" },
-            { id_ejercicio: 4, nombre: "Remo con barra" },
-            { id_ejercicio: 5, nombre: "Fondos en paralelas" },
-            { id_ejercicio: 6, nombre: "Sentadillas con barra" }
-        ];
-        renderEjerciciosDisponibles();
+    const respuesta = await API.request('/ejercicios', 'GET');
+    ejerciciosDisponibles = Array.isArray(respuesta) ? respuesta : (respuesta?.data || []);
+    renderEjerciciosDisponibles();
+}
+
+async function cargarRutinaParaEditar() {
+    const [lista, detalle] = await Promise.all([
+        API.request('/mis-rutinas', 'GET'),
+        API.request(`/rutinas/${RutinaEditada}`, 'GET')
+    ]);
+
+    const rutina = (lista?.data || []).find(r => Number(r.id_rutina) === RutinaEditada);
+    if (!rutina || Number(rutina.es_propia) !== 1 || detalle?.status !== 'ok') {
+        alert('Solo podés editar las rutinas que creaste.');
+        window.location.href = 'Rutinas.html';
+        return;
     }
+
+    document.getElementById('tituloRutina').textContent = 'Editar rutina';
+    document.title = 'Editar rutina';
+    document.getElementById('nombreRutina').value = rutina.nombre;
+
+    ejerciciosSeleccionados = detalle.data.map(e => ({
+        id_ejercicio: Number(e.id_ejercicio),
+        nombre: e.nombre,
+        series: Number(e.series),
+        repeticiones: Number(e.repeticiones),
+        descanso: Number(e.descanso)
+    }));
+
+    renderEjerciciosDisponibles();
+    renderEjerciciosSeleccionados();
 }
 
 function renderEjerciciosDisponibles() {
     const q = (document.getElementById('buscarEjercicio')?.value || "").toLowerCase().trim();
     const contenedor = document.getElementById('listaEjerciciosDisponibles');
 
-    const filtrados = ejerciciosDisponibles.filter(e => 
-        e.nombre.toLowerCase().includes(q) && 
-        !ejerciciosSeleccionados.some(sel => sel.id_ejercicio === e.id_ejercicio)
+    const filtrados = ejerciciosDisponibles.filter(e =>
+        e.nombre.toLowerCase().includes(q) &&
+        !ejerciciosSeleccionados.some(sel => sel.id_ejercicio === Number(e.id_ejercicio))
     );
 
     if (filtrados.length === 0) {
-        contenedor.innerHTML = `<div class="text-whit text-center py-3 fs-6">No hay ejercicios disponibles</div>`;
+        contenedor.innerHTML = `<div class="text-secondary text-center py-3 fs-6">No hay ejercicios disponibles</div>`;
         return;
     }
 
@@ -59,87 +75,136 @@ function renderEjerciciosDisponibles() {
         </div>
     `).join("");
 
-    document.querySelectorAll('.btn-agregar').forEach(btn => {
+    contenedor.querySelectorAll('.btn-agregar').forEach(btn => {
         btn.addEventListener('click', () => {
-            const id = parseInt(btn.dataset.id);
-            const ejercicio = ejerciciosDisponibles.find(e => e.id_ejercicio === id);
-            if (ejercicio) {
-                ejerciciosSeleccionados.push(ejercicio);
-                renderEjerciciosDisponibles();
-                renderEjerciciosSeleccionados();
-            }
-        });
-    });
-}
-
-function renderEjerciciosSeleccionados() {
-    const contenedor = document.getElementById('listaEjerciciosSeleccionados');
-    const totalSpan = document.getElementById('totalEjercicios');
-
-    totalSpan.textContent = `Total: ${ejerciciosSeleccionados.length} ejercicio${ejerciciosSeleccionados.length === 1 ? '' : 's'}`;
-
-    if (ejerciciosSeleccionados.length === 0) {
-        contenedor.innerHTML = `<div class="text-whit text-center py-4 fs-6">No hay ejercicios seleccionados</div>`;
-        return;
-    }
-
-    contenedor.innerHTML = ejerciciosSeleccionados.map((e, index) => `
-        <div class="d-flex align-items-center justify-content-between p-2 px-3 rounded border border-secondary bg-dark text-light">
-            <span style="font-size: 14.5px; font-weight: 500;">${esc(e.nombre)}</span>
-            <button class="btn btn-sm text-danger p-0 btn-quitar" data-index="${index}" title="Quitar">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        </div>
-    `).join("");
-
-    document.querySelectorAll('.btn-quitar').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const index = parseInt(btn.dataset.index);
-            ejerciciosSeleccionados.splice(index, 1);
+            const ejercicio = ejerciciosDisponibles.find(e => Number(e.id_ejercicio) === Number(btn.dataset.id));
+            if (!ejercicio) return;
+            ejerciciosSeleccionados.push({
+                id_ejercicio: Number(ejercicio.id_ejercicio),
+                nombre: ejercicio.nombre,
+                series: 4,
+                repeticiones: 10,
+                descanso: 60
+            });
             renderEjerciciosDisponibles();
             renderEjerciciosSeleccionados();
         });
     });
 }
 
+function crearCampo(item, campo, etiqueta, min) {
+    const label = document.createElement('label');
+    label.className = 'rut-campo';
+
+    const texto = document.createElement('span');
+    texto.textContent = etiqueta;
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = min;
+    input.className = 'form-control form-control-sm bg-dark text-light border-secondary';
+    input.value = item[campo] ?? '';
+    input.addEventListener('input', () => {
+        item[campo] = input.value;
+    });
+
+    label.append(texto, input);
+    return label;
+}
+
+function renderEjerciciosSeleccionados() {
+    const contenedor = document.getElementById('listaEjerciciosSeleccionados');
+    const cantidad = ejerciciosSeleccionados.length;
+    document.getElementById('totalEjercicios').textContent =
+        `Total: ${cantidad} ejercicio${cantidad === 1 ? '' : 's'}`;
+
+    if (cantidad === 0) {
+        contenedor.innerHTML = `<div class="text-secondary text-center py-4 fs-6">No hay ejercicios seleccionados</div>`;
+        return;
+    }
+
+    contenedor.replaceChildren(...ejerciciosSeleccionados.map(s => {
+        const item = document.createElement('div');
+        item.className = 'p-2 px-3 rounded border border-secondary bg-dark text-light';
+
+        const fila = document.createElement('div');
+        fila.className = 'd-flex align-items-center justify-content-between';
+
+        const nombre = document.createElement('span');
+        nombre.style.fontSize = '14.5px';
+        nombre.style.fontWeight = '500';
+        nombre.textContent = s.nombre;
+
+        const quitar = document.createElement('button');
+        quitar.type = 'button';
+        quitar.className = 'btn btn-sm text-danger p-0';
+        quitar.title = 'Quitar';
+        quitar.innerHTML = '<i class="bi bi-x-lg"></i>';
+        quitar.addEventListener('click', () => {
+            ejerciciosSeleccionados = ejerciciosSeleccionados.filter(e => e.id_ejercicio !== s.id_ejercicio);
+            renderEjerciciosDisponibles();
+            renderEjerciciosSeleccionados();
+        });
+
+        fila.append(nombre, quitar);
+
+        const campos = document.createElement('div');
+        campos.className = 'rut-campos';
+        campos.append(
+            crearCampo(s, 'series', 'Series', 1),
+            crearCampo(s, 'repeticiones', 'Repeticiones', 1),
+            crearCampo(s, 'descanso', 'Descanso (s)', 0)
+        );
+
+        item.append(fila, campos);
+        return item;
+    }));
+}
+
 async function guardarRutina() {
+    const error = document.getElementById('errorRutina');
     const nombre = document.getElementById('nombreRutina').value.trim();
+    error.textContent = '';
 
     if (!nombre) {
-        alert("Por favor, ingresa un nombre para la rutina.");
+        error.textContent = 'Ingresá un nombre para la rutina.';
         return;
     }
-
     if (ejerciciosSeleccionados.length === 0) {
-        alert("Debes seleccionar al menos un ejercicio para la rutina.");
+        error.textContent = 'Agregá al menos un ejercicio.';
         return;
     }
 
-    try {
-        const perfilRes = await API.request('/perfil', 'GET');
-        const idPersona = perfilRes.id_persona || perfilRes.data?.id_persona || 1;
-
-        const payload = {
-            nombre: nombre,
-            descripcion: "Creada por el socio",
-            id_persona: idPersona,
-            ejercicios: ejerciciosSeleccionados.map(e => ({
-                id_ejercicio: e.id_ejercicio,
-                series: 4,
-                repeticiones: 10,
-                descanso: 120
-            }))
+    const ejercicios = [];
+    for (const s of ejerciciosSeleccionados) {
+        const item = {
+            id_ejercicio: s.id_ejercicio,
+            series: Number(s.series),
+            repeticiones: Number(s.repeticiones),
+            descanso: Number(s.descanso)
         };
-
-        const respuesta = await API.request('/rutinas', 'POST', payload);
-        if (respuesta.status === 'ok' || respuesta.success || respuesta.id) {
-            alert("¡Rutina creada con éxito!");
-            window.location.href = "Rutinas.html";
-        } else {
-            alert("Error al guardar la rutina: " + (respuesta.message || "Desconocido"));
+        if (!Number.isInteger(item.series) || item.series < 1 ||
+            !Number.isInteger(item.repeticiones) || item.repeticiones < 1 ||
+            !Number.isInteger(item.descanso) || item.descanso < 0) {
+            error.textContent = `Revisá las series, repeticiones y descanso de "${s.nombre}".`;
+            return;
         }
-    } catch (err) {
-        console.error("Error al guardar:", err);
-        alert("Hubo un error al conectar con el servidor para guardar la rutina.");
+        ejercicios.push(item);
     }
+
+    const boton = document.getElementById('btnGuardarRutina');
+    boton.disabled = true;
+
+    const datos = { nombre, descripcion: 'Creada por el socio', ejercicios };
+    const respuesta = RutinaEditada
+        ? await API.request(`/rutinas/${RutinaEditada}`, 'PUT', datos)
+        : await API.request('/rutinas', 'POST', datos);
+
+    if (respuesta?.status === 'ok') {
+        window.location.href = 'Rutinas.html';
+        return;
+    }
+
+    boton.disabled = false;
+    error.textContent = respuesta?.message || 'No se pudo guardar la rutina.';
 }

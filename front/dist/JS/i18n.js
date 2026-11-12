@@ -666,6 +666,13 @@
         "Iniciá sesión": "Log in",
         "Tu puntuación": "Your rating",
         "Contanos qué te pareció el producto": "Tell us what you thought of the product",
+        "Editar rutina": "Edit routine",
+        "Ingresá un nombre para la rutina.": "Enter a name for the routine.",
+        "Agregá al menos un ejercicio.": "Add at least one exercise.",
+        "No se pudo guardar la rutina.": "Couldn't save the routine.",
+        "Solo podés editar las rutinas que creaste.": "You can only edit routines you created.",
+        "Solo podés editar las rutinas que creaste": "You can only edit routines you created",
+        "Rutina actualizada": "Routine updated",
     };
 
     const unidades = { "día": "day", "días": "days", "semana": "week", "semanas": "weeks", "mes": "month", "meses": "months", "año": "year", "años": "years" };

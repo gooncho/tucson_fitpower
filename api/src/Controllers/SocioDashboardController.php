@@ -33,8 +33,18 @@ class SocioDashboardController {
     public function rutinas() {
         $id = $this->personaActual();
         if (!$id) { $this->responder(null); return; }
-        $stmt = $this->db->prepare('SELECT r.id_rutina, r.nombre, r.descripcion, COUNT(d.id_ejercicio) AS cantidad_ejercicios FROM ASIGNA a INNER JOIN RUTINA r ON r.id_rutina = a.id_rutina LEFT JOIN DETALLERUTINA d ON d.id_rutina = r.id_rutina WHERE a.id_persona = :persona GROUP BY r.id_rutina, r.nombre, r.descripcion ORDER BY a.fecha_asignacion DESC');
-        $stmt->execute(['persona' => $id]);
+        $stmt = $this->db->prepare(
+            'SELECT r.id_rutina, r.nombre, r.descripcion,
+                    COUNT(d.id_ejercicio) AS cantidad_ejercicios,
+                    EXISTS(SELECT 1 FROM CREA c WHERE c.id_rutina = r.id_rutina AND c.id_persona = :creador) AS es_propia
+            FROM ASIGNA a
+            INNER JOIN RUTINA r ON r.id_rutina = a.id_rutina
+            LEFT JOIN DETALLERUTINA d ON d.id_rutina = r.id_rutina
+            WHERE a.id_persona = :persona
+            GROUP BY r.id_rutina, r.nombre, r.descripcion
+            ORDER BY a.fecha_asignacion DESC'
+        );
+        $stmt->execute(['persona' => $id, 'creador' => $id]);
         $this->responder($stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 

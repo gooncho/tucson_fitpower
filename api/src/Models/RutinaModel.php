@@ -174,4 +174,10 @@ Class RutinaModel {
             throw $e;
         }
     }
+    
+    public function esCreador($idRutina, $idPersona) {
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM CREA WHERE id_rutina = :rutina AND id_persona = :persona');
+        $stmt->execute(['rutina' => $idRutina, 'persona' => $idPersona]);
+        return (int) $stmt->fetchColumn() > 0;
+    }
 }

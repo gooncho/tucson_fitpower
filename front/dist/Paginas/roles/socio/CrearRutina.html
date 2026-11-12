@@ -40,7 +40,7 @@
         <a href="Rutinas.html" class="text-light fs-4 text-decoration-none d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: #151515; border: 1px solid #2a2a2a; border-radius: 10px;">
           <i class="bi bi-arrow-left"></i>
         </a>
-        <h1 class="mb-0" style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 28px;">Crear rutina</h1>
+        <h1 id="tituloRutina" class="mb-0" style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 28px;">Crear rutina</h1>
       </div>
       <button id="btnGuardarRutina" class="btn-lime px-4"><i class="bi bi-check-lg me-1"></i> Guardar</button>
     </div>
@@ -48,6 +48,7 @@
     <div class="mb-4" style="max-width: 800px;">
       <label class="form-label fw-semibold text-light mb-2" style="font-size: 15px;">Nombre de la rutina</label>
       <input type="text" id="nombreRutina" class="form-control bg-dark text-light border-secondary py-2" placeholder="Ej: Hipertrofia - Piernas">
+      <p id="errorRutina" class="text-danger small mt-2 mb-0"></p>
     </div>
 
     <h3 class="mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 19px;">Agregar ejercicios</h3>

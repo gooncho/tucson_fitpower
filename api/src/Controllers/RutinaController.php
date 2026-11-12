@@ -81,6 +81,11 @@ class RutinaController {
     }
 
     public function store() {
+        if (($_SESSION['rol'] ?? '') === 'Socio') {
+            $this->guardarDeSocio(null);
+            return;
+        }
+
         if (!$this->accesoPermitido()) {
             return;
         }
@@ -199,6 +204,12 @@ class RutinaController {
     }
 
     public function actualizar($idRutina) {
+
+        if (($_SESSION['rol'] ?? '') === 'Socio') {
+            $this->guardarDeSocio((int) $idRutina);
+            return;
+        }
+
         if (!$this->accesoPermitido()) {
             return;
         }
@@ -226,6 +237,38 @@ class RutinaController {
         } catch (\Exception $e) {
             error_log('Error al actualizar rutina: ' . $e->getMessage());
             $this->responder(500, ['status' => 'error', 'message' => 'No se pudo actualizar la rutina']);
+        }
+    }
+
+    private function guardarDeSocio($idRutina) {
+        $idSocio = (int) $this->modelo->buscarPersonaPorUsuario((int) $_SESSION['usuario_id']);
+        if (!$idSocio) {
+            $this->responder(403, ['status' => 'error', 'message' => 'Tu usuario no tiene perfil']);
+            return;
+        }
+
+        $d = $this->leerRutina();
+        if ($d === null) {
+            return;
+        }
+
+        try {
+            if ($idRutina === null) {
+                $id = $this->modelo->crear($d['nombre'], $d['descripcion'], $idSocio, $idSocio, $d['ejercicios']);
+                $this->responder(201, ['status' => 'ok', 'message' => 'Rutina creada', 'id' => $id]);
+                return;
+            }
+
+            if ($idRutina <= 0 || !$this->modelo->esCreador($idRutina, $idSocio)) {
+                $this->responder(403, ['status' => 'error', 'message' => 'Solo podés editar las rutinas que creaste']);
+                return;
+            }
+
+            $this->modelo->actualizar($idRutina, $d['nombre'], $d['descripcion'], $d['ejercicios']);
+            $this->responder(200, ['status' => 'ok', 'message' => 'Rutina actualizada']);
+        } catch (\Exception $e) {
+            error_log('Error al guardar rutina del socio: ' . $e->getMessage());
+            $this->responder(500, ['status' => 'error', 'message' => 'No se pudo guardar la rutina']);
         }
     }
 }   
