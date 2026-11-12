@@ -1,4 +1,5 @@
 const PRODUCTOS_VISIBLES = 6;
+let ProductoActual = null;
 
 const IMAGENES = [
     { clave: 'proteina', archivo: 'Prote.png' },
@@ -24,7 +25,7 @@ function formatearPrecio(valor) {
 
 function crearTarjeta(p, oculta) {
     const col = document.createElement('div');
-    col.className = 'col-md-4 producto-tarjeta' + (oculta ? ' d-none' : '');
+    col.className = 'col-sm-6 col-xl-4 producto-tarjeta' + (oculta ? ' d-none' : '');
 
     const card = document.createElement('div');
     card.className = 'card p-4 h-100';
@@ -58,17 +59,84 @@ function abrirModal(p) {
     document.getElementById('modal-precio').textContent = formatearPrecio(p.precio);
     document.getElementById('modal-descripcion').textContent = p.descripcion || '';
 
-    const stock = document.getElementById('modal-stock');
-    const hayStock = Number(p.stock) > 0;
-    stock.textContent = hayStock ? `${p.stock} unidades disponibles` : 'Sin stock';
-    stock.className = 'fw-semibold ' + (hayStock ? 'text-success' : 'text-danger');
-
     document.getElementById('modalProducto').dataset.idProducto = p.id_producto;
     
+    ProductoActual = p;
+    PrepararCompra();
+
     bootstrap.Modal.getOrCreateInstance(document.getElementById('modalProducto')).show();
 }
 
+function MaximoCompra() {
+    return Math.min(10, Number(ProductoActual.stock));
+}
+
+function ActualizarTotal() {
+    const cantidad = Number(document.getElementById('compra-cantidad').value) || 0;
+    document.getElementById('compra-total').textContent = formatearPrecio(cantidad * Number(ProductoActual.precio));
+}
+
+function MostrarStock() {
+    const stock = document.getElementById('modal-stock');
+    const hayStock = Number(ProductoActual.stock) > 0;
+    stock.textContent = hayStock ? `${ProductoActual.stock} unidades disponibles` : 'Sin stock';
+    stock.className = 'fw-semibold ' + (hayStock ? 'text-success' : 'text-danger');
+}
+
+function PrepararCompra() {
+    const cantidad = document.getElementById('compra-cantidad');
+    const boton = document.getElementById('btn-confirmar-compra');
+    const mensaje = document.getElementById('compra-mensaje');
+    const hayStock = Number(ProductoActual.stock) > 0;
+
+    cantidad.value = 1;
+    cantidad.max = Math.max(1, MaximoCompra());
+    cantidad.disabled = !hayStock;
+    boton.disabled = !hayStock;
+    boton.textContent = hayStock ? 'Reservar compra' : 'Sin stock';
+    mensaje.textContent = '';
+    mensaje.className = 'small mt-2 mb-0';
+    ActualizarTotal();
+}
+
+async function ConfirmarCompra() {
+    const cantidad = Number(document.getElementById('compra-cantidad').value);
+    const mensaje = document.getElementById('compra-mensaje');
+    const boton = document.getElementById('btn-confirmar-compra');
+    mensaje.className = 'small mt-2 mb-0 text-danger';
+
+    if (!Number.isInteger(cantidad) || cantidad < 1 || cantidad > MaximoCompra()) {
+        mensaje.textContent = `Elegí una cantidad entre 1 y ${MaximoCompra()}.`;
+        return;
+    }
+
+    boton.disabled = true;
+    const res = await API.request('/compras', 'POST', {
+        id_producto: ProductoActual.id_producto,
+        cantidad,
+        metodo_pago: document.getElementById('compra-metodo').value
+    });
+
+    if (res && res.status === 'ok') {
+        ProductoActual.stock = res.data.stock;
+        MostrarStock();
+        PrepararCompra();
+        mensaje.className = 'small mt-2 mb-0 text-success fw-semibold';
+        mensaje.textContent = '¡Reserva hecha! Pagá y retirá tu producto en recepción.';
+        return;
+    }
+
+    if (res && res.stock !== undefined) {
+        ProductoActual.stock = res.stock;
+        MostrarStock();
+    }
+    boton.disabled = Number(ProductoActual.stock) <= 0;
+    mensaje.textContent = res?.message || 'No se pudo registrar la compra.';
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
+    document.getElementById('compra-cantidad').addEventListener('input', ActualizarTotal);
+    document.getElementById('btn-confirmar-compra').addEventListener('click', ConfirmarCompra);
     const lista = document.getElementById('lista-productos');
     const botonMas = document.getElementById('MasProductos');
     const cuenta = document.getElementById('navCuenta');

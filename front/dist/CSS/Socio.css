@@ -137,3 +137,116 @@
         align-items: flex-start;
     }
 }
+.text-lime {
+    color: #cdfa3f;
+}
+
+.tienda .card {
+    background: #151515;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    color: #f4f4f2;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.tienda .card:hover {
+    border-color: #cdfa3f;
+    transform: translateY(-3px);
+}
+
+.tienda .img-producto {
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    padding: 12px;
+    margin-bottom: 14px;
+    background: #1c1c1c;
+    border-radius: 10px;
+}
+
+.tienda .card h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.tienda .card h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #cdfa3f;
+    margin-bottom: 16px;
+}
+.tienda .btn-fit {
+    background: #cdfa3f;
+    color: #0a0a0a;
+    font-weight: 700;
+    border: none;
+}
+
+.tienda .btn-fit:hover {
+    filter: brightness(0.92);
+    color: #0a0a0a;
+}
+
+#modalProducto .modal-content {
+    background: #151515;
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    color: #f4f4f2;
+}
+
+.tienda-img-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    padding: 16px;
+    background: #1c1c1c;
+    border-radius: 12px;
+}
+
+.tienda-img-box img {
+    max-height: 300px;
+    object-fit: contain;
+}
+
+.tienda-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #cdfa3f;
+    background: rgba(205, 250, 63, 0.1);
+    border: 1px solid rgba(205, 250, 63, 0.35);
+    border-radius: 999px;
+}
+
+.tienda-precio {
+    font-size: 30px;
+    font-weight: 800;
+    color: #cdfa3f;
+}
+
+.tienda-form-resena {
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+}
+#modalProducto .progress {
+    background: #2a2a2a;
+}
+
+#modalProducto .progress-bar.bg-dark {
+    background: #cdfa3f !important;
+}
+
+#modalProducto #lista-resenas .bg-light {
+    background: #2a2a2a !important;
+    color: #cdfa3f;
+    border-color: #3a3a3a !important;
+}
+
+#modalProducto .btn-lime:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}

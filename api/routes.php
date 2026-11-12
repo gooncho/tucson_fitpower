@@ -34,6 +34,7 @@ $router->put('/ejercicio/:id/reactivar', 'EjerciciosController@reactivar');
 $router->get('/producto', 'ProductosController@index');
 $router->get('/producto/:id/resenas', 'ResenaController@index');
 $router->post('/producto/:id/resenas', 'ResenaController@store');
+$router->post('/compras', 'CompraController@crear');
 $router->get('/perfil', 'PerfilController@ver');
 $router->put('/perfil', 'PerfilController@actualizar');
 $router->post('/perfil/foto', 'PerfilController@subirFoto');

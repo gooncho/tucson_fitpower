@@ -646,6 +646,26 @@
         "No se pudo guardar la reseña": "Couldn't save the review",
         "Elegir imagen": "Choose image",
         "Ningún archivo seleccionado": "No file selected",
+        "Cantidad": "Quantity",
+        "Pago en recepción": "Pay at the front desk",
+        "Efectivo": "Cash",
+        "Tarjeta": "Card",
+        "Transferencia": "Bank transfer",
+        "Reservar compra": "Reserve purchase",
+        "Sin stock": "Out of stock",
+        "¡Reserva hecha! Pagá y retirá tu producto en recepción.": "Reservation done! Pay and pick up your product at the front desk.",
+        "No se pudo registrar la compra.": "Couldn't register the purchase.",
+        "No se pudo registrar la compra": "Couldn't register the purchase",
+        "Solo los socios pueden comprar": "Only members can buy",
+        "La cantidad tiene que ser entre 1 y 10": "Quantity must be between 1 and 10",
+        "Elegí un método de pago válido": "Choose a valid payment method",
+        "Reservá y retiralo en el gimnasio": "Reserve it and pick it up at the gym",
+        "Hacé tu reserva online y retirá tu producto en el mostrador cuando vengas a entrenar.": "Book online and pick up your product at the front desk when you come to train.",
+        "Todo lo que necesitás para tu entrenamiento. Reservá online y retirá en recepción.": "Everything you need for your training. Book online and pick up at the front desk.",
+        "Ver más productos": "See more products",
+        "Iniciá sesión": "Log in",
+        "Tu puntuación": "Your rating",
+        "Contanos qué te pareció el producto": "Tell us what you thought of the product",
     };
 
     const unidades = { "día": "day", "días": "days", "semana": "week", "semanas": "weeks", "mes": "month", "meses": "months", "año": "year", "años": "years" };
@@ -679,7 +699,9 @@
         [/^Error al guardar la rutina: (.*)$/, (x) => "Error saving the routine: " + d(x)],
         [/^Error al guardar el objetivo: (.*)$/, (x) => "Error saving the goal: " + d(x)],
         [/^Revisá las series, repeticiones y descanso de "(.+)"\.$/, (x) => `Check the sets, reps and rest of "${x}".`],
-        [/^La hora de fin de (.+) tiene que ser después de la de inicio\.$/, (x) => `${x}'s end time must be after the start time.`]
+        [/^La hora de fin de (.+) tiene que ser después de la de inicio\.$/, (x) => `${x}'s end time must be after the start time.`],
+                [/^Elegí una cantidad entre 1 y (\d+)\.$/, (n) => `Choose a quantity between 1 and ${n}.`],
+        [/^Solo quedan (\d+) unidades$/, (n) => `Only ${n} units left`],
     ];
 
     const atributos = ["placeholder", "title", "aria-label", "alt"];
