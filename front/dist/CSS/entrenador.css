@@ -296,3 +296,31 @@ a.details-btn {
         gap: 2px;
     }
 }
+
+.selector-archivo {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    border: 1px solid #3a3a3a;
+    border-radius: 10px;
+    background: #1b1c1f;
+    overflow: hidden;
+    cursor: pointer;
+}
+.selector-boton {
+    padding: 10px 14px;
+    background: #2a2b2f;
+    border-right: 1px solid #3a3a3a;
+    color: #f4f4f2;
+    white-space: nowrap;
+}
+.selector-archivo:hover .selector-boton {
+    color: #cdfa3f;
+}
+.selector-nombre {
+    padding: 10px 14px;
+    color: #9a9a9a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

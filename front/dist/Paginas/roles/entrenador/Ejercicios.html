@@ -100,7 +100,11 @@
         <textarea id="ej-descripcion" class="form-control" rows="3"></textarea>
         <div id="ej-imagen-grupo" class="mt-3">
           <label class="form-label" for="ej-imagen">Imagen (opcional)</label>
-          <input id="ej-imagen" type="file" class="form-control" accept="image/png, image/jpeg, image/webp">
+            <label class="selector-archivo">
+            <input id="ej-imagen" type="file" accept="image/png, image/jpeg, image/webp" hidden>
+            <span class="selector-boton"><i class="bi bi-image"></i> Elegir imagen</span>
+            <span class="selector-nombre" id="ej-imagen-nombre">Ningún archivo seleccionado</span>
+          </label>
         </div>
         <p id="ej-error" class="text-danger small mt-3 mb-0"></p>
         </div>

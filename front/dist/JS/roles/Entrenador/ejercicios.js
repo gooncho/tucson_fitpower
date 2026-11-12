@@ -143,6 +143,7 @@ function LimpiarFormularioEjercicio() {
     document.getElementById('ej-descripcion').value = '';
     document.getElementById('ej-error').textContent = '';
     document.getElementById('ej-imagen').value = '';
+    document.getElementById('ej-imagen-nombre').textContent = 'Ningún archivo seleccionado';
 }
 async function GuardarEjercicio() {
     const error = document.getElementById('ej-error');
@@ -254,4 +255,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-guardar-ejercicio').addEventListener('click', GuardarEjercicio);
     document.getElementById('estado-ejercicio').addEventListener('change', CargarEjercicios);
     document.getElementById('btn-confirmar-eliminar').addEventListener('click', ConfirmarEliminarEjercicio);
+    document.getElementById('ej-imagen').addEventListener('change', (ev) => {
+    const archivo = ev.target.files[0];
+    document.getElementById('ej-imagen-nombre').textContent = archivo ? archivo.name : 'Ningún archivo seleccionado';
+    });
 });

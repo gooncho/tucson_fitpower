@@ -178,11 +178,19 @@ function abrirNuevo() {
       </div>
       <div class="mb-3">
         <label class="form-label">Imagen (opcional)</label>
-        <input type="file" class="admin-input" id="imagenNuevoEjercicio" accept="image/png, image/jpeg, image/webp">
+        <label class="selector-archivo">
+          <input type="file" id="imagenNuevoEjercicio" accept="image/png, image/jpeg, image/webp" hidden>
+          <span class="selector-boton"><i class="bi bi-image"></i> Elegir imagen</span>
+          <span class="selector-nombre" id="imagenNuevoEjercicioNombre">Ningún archivo seleccionado</span>
+        </label>
       </div>
       <p id="errorNuevoEjercicio" class="text-danger"></p>
       <button type="submit" class="admin-btn">Guardar ejercicio</button>
     </form>`;
+    document.getElementById('imagenNuevoEjercicio').addEventListener('change', ev => {
+    const archivo = ev.target.files[0];
+    document.getElementById('imagenNuevoEjercicioNombre').textContent = archivo ? archivo.name : 'Ningún archivo seleccionado';
+  });
   document.getElementById('formNuevoEjercicio').addEventListener('submit', async event => {
     event.preventDefault();
     const datos = Object.fromEntries(new FormData(event.target));

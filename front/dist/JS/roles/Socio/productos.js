@@ -15,7 +15,7 @@ const IMAGEN_POR_DEFECTO = 'FITPOWER.png';
 function imagenDe(nombre) {
     const n = nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     const hallada = IMAGENES.find(i => n.includes(i.clave));
-    return '../assets/' + (hallada ? hallada.archivo : IMAGEN_POR_DEFECTO);
+    return '/front/dist/assets/' + (hallada ? hallada.archivo : IMAGEN_POR_DEFECTO);
 }
 
 function formatearPrecio(valor) {
