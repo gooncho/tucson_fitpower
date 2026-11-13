@@ -106,7 +106,7 @@ a {
 
 .textosuperpuesto h1 {
     font-family: "Oswald";
-    font-size: 4rem;
+    font-size: clamp(2.5rem, 12vw, 4rem);
     line-height: 1.1;
     margin-bottom: 1.5rem;
 }
