@@ -27,7 +27,9 @@
                 <div class="collapse navbar-collapse" id="menu">
                     <ul class="navbar-nav mx-auto">
                         <li class="nav-item"><a class="navegacion-link" href="#Inicio">Inicio</a></li>
-                        </li>
+                        <li class="nav-item"><a class="navegacion-link" href="#Beneficios">Beneficios</a></li>
+                        <li class="nav-item"><a class="navegacion-link" href="#Plan">Planes</a></li>
+                        <li class="nav-item"><a class="navegacion-link" href="#Entrenadores">Entrenadores</a></li>
                         <li class="nav-item"><a class="navegacion-link" href="#Contacto">Contacto</a></li>
                     </ul>
                     <a href="dist/Paginas/acceso.html" class="btn btn-outline">Iniciar sesión</a>
@@ -254,15 +256,15 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-lg-5 col-md-8">
-                    <form class="formulario mx-auto w-100">
+                    <form id="formularioContacto" class="formulario mx-auto w-100">
                         <div class="mb-3">
-                            <input type="text" class="form-control" placeholder="Nombre completo">
+                            <input type="text" class="form-control" placeholder="Nombre completo" required>
                         </div>
                         <div class="mb-3">
-                            <input type="email" class="form-control" placeholder="Correo electrónico">
+                            <input type="email" class="form-control" placeholder="Correo electrónico" required>
                         </div>
                         <div class="mb-4">
-                            <input type="tel" class="form-control" placeholder="Teléfono de contacto">
+                            <input type="tel" class="form-control" placeholder="Teléfono de contacto" required>
                         </div>
                         <button type="submit" class="boton-login">Enviar solicitud</button>
                     </form>
@@ -270,6 +272,24 @@
             </div>
         </div>
     </section>
+
+    <div class="modal fade" id="modalContacto" tabindex="-1" aria-labelledby="modalContactoTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark-custom border-fitpower text-light">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title texto-fitpower" id="modalContactoTitulo">¡Solicitud enviada!</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <h2 class="texto-fitpower mb-3">¡Gracias por contactarnos!</h2>
+                    <p class="text-light mb-0">Tus datos fueron enviados correctamente. Nos pondremos en contacto contigo lo antes posible.</p>
+                </div>
+                <div class="modal-footer border-top-0 justify-content-center">
+                    <button type="button" class="boton-login" data-bs-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer class="footer">
         <div class="container">
@@ -329,6 +349,14 @@
 <script src="dist/JS/api.js"></script>
 <script src="dist/JS/planes.js"></script>
 <script src="dist/JS/i18n.js"></script>
+<script>
+    document.getElementById("formularioContacto").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const modal = new bootstrap.Modal(document.getElementById("modalContacto"));
+        modal.show();
+        this.reset();
+    });
+</script>
 </body>
 
 </html>
