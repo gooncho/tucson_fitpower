@@ -47,26 +47,12 @@ function render() {
       });
   });
 
-  document.querySelectorAll('.btn-eliminar-lista').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-          e.preventDefault();
-          const producto = lista[btn.dataset.index];
-          btn.style.pointerEvents = 'none';
-          try {
-              const respuesta = await API.request('/productos/' + producto.id_producto, 'DELETE');
-              if (respuesta.status === 'ok') {
-                  productos = productos.filter(item => item.id_producto !== producto.id_producto);
-                  render();
-              } else {
-                  btn.style.pointerEvents = '';
-                  console.error(respuesta.message || 'No se pudo eliminar el producto');
-              }
-          } catch (error) {
-              btn.style.pointerEvents = '';
-              console.error(error);
-          }
-      });
-  });
+document.querySelectorAll('.btn-eliminar-lista').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        confirmarEliminarProducto(lista[btn.dataset.index]);
+    });
+});
 
   document.querySelectorAll('.btn-editar').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -90,30 +76,40 @@ function render() {
                       </div>
                       <p class="text-danger" id="errorEditar"></p>
                       <button type="submit" class="admin-btn">Guardar Cambios</button>
-                      <button type="button" class="admin-mini" id="btnEliminar">Eliminar</button>
-                  </form>
-              `;
-              document.getElementById('btnEliminar').addEventListener('click', async (ev) => {
-                  ev.preventDefault();
-                  ev.target.disabled = true;
-                  try {
-                      const respuesta = await API.request('/productos/' + p.id_producto, 'DELETE');
-                      if (respuesta.status === 'ok') {
-                          adminModal.hide();
-                          cargar();
-                      } else {
-                          ev.target.disabled = false;
-                          console.error(respuesta.message || 'No se pudo eliminar el producto');
-                      }
-                  } catch (error) {
-                      ev.target.disabled = false;
-                      console.error(error);
-                  }
-              });
+                  </form>`;
           }
           if (adminModal) adminModal.show();
       });
   });
+}
+
+function confirmarEliminarProducto(producto) {
+    modalTitle.textContent = 'Eliminar producto';
+    modalBody.innerHTML = `
+        <p>¿Seguro que querés eliminar <strong>${esc(producto.nombre)}</strong>?</p>
+        <p class="small" style="color: #9c9c98;">
+            Se borran el producto y sus reseñas. Si ya tiene compras, no se puede eliminar,
+            para no perder el historial de ventas. Esta acción no se puede deshacer.
+        </p>
+        <p id="errorEliminar" class="text-danger small mb-3"></p>
+        <button type="button" class="admin-btn peligro" id="btnConfirmarEliminar">Sí, eliminar</button>`;
+
+    document.getElementById('btnConfirmarEliminar').addEventListener('click', async (ev) => {
+        const boton = ev.currentTarget;
+        boton.disabled = true;
+
+        const respuesta = await API.request('/productos/' + producto.id_producto, 'DELETE');
+        if (respuesta.status === 'ok') {
+            productos = productos.filter(item => item.id_producto !== producto.id_producto);
+            adminModal.hide();
+            render();
+        } else {
+            boton.disabled = false;
+            document.getElementById('errorEliminar').textContent = respuesta.message || 'No se pudo eliminar el producto';
+        }
+    });
+
+    adminModal.show();
 }
 
 function cargar() {

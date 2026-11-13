@@ -683,6 +683,9 @@
         "Eliminar entrenador": "Delete trainer",
         "No tiene socios asignados.": "Has no assigned members.",
         "No se pudo eliminar el entrenador": "Couldn't delete the trainer",
+        "Eliminar producto": "Delete product",
+        "No se puede eliminar: el producto tiene compras asociadas": "Can't delete: the product has purchases",
+        "No se pudo eliminar el producto": "Couldn't delete the product",
     };
 
     const unidades = { "día": "day", "días": "days", "semana": "week", "semanas": "weeks", "mes": "month", "meses": "months", "año": "year", "años": "years" };
