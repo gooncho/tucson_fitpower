@@ -1,4 +1,7 @@
 <?php
+/**
+ * Consultas de productos para el Administrador.
+ */
 namespace App\Models;
 
 class ProductoModel {
@@ -8,6 +11,8 @@ class ProductoModel {
         $this->db = $db;
     }
 
+    // Productos con su categoría y un estado calculado según el stock:
+    // Sin stock (0), Crítico (menos de 10), Bajo (menos de 20) o Disponible.
     public function obtenerProductos() {
         try {
             $sql = "SELECT 
@@ -18,7 +23,8 @@ class ProductoModel {
                         pr.precio,
                         CASE 
                             WHEN pr.stock = 0 THEN 'Sin stock'
-                            WHEN pr.stock <= 5 THEN 'Bajo stock'
+                            WHEN pr.stock < 10 THEN 'Crítico'
+                            WHEN pr.stock < 20 THEN 'Bajo'
                             ELSE 'Disponible'
                         END AS estado
                     FROM PRODUCTO pr
@@ -32,11 +38,25 @@ class ProductoModel {
         }
     }
 
+    // Inserta un producto nuevo.
     public function crearProducto($idCategoria, $nombre, $descripcion, $precio, $stock) {
         $stmt = $this->db->prepare("INSERT INTO PRODUCTO (id_categoria, nombre, descripcion, precio, stock) VALUES (:cat, :nombre, :descripcion, :precio, :stock)");
         $stmt->execute(['cat' => $idCategoria, 'nombre' => $nombre, 'descripcion' => $descripcion, 'precio' => $precio, 'stock' => $stock]);
     }
 
+    // Actualiza nombre, precio y stock.
+    public function actualizarProducto($id, $nombre, $precio, $stock) {
+        $stmt = $this->db->prepare("UPDATE PRODUCTO SET nombre = :nombre, precio = :precio, stock = :stock WHERE id_producto = :id");
+        $stmt->execute([
+            'nombre' => $nombre,
+            'precio' => $precio,
+            'stock' => $stock,
+            'id' => $id
+        ]);
+    }
+
+    // Borra las reseñas y el producto en una transacción.
+    // Si el producto tiene compras, MySQL no deja borrarlo (clave foránea).
     public function eliminarProducto($id) {
         $this->db->beginTransaction();
         try {

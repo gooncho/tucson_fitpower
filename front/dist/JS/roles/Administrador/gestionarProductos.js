@@ -1,7 +1,15 @@
+/**
+ * Gestión de productos (Administrador).
+ *
+ * Tabla con buscador, filtros por categoría y estado de stock, paginación,
+ * y los modales de Ver, Editar (nombre, precio y stock), Nuevo y Eliminar.
+ */
+
 let productos = []; 
 let adminModal = null;
 let modalTitle, modalBody;
 
+// Filtra, pagina y dibuja la tabla de productos.
 function render() {
   const q = norm($("buscar").value.trim());
   const cat = $("filtroCategoria").value;
@@ -61,28 +69,44 @@ document.querySelectorAll('.btn-eliminar-lista').forEach(btn => {
           if (modalTitle) modalTitle.textContent = "Editar Producto";
           if (modalBody) {
               modalBody.innerHTML = `
-                  <form onsubmit="event.preventDefault();">
+                  <form id="formEditar">
                       <div class="mb-3">
                           <label class="form-label">Nombre</label>
-                          <input type="text" class="admin-input" value="${esc(p.nombre)}">
+                          <input type="text" class="admin-input" name="nombre" maxlength="50" value="${esc(p.nombre)}" required>
                       </div>
                       <div class="mb-3">
                           <label class="form-label">Precio ($)</label>
-                          <input type="number" class="admin-input" value="${esc(p.precio)}">
+                          <input type="number" class="admin-input" name="precio" min="0" step="any" value="${esc(p.precio)}" required>
                       </div>
                       <div class="mb-3">
                           <label class="form-label">Stock</label>
-                          <input type="number" class="admin-input" value="${esc(p.stock)}">
+                          <input type="number" class="admin-input" name="stock" min="0" value="${esc(p.stock)}" required>
                       </div>
                       <p class="text-danger" id="errorEditar"></p>
                       <button type="submit" class="admin-btn">Guardar Cambios</button>
                   </form>`;
+
+              document.getElementById('formEditar').addEventListener('submit', async (e) => {
+                  e.preventDefault();
+
+                  const datos = Object.fromEntries(new FormData(e.target));
+                  const respuesta = await API.request('/productos/' + p.id_producto, 'PUT', datos);
+
+                  if (respuesta.status === 'ok') {
+                      adminModal.hide();
+                      cargar();
+                  } else {
+                      document.getElementById('errorEditar').textContent = respuesta.message || 'No se pudo actualizar el producto';
+                  }
+              });
           }
           if (adminModal) adminModal.show();
       });
   });
 }
 
+// Modal de confirmación. Si el producto ya tiene compras, el servidor no deja
+// borrarlo y el motivo se muestra en el modal.
 function confirmarEliminarProducto(producto) {
     modalTitle.textContent = 'Eliminar producto';
     modalBody.innerHTML = `
@@ -112,6 +136,7 @@ function confirmarEliminarProducto(producto) {
     adminModal.show();
 }
 
+// Pide los productos y llena el filtro de categorías.
 function cargar() {
     API.request('/productos', 'GET').then(d => {
       productos = Array.isArray(d) ? d : (d.data || []);
@@ -120,6 +145,7 @@ function cargar() {
     }).catch(() => aviso("No se pudo conectar con la API"));
 }
 
+// Modal para crear un producto nuevo.
 function abrirNuevo() {
     modalTitle.textContent = "Nuevo Producto";
     modalBody.innerHTML = `

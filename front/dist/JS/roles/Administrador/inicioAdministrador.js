@@ -1,3 +1,11 @@
+/**
+ * Inicio del Administrador.
+ *
+ * Muestra los totales del sistema, la distribución de membresías,
+ * los productos con poco stock y las membresías que vencen pronto (paginadas de a 6).
+ */
+
+// Escapa el texto antes de meterlo en innerHTML, para que nadie pueda inyectar HTML o scripts (XSS).
 const escAdmin = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -19,6 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const productos = Array.isArray(d.productos_bajo_stock) ? d.productos_bajo_stock : [];
     const porVencer = Array.isArray(d.por_vencer) ? d.por_vencer : [];
 
+    // Porcentaje de socios en cada plan.
     const totalPlanes = planes.reduce((total, plan) => total + Number(plan.cantidad || 0), 0);
     document.getElementById('distribucionMembresias').innerHTML = planes.length ? planes.map(p => {
         const cantidad = Number(p.cantidad || 0);
@@ -29,7 +38,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             <small>${porcentaje}% de las membresías</small>
         </div>`;
     }).join('') : '<p>No hay membresías registradas.</p>';
-    document.getElementById('productosBajoStock').innerHTML = productos.length ? productos.map(p => `<div class="admin-producto"><div><strong>${escAdmin(p.nombre)}</strong><small>Stock actual: ${escAdmin(p.stock)}</small></div><span>${Number(p.stock) < 10 ? 'Crítico' : 'Bajo'}</span></div>`).join('') : '<p>No hay productos con stock bajo.</p>';
+    document.getElementById('productosBajoStock').innerHTML = productos.length ? productos.map(p => {
+        const stock = Number(p.stock);
+        let estado = 'Bajo';
+        if (stock === 0) {
+            estado = 'Sin stock';
+        } else if (stock < 10) {
+            estado = 'Crítico';
+        }
+        return `<div class="admin-producto"><div><strong>${escAdmin(p.nombre)}</strong><small>Stock actual: ${escAdmin(p.stock)}</small></div><span>${estado}</span></div>`;
+    }).join('') : '<p>No hay productos con stock bajo.</p>';
+            // Membresías por vencer, 6 por página, con la paginación de administrador.js.
             function renderPorVencer() {
         const contenedor = document.getElementById('membresiasPorVencer');
         if (porVencer.length === 0) {
