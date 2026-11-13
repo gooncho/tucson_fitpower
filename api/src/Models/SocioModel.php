@@ -77,7 +77,7 @@ class SocioModel {
         $this->db->beginTransaction();
         try {
             $stmt = $this->db->prepare("INSERT INTO USUARIO (id_rol, nombre_usuario, email, hash) VALUES ((SELECT id_rol FROM TIPOUSUARIO WHERE nombre_rol = 'Socio'), :usuario, :email, :hash)");
-            $stmt->execute(['usuario' => $usuario, 'email' => $email, 'hash' => $password]);
+            $stmt->execute(['usuario' => $usuario, 'email' => $email, 'hash' => password_hash($password, PASSWORD_DEFAULT)]);
             $idUsuario = $this->db->lastInsertId();
             $inicio = $idPlan ? date('Y-m-d') : null;
             $fin = $idPlan ? date('Y-m-d', strtotime($idPlan == 3 ? '+3 month' : '+1 month')) : null;

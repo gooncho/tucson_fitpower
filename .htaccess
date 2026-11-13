@@ -1,3 +1,11 @@
+# Archivos y carpetas ocultos (.env, .git, .htaccess...)
+    RedirectMatch 404 /\.
+# Código y configuración del backend: PHP los usa por dentro, nadie los pide por URL
+    RedirectMatch 404 ^/api/(config|src)/
+# Archivos de base de datos, Docker y documentación
+    RedirectMatch 404 \.(sql|yml|yaml|md|log|bak)$
+    RedirectMatch 404 ^/Dockerfile$
+
 <IfModule mod_rewrite.c> 
     RewriteEngine On
 

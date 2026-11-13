@@ -39,7 +39,7 @@ class AuthController {
         $authModel = new AuthModel($this->db);
         $fila = $authModel->buscarPorUsuario($usuario);
 
-            if (!$fila || $password !== $fila['hash']) {
+        if (!$fila || !$this->passwordCorrecta($password, $fila, $authModel)) {
             http_response_code(401);
 
             echo json_encode([
@@ -49,6 +49,16 @@ class AuthController {
 
             return;
         }
+
+        if ((int) $fila['activo'] !== 1) {
+            http_response_code(403);
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Tu cuenta está desactivada. Consultá en recepción.'
+            ], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        
         session_regenerate_id(true);
 
         $_SESSION['usuario_id'] = (int) $fila['id_usuario'];
@@ -67,6 +77,20 @@ class AuthController {
         ], JSON_UNESCAPED_UNICODE);
     }
 
+    private function passwordCorrecta($password, $fila, $authModel) {
+        $guardado = (string) $fila['hash'];
+
+        if (str_starts_with($guardado, '$2y$')) {
+            return password_verify($password, $guardado);
+        }
+
+        // Contraseña vieja en texto plano: si coincide, la pasamos a hash
+        if (hash_equals($guardado, $password)) {
+            $authModel->actualizarHash((int) $fila['id_usuario'], password_hash($password, PASSWORD_DEFAULT));
+            return true;
+        }
+        return false;
+    }
 
     public function sesion() {
 
@@ -152,7 +176,7 @@ class AuthController {
         try {
             $duplicado = $authModel->buscarDuplicado($usuario, $email);
             if ($duplicado) {
-                http_responde_code(409);
+                http_response_code(409);
                 $mensaje = strtolower($duplicado['nombre_usuario']) === strtolower($usuario)
                     ? 'Ese nombre de usuario ya existe'
                     : 'Ese email ya esta registrado';

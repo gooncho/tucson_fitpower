@@ -80,7 +80,7 @@ class EntrenadorModel {
         $this->db->beginTransaction();
         try {
             $stmt = $this->db->prepare("INSERT INTO USUARIO (id_rol, nombre_usuario, email, hash) VALUES (2, :usuario, :email, :hash)");
-            $stmt->execute(['usuario' => $usuario, 'email' => $email, 'hash' => $password]);
+            $stmt->execute(['usuario' => $usuario, 'email' => $email, 'hash' => password_hash($password, PASSWORD_DEFAULT)]);
             $idUsuario = $this->db->lastInsertId();
 
             $stmt = $this->db->prepare("INSERT INTO PERSONA (id_usuario, apellido, especialidad) VALUES (:usuario, :apellido, :especialidad)");

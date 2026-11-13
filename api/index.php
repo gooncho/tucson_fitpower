@@ -1,8 +1,8 @@
 <?php
 // api/index.php
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 error_reporting(E_ALL);
 
 // ... el resto de tu código (require autoload, router, etc.)
@@ -11,9 +11,13 @@ ob_start();
 
 // 2. Cabeceras estrictas para API-Driven
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'httponly' => true,
+    'samesite' => 'Lax',
+    'secure' => !empty($_SERVER['HTTPS']),
+]);
 
 // Manejo de peticiones preflight (CORS) de los navegadores
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

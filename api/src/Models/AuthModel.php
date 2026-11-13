@@ -13,7 +13,7 @@ class AuthModel {
 
         try {
             $stmt = $this->db->prepare(
-                'SELECT u.id_usuario, u.nombre_usuario, u.email, u.hash, u.id_rol, t.nombre_rol 
+                'SELECT u.id_usuario, u.nombre_usuario, u.email, u.hash, u.activo, u.id_rol, t.nombre_rol 
                 FROM USUARIO u
                 INNER JOIN TIPOUSUARIO t 
                 ON u.id_rol = t.id_rol
@@ -27,6 +27,11 @@ class AuthModel {
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    public function actualizarHash($idUsuario, $hash) {
+        $stmt = $this->db->prepare('UPDATE USUARIO SET hash = :hash WHERE id_usuario = :id');
+        $stmt->execute(['hash' => $hash, 'id' => $idUsuario]);
     }
 
     public function buscarDuplicado($usuario, $email) {
@@ -60,7 +65,7 @@ class AuthModel {
                 'rol' => $rol['id_rol'],
                 'usuario' => $usuario,
                 'email' => $email,
-                'hash' => $password,
+                'hash' => password_hash($password, PASSWORD_DEFAULT),
             ]);
 
             $idUsuario = (int) $this->db->lastInsertId();

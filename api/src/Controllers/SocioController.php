@@ -16,12 +16,9 @@ class SocioController {
 
     public function listar() {
 
-        if (empty($_SESSION['usuario_id'])) {
-            http_response_code(401);
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'No autorizado'
-            ], JSON_UNESCAPED_UNICODE);
+        if (($_SESSION['rol'] ?? '') !== 'Administrador') {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'No autorizado'], JSON_UNESCAPED_UNICODE);
             return;
         }
 

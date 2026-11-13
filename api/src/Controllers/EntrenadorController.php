@@ -15,12 +15,17 @@ class EntrenadorController {
     }
 
     public function listar() {
+        if (($_SESSION['rol'] ?? '') !== 'Administrador') {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'No autorizado'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
         $entrenadorModel = new EntrenadorModel($this->db);
         $entrenadores = $entrenadorModel->obtenerEntrenadores();
 
         echo json_encode($entrenadores, JSON_UNESCAPED_UNICODE);
     }
-
     public function crear() {
 
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
@@ -138,18 +143,39 @@ class EntrenadorController {
     public function actualizar($idUsuario) {
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
             http_response_code(403);
-            echo json_encode(['status' => 'error', 'message' => 'No autorizado']);
+            echo json_encode(['status' => 'error', 'message' => 'No autorizado'], JSON_UNESCAPED_UNICODE);
             return;
         }
+
         $datos = json_decode(file_get_contents('php://input'), true);
-        $stmt = $this->db->prepare('UPDATE USUARIO u INNER JOIN PERSONA p ON p.id_usuario = u.id_usuario SET u.nombre_usuario = :nombre, u.email = :email, p.especialidad = :especialidad WHERE u.id_usuario = :id AND u.id_rol = 2');
-        $stmt->execute([
-            'nombre' => trim($datos['nombre_usuario'] ?? ''),
-            'email' => trim($datos['email'] ?? ''),
-            'especialidad' => trim($datos['especialidad'] ?? '') ?: null,
-            'id' => (int) $idUsuario
-        ]);
-        echo json_encode(['status' => 'ok'], JSON_UNESCAPED_UNICODE);
+        $datos = is_array($datos) ? $datos : [];
+        $nombre = trim((string) ($datos['nombre_usuario'] ?? ''));
+        $email = trim((string) ($datos['email'] ?? ''));
+        $especialidad = trim((string) ($datos['especialidad'] ?? ''));
+
+        if ($nombre === '' || mb_strlen($nombre) > 50 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Completá el usuario y un email válido'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        try {
+            $stmt = $this->db->prepare('UPDATE USUARIO u INNER JOIN PERSONA p ON p.id_usuario = u.id_usuario SET u.nombre_usuario = :nombre, u.email = :email, p.especialidad = :especialidad WHERE u.id_usuario = :id AND u.id_rol = 2');
+            $stmt->execute([
+                'nombre' => $nombre,
+                'email' => $email,
+                'especialidad' => $especialidad !== '' ? $especialidad : null,
+                'id' => (int) $idUsuario
+            ]);
+            echo json_encode(['status' => 'ok'], JSON_UNESCAPED_UNICODE);
+        } catch (\PDOException $e) {
+            $repetido = $e->getCode() == 23000;
+            http_response_code($repetido ? 409 : 500);
+            echo json_encode([
+                'status' => 'error',
+                'message' => $repetido ? 'Ese usuario o email ya existe' : 'No se pudo actualizar el entrenador'
+            ], JSON_UNESCAPED_UNICODE);
+        }
     }
 
 }
