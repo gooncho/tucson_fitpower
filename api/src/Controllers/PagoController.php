@@ -1,4 +1,10 @@
 <?php
+/**
+ * Pagos del panel del Administrador (/api/pagos).
+ *
+ * Un "pago" es una compra de productos (tabla COMPRA). El admin ve la lista
+ * y cambia el estado entre Pendiente y Pagada cuando el socio paga en recepción.
+ */
 namespace App\Controllers;
 
 use App\Models\PagoModel;
@@ -13,6 +19,8 @@ class PagoController {
         if (session_status() === PHP_SESSION_NONE) session_start();
     }
 
+    // Solo el Administrador puede usar esta función.
+    // Si no lo es, responde 403 y devuelve false.
     private function soloAdmin() {
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
             http_response_code(403);
@@ -22,6 +30,7 @@ class PagoController {
         return true;
     }
 
+    // GET /api/pagos: todas las compras con el usuario, fecha, monto y estado.
     public function listar() {
         if (!$this->soloAdmin()) return;
         try {
@@ -33,6 +42,7 @@ class PagoController {
         }
     }
 
+    // PUT /api/pagos/:id: cambia el estado (solo se aceptan Pagada o Pendiente).
     public function actualizar($id) {
         if (!$this->soloAdmin()) return;
         $datos = json_decode(file_get_contents('php://input'), true);

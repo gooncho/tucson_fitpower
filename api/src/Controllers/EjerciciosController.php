@@ -1,4 +1,11 @@
 <?php
+/**
+ * Gestión de ejercicios para Entrenador y Administrador (/api/ejercicio).
+ *
+ * Permite listar, crear, editar, subir imagen, desactivar y reactivar.
+ * Los ejercicios no se borran de la base: se desactivan (columna activo = 0)
+ * para que las rutinas que ya los usan no se rompan.
+ */
 namespace App\Controllers;
 
 use App\Models\EjerciciosModel;
@@ -16,22 +23,26 @@ class EjerciciosController {
         }
     }
 
+    // Envía la respuesta JSON con el código HTTP indicado.
     private function responder($codigo, $payload) {
         http_response_code($codigo);
         echo json_encode($payload, JSON_UNESCAPED_UNICODE);
     }
 
+     // Solo pueden entrar usuarios logueados con rol Entrenador o Administrador.
      private function accesoPermitido() {
         if (empty($_SESSION['usuario_id'])) {
             $this->responder(401, ['status' => 'error', 'message' => 'Tenes que iniciar sesion']);
             return false;
         }
-        if (!in_array($_SESSION['rol'] ?? '', ['Entrenador', 'Administrador'])) {
+        $rol = strtolower(trim((string) ($_SESSION['rol'] ?? '')));
+        if (!in_array($rol, ['entrenador', 'administrador'], true)) {
             $this->responder(403, ['status' => 'error', 'message' => 'No tenes permiso para hacer esto']);
             return false;
         }
         return true;
     }
+     // GET /api/ejercicio  (o ?estado=inactivos para ver los desactivados)
      public function index() {
         if (!$this->accesoPermitido()) {
             return;
@@ -46,6 +57,8 @@ class EjerciciosController {
         }
     }
     
+    // Lee y valida el JSON del formulario (nombre, grupo muscular, nivel y descripción).
+    // Devuelve null y responde 400 si algo no es válido.
     private function leerDatos() {
         $datos = json_decode(file_get_contents('php://input'), true); 
         if (!is_array($datos)) {
@@ -79,6 +92,8 @@ class EjerciciosController {
         ];
     }
 
+    // POST /api/ejercicio: crea un ejercicio.
+    // Si ya existe uno desactivado con el mismo nombre, pide reactivarlo en vez de duplicarlo.
     public function store() {
         if(!$this->accesoPermitido()) {
             return;
@@ -104,6 +119,7 @@ class EjerciciosController {
         }
     }
 
+    // PUT /api/ejercicio/:id: edita un ejercicio existente.
     public function update($idEjercicio) {
         if (!$this->accesoPermitido()) {
             return;
@@ -127,6 +143,10 @@ class EjerciciosController {
         }
     }
 
+    // POST /api/ejercicio/:id/imagen
+    // Guarda la imagen como front/dist/assets/Ejercicios/{id}.png|jpg|webp.
+    // Se valida que sea una imagen real (getimagesize) y que pese hasta 2 MB;
+    // el nombre del archivo lo arma el servidor, nunca el usuario.
     public function subirImagen($idEjercicio) {
         if (!$this->accesoPermitido()) {
             return;
@@ -185,14 +205,18 @@ class EjerciciosController {
         }
     }
 
+    // DELETE /api/ejercicio/:id: desactiva el ejercicio (no lo borra).
     public function destroy($idEjercicio) {
         $this->cambiarActivo($idEjercicio, false);
     }
 
+    // PUT /api/ejercicio/:id/reactivar: vuelve a activar un ejercicio desactivado.
     public function reactivar($idEjercicio) {
         $this->cambiarActivo($idEjercicio, true);
     }
 
+    // Lógica común de desactivar/reactivar: comprueba permisos, que exista
+    // y que no esté ya en ese estado, y después cambia la columna activo.
     private function cambiarActivo($idEjercicio, $activo) {
         if (!$this->accesoPermitido()) {
             return;

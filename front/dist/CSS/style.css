@@ -1,3 +1,7 @@
+/* ==================================================================
+   Estilos de la página pública (index.html) y del login/registro (acceso.html).
+   ================================================================== */
+
 body {
     background: #1C1F26;
     color: #fff;
@@ -78,6 +82,7 @@ a {
     padding-top: 80px;
 }
 
+/* --- Portada con imagen de fondo --- */
 .hero-bg {
     position: absolute;
     top: 0;
@@ -116,6 +121,7 @@ a {
    5. LOGIN Y REGISTRO
    ========================================================= */
 
+/* --- Login y registro: el panel se desliza entre los dos formularios --- */
 .formulario {
     width: 90%;
     max-width: 420px;
@@ -224,6 +230,7 @@ section {
     background: #1C1F26;
 }
 
+/* --- Secciones de beneficios y entrenadores --- */
 .beneficios {
     background: #2E3340;
 }
@@ -271,6 +278,7 @@ section {
     transform: scale(1.05);
 }
 
+/* --- Tarjetas de planes --- */
 .caja-plan {
     background: #2E3340;
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -345,6 +353,7 @@ section {
     margin-right: 8px;
 }
 
+/* --- Pie de página --- */
 .footer {
     background-color: #16181D;
     padding: 60px 0 20px;

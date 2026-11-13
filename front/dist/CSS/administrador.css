@@ -1,9 +1,18 @@
+/* ==================================================================
+   Estilos del panel del Administrador.
+   Barra lateral, tarjetas del inicio, secciones, paginación y menú
+   hamburguesa para el celular.
+   Importante: si dos reglas chocan, gana la que está más abajo; por eso los
+   bloques para el celular van al final del archivo.
+   ================================================================== */
+
 .admin-menu-toggle,
 .admin-hamburger,
 .admin-overlay {
     display: none;
 }
 
+/* --- Estructura general --- */
 .admin-body {
     background: #0a0a0a;
     color: #f4f4f2;
@@ -81,6 +90,7 @@
     color: #9c9c98;
 }
 
+/* --- Inicio: tarjetas de totales --- */
 .admin-card {
     background: #1c1c1c;
     border: 1px solid #2a2a2a;
@@ -113,6 +123,7 @@
     font-size: 22px;
 }
 
+/* --- Inicio: distribución de membresías y listas --- */
 .admin-membresias {
     display: flex;
     align-items: center;
@@ -210,6 +221,7 @@
     align-items: center;
 }
 
+/* --- Inicio: accesos rápidos --- */
 .admin-acceso {
     display: flex;
     flex-direction: column;
@@ -250,6 +262,7 @@
         padding: 20px 12px;
     }
 
+    /* --- Barra lateral fija de 250 px y contenido corrido a la derecha --- */
     .admin-sidebar {
         min-height: auto;
     }
@@ -389,6 +402,7 @@
     }
 }
 
+/* --- Selector de imagen personalizado --- */
 .selector-archivo {
     display: flex;
     align-items: center;
@@ -416,6 +430,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+/* --- Paginación --- */
 .paginacion {
     display: flex;
     align-items: center;
@@ -444,6 +459,7 @@
     border-color: #2a2a2a;
     color: #f4f4f2;
 }
+/* --- Barra lateral igual en todas las páginas: "Cerrar sesión" queda abajo --- */
 @media (min-width: 768px) {
     .admin-sidebar {
         display: flex !important;
@@ -475,6 +491,7 @@
     padding-bottom: 9px;
 }
 
+/* --- Menú hamburguesa (celular): la barra entra desde la izquierda --- */
 @media (max-width: 767px) {
     .admin-sidebar {
         display: flex !important;

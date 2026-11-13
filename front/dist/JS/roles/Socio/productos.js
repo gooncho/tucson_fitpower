@@ -1,8 +1,22 @@
+/**
+ * Tienda (Socio).
+ *
+ * Tarjetas de productos (6 visibles y el resto con "Ver más").
+ * El modal de cada producto muestra los datos, el stock y el formulario
+ * para reservar la compra (se paga y retira en recepción).
+ * Las reseñas del mismo modal las maneja resenas.js.
+ */
+
+// Cuántos productos se muestran antes de apretar "Ver más productos".
 const PRODUCTOS_VISIBLES = 6;
 const CARPETA_PRODUCTOS = '/front/dist/assets/productos/';
 const IMAGEN_POR_DEFECTO = '/front/dist/assets/FITPOWER.png';
+// Producto abierto en el modal.
 let ProductoActual = null;
 
+// La base no guarda imágenes: la foto se elige por una palabra del nombre.
+// Se usa la PRIMERA coincidencia, por eso las claves más específicas van arriba
+// (si no, "Proteina Isolate" agarraría la foto de "proteina").
 const IMAGENES = [
     { clave: 'isolate',     archivo: 'ProteIsolate.png' },
     { clave: 'micronizada', archivo: 'CreaMicro.png' },
@@ -18,6 +32,8 @@ const IMAGENES = [
     { clave: 'toalla',      archivo: 'Toalla.png' },
 ];
 
+// Busca la imagen según el nombre, sin importar mayúsculas ni tildes.
+// Si no hay coincidencia, usa el logo.
 function imagenDe(nombre) {
     const n = nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     const hallada = IMAGENES.find(i => n.includes(i.clave));
@@ -28,6 +44,7 @@ function formatearPrecio(valor) {
     return '$ ' + Number(valor).toLocaleString();
 }
 
+// Tarjeta de un producto. "oculta" la esconde hasta apretar "Ver más".
 function crearTarjeta(p, oculta) {
     const col = document.createElement('div');
     col.className = 'col-sm-6 col-xl-4 producto-tarjeta' + (oculta ? ' d-none' : '');
@@ -60,6 +77,8 @@ function crearTarjeta(p, oculta) {
     return col;
 }
 
+// Llena el modal con el producto y lo abre. data-id-producto le dice
+// a resenas.js de qué producto cargar las reseñas.
 function abrirModal(p) {
     const imagen = document.getElementById('modal-imagen');
     imagen.onerror = () => {
@@ -84,15 +103,18 @@ function abrirModal(p) {
     bootstrap.Modal.getOrCreateInstance(modal).show();
 }
 
+// Máximo por compra: 10 o el stock disponible, lo que sea menor.
 function MaximoCompra() {
     return Math.min(10, Number(ProductoActual.stock));
 }
 
+// Total = cantidad x precio (solo para mostrar; el real lo calcula el servidor).
 function ActualizarTotal() {
     const cantidad = Number(document.getElementById('compra-cantidad').value) || 0;
     document.getElementById('compra-total').textContent = formatearPrecio(cantidad * Number(ProductoActual.precio));
 }
 
+// "X unidades disponibles" en verde o "Sin stock" en rojo.
 function MostrarStock() {
     const stock = document.getElementById('modal-stock');
     const hayStock = Number(ProductoActual.stock) > 0;
@@ -100,6 +122,7 @@ function MostrarStock() {
     stock.className = 'fw-semibold ' + (hayStock ? 'text-success' : 'text-danger');
 }
 
+// Reinicia el formulario de compra; sin stock, el botón queda desactivado.
 function PrepararCompra() {
     const cantidad = document.getElementById('compra-cantidad');
     const boton = document.getElementById('btn-confirmar-compra');
@@ -116,6 +139,8 @@ function PrepararCompra() {
     ActualizarTotal();
 }
 
+// Envía la compra. Con la respuesta se actualiza el stock en pantalla,
+// también si otro socio compró mientras el modal estaba abierto.
 async function ConfirmarCompra() {
     const cantidad = Number(document.getElementById('compra-cantidad').value);
     const mensaje = document.getElementById('compra-mensaje');

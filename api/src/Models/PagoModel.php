@@ -1,4 +1,7 @@
 <?php
+/**
+ * Consultas de pagos (compras) para el Administrador.
+ */
 namespace App\Models;
 
 class PagoModel {
@@ -8,6 +11,7 @@ class PagoModel {
         $this->db = $db;
     }
 
+    // Cada compra con el usuario y el monto total (suma de sus DETALLECOMPRA).
     public function obtenerPagos() {
         $sql = "SELECT c.id_compra AS id_pago, u.nombre_usuario, c.fecha, 'Productos' AS razon, COALESCE(SUM(dc.total), 0) AS monto, c.estado
                 FROM COMPRA c
@@ -21,12 +25,14 @@ class PagoModel {
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    // Cambia el estado de una compra (Pagada o Pendiente).
     public function actualizarEstado($id, $estado) {
         $stmt = $this->db->prepare("UPDATE COMPRA SET estado = :estado WHERE id_compra = :id");
         $stmt->execute(['estado' => $estado, 'id' => $id]);
         return $stmt->rowCount();
     }
 
+    // true si existe la compra.
     public function existe($id) {
         $stmt = $this->db->prepare("SELECT COUNT(*) FROM COMPRA WHERE id_compra = :id");
         $stmt->execute(['id' => $id]);

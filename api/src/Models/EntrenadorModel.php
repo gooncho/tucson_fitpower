@@ -1,4 +1,7 @@
 <?php
+/**
+ * Consultas de entrenadores para el panel del Administrador.
+ */
 namespace App\Models;
 
 class EntrenadorModel {
@@ -8,6 +11,7 @@ class EntrenadorModel {
         $this->db = $db;
     }
 
+    // Entrenadores con la cantidad de socios asignados y los días que atienden.
     public function obtenerEntrenadores() {
         try {
             $sql = "SELECT 
@@ -38,6 +42,8 @@ class EntrenadorModel {
     }
 
 
+    // Elimina al entrenador y sus datos en una transacción. Sus socios quedan
+    // sin entrenador y se borran sus horarios; las rutinas de los socios se conservan.
     public function eliminarEntrenador($idUsuario) {
         $this->db->beginTransaction();
         try {
@@ -57,7 +63,7 @@ class EntrenadorModel {
             $stmt = $this->db->prepare('DELETE FROM DETALLECOMPRA WHERE id_compra IN (SELECT id_compra FROM COMPRA WHERE id_persona = :id)');
             $stmt->execute(['id' => $idPersona]);
 
-            foreach (['CREA', 'PROGRESO', 'OBJETIVO', 'OBTIENE', 'RESENA', 'ASISTENCIA', 'MENSAJE', 'ASIGNA'] as $tabla) {
+            foreach (['CREA', 'PROGRESO', 'OBJETIVO', 'OBTIENE', 'RESENA', 'ASISTENCIA', 'ENTRENAMIENTO_REALIZADO', 'MENSAJE', 'ASIGNA'] as $tabla) {
                 $stmt = $this->db->prepare('DELETE FROM ' . $tabla . ' WHERE id_persona = :id');
                 $stmt->execute(['id' => $idPersona]);
             }
@@ -76,6 +82,7 @@ class EntrenadorModel {
         }
     }
 
+    // Crea USUARIO (rol 2 = Entrenador, contraseña con hash) y su PERSONA.
     public function crearEntrenador($usuario, $apellido, $email, $password, $especialidad) {
         $this->db->beginTransaction();
         try {

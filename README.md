@@ -1,4 +1,4 @@
-# FitPower — Plataforma web de gestión de gimnasios
+# FitPower - Plataforma web de gestión de gimnasios
 
 FitPower es una aplicación web para administrar un gimnasio. Tiene un sitio público (página principal, planes, entrenadores, contacto y tienda de productos con reseñas) y tres paneles privados según el rol del usuario:
 

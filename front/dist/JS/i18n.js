@@ -1,4 +1,18 @@
+/**
+ * Traducción español / inglés de todo el sitio.
+ *
+ * Cómo funciona:
+ *  - "en" es un diccionario: texto en español -> texto en inglés.
+ *  - "patrones" traduce textos con números variables (ej: "Página 2 de 5").
+ *  - Al cambiar de idioma recorre la página y reemplaza los textos;
+ *    el original se guarda para poder volver al español.
+ *  - Un MutationObserver traduce también lo que el JavaScript agrega después.
+ *  - El idioma elegido se guarda en localStorage.
+ * Para traducir un texto nuevo, alcanza con agregarlo al diccionario.
+ */
+
 (function () {
+    // Diccionario de textos fijos.
     const en = {
         "Inicio": "Home",
         "Productos": "Products",
@@ -97,8 +111,6 @@
         "Ingresá tu nombre de usuario": "Enter your username",
         "Contraseña": "Password",
         "Ingresá tu contraseña": "Enter your password",
-        "Recordarme": "Remember me",
-        "¿Olvidaste tu contraseña?": "Forgot your password?",
         "o continuá con": "or continue with",
         "Continuar con Google": "Continue with Google",
         "Continuar con Facebook": "Continue with Facebook",
@@ -696,6 +708,7 @@
     const d = (x) => en[x] !== undefined ? en[x] : x;
     const plural = (n, s, p) => n + " " + (n === "1" ? s : p);
 
+    // Textos con partes variables: [expresión regular, función que arma el texto en inglés].
     const patrones = [
         [/^(\d+) ejercicios?$/, (n) => plural(n, "exercise", "exercises")],
         [/^(\d+) \/ (\d+) ejercicios$/, (a, b) => a + " / " + b + " exercises"],
@@ -730,12 +743,14 @@
                 [/^Tu sesión se cerrará en (\d+) segundos por inactividad\. Mové el mouse o tocá una tecla para seguir\.$/, (n) => `Your session will close in ${n} seconds due to inactivity. Move the mouse or press a key to continue.`],
     ];
 
+    // Atributos que también se traducen (placeholder, title, etc.).
     const atributos = ["placeholder", "title", "aria-label", "alt"];
     const textos = new WeakMap();
     const attrs = new WeakMap();
     let idioma = localStorage.getItem("idioma") === "en" ? "en" : "es";
     let tituloOriginal = null;
 
+    // Busca la traducción de un texto: primero en el diccionario y después en los patrones.
     function traducir(texto) {
         const limpio = texto.replace(/\s+/g, " ").trim();
         if (!limpio) {
@@ -763,6 +778,7 @@
         return texto.match(/^\s*/)[0] + res + texto.match(/\s*$/)[0];
     }
 
+    // Traduce (o restaura) un nodo de texto, guardando el original.
     function procesarTexto(nodo) {
         const padre = nodo.parentNode;
         if (!padre || padre.nodeName === "SCRIPT" || padre.nodeName === "STYLE") {
@@ -784,6 +800,7 @@
         }
     }
 
+    // Igual que procesarTexto, pero para un atributo.
     function procesarAtributo(el, nombre) {
         const valor = el.getAttribute(nombre);
         if (valor === null) {
@@ -807,6 +824,7 @@
         }
     }
 
+    // Recorre todos los textos y atributos de un elemento y sus hijos.
     function recorrer(raiz) {
         if (raiz.nodeType === 3) {
             procesarTexto(raiz);
@@ -838,12 +856,14 @@
         recorrer(document.body);
     }
 
+    // Cambia el idioma, lo guarda y vuelve a traducir la página.
     function cambiarIdioma(nuevo) {
         idioma = nuevo;
         localStorage.setItem("idioma", idioma);
         aplicar();
     }
 
+    // Conecta el botón EN/ES, traduce la página y empieza a observar cambios.
     function iniciar() {
         const boton = document.getElementById("btnIdioma");
         if (boton) {
@@ -875,6 +895,7 @@
         });
     }
 
+    // Los alert() y confirm() también se muestran traducidos.
     const alertOriginal = window.alert.bind(window);
     window.alert = (mensaje) => alertOriginal(idioma === "en" ? traducir(String(mensaje)) : mensaje);
     const confirmOriginal = window.confirm.bind(window);

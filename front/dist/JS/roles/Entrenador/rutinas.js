@@ -1,4 +1,14 @@
+/**
+ * Rutinas (Entrenador).
+ *
+ * Tabla de rutinas de sus socios, con buscador y paginación.
+ * Modal de dos paneles para crear o editar: a la izquierda los ejercicios
+ * disponibles y a la derecha los elegidos, cada uno con series, repeticiones y descanso.
+ * Los elegidos se guardan en el arreglo RutSeleccionados y se envían al guardar.
+ */
+
 let TodasLasRutinas = [];
+// Si tiene una rutina, el modal está editando; si es null, está creando.
 let RutinaEditada = null;
 let RutinaAEliminar = null;
 let RutSeleccionados = [];
@@ -16,6 +26,7 @@ function MostrarMensaje(tbody, texto) {
     tbody.replaceChildren(fila);
 }
 
+// Fila del modal "Ver rutina".
 function CrearFilaEjercicio(e) {
     const fila = document.createElement('tr');
 
@@ -28,6 +39,7 @@ function CrearFilaEjercicio(e) {
     return fila;
 }
 
+// Modal "Ver": ejercicios de la rutina con series, repeticiones y descanso.
 async function AbrirRutina(r) {
     document.getElementById('rut-ver-titulo').textContent = r.rutina;
     document.getElementById('rut-ver-socio').textContent = `${r.usuario} ${r.apellido || '' }`.trim();
@@ -47,6 +59,7 @@ async function AbrirRutina(r) {
     tbody.replaceChildren(...res.data.map(CrearFilaEjercicio));
 }
 
+// Abre el modal de confirmación para eliminar.
 function EliminarRutina(r) {
     RutinaAEliminar = r;
     document.getElementById('elim-rut-nombre').textContent = r.rutina;
@@ -55,6 +68,7 @@ function EliminarRutina(r) {
     bootstrap.Modal.getOrCreateInstance(document.getElementById('modalEliminarRutina')).show();
 }
 
+// Elimina la rutina y recarga la tabla.
 async function ConfirmarEliminarRutina() {
     if (!RutinaAEliminar) return;
 
@@ -72,6 +86,7 @@ async function ConfirmarEliminarRutina() {
     document.getElementById('elim-rut-error').textContent = res?.message || 'No se pudo eliminar la rutina';
 }
 
+// Fila de la tabla con los botones Ver, Editar y Eliminar.
 function CrearFila(r) {
     const fila = document.createElement('tr');
 
@@ -115,6 +130,7 @@ function MostrarRutinas(lista) {
     }
 }
 
+// Filtra por nombre de rutina o de socio.
 function FiltrarRutinas() {
     const texto = normalizar(document.getElementById('buscar-rutina').value.trim());
     const filtradas = TodasLasRutinas.filter(r =>
@@ -123,6 +139,7 @@ function FiltrarRutinas() {
     MostrarRutinas(filtradas);
 }
 
+// Pide las rutinas a la API y las muestra.
 async function CargarRutinas() {
     const tbody = document.getElementById('listar-rutinas');
     if (!tbody) return;
@@ -143,6 +160,7 @@ async function CargarRutinas() {
     MostrarRutinas(TodasLasRutinas);
 }
 
+// Llena el selector de socios del modal (sin repetidos).
 async function CargarSociosSelect() {
     const select = document.getElementById('rut-socio');
     const error = document.getElementById('rut-error');
@@ -171,6 +189,7 @@ const opciones = [...unicos.values()].map(s => {
 select.replaceChildren(vacia, ...opciones);
 }
 
+// Abre el modal vacío (nueva) o con los datos y ejercicios de r (editar).
 async function AbrirNuevaRutina(r = null) {
     RutinaEditada = r;
     RutSeleccionados = [];
@@ -210,6 +229,7 @@ async function AbrirNuevaRutina(r = null) {
     bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevaRutina')).show();
 }
 
+// Valida y guarda: PUT si se está editando, POST si es nueva.
 async function GuardarRutina() {
     const error = document.getElementById('rut-error');
     error.textContent = '';
@@ -264,6 +284,7 @@ async function GuardarRutina() {
     error.textContent = res?.message || 'No se pudo guardar la rutina';
 }
 
+// --- Panel de ejercicios del modal ---
 let EjerciciosDisponible = [];
 
 async function CargarEjerciciosDisponibles() {
@@ -278,6 +299,7 @@ function MensajeVacio(contenedor, texto) {
     contenedor.replaceChildren(div);
 }
 
+// Panel izquierdo: ejercicios que todavía no se agregaron, filtrados por el buscador.
 function RenderDisponibles() {
     const contenedor = document.getElementById('rut-disponibles');
     const texto = normalizar(document.getElementById('rut-buscar-ej').value.trim());
@@ -317,6 +339,7 @@ function RenderDisponibles() {
     }));
 }
 
+// Input numérico que escribe directo en el objeto del ejercicio elegido.
 function CrearCampo(item, campo, etiqueta, min) {
     const label = document.createElement('label');
     label.className = 'rut-campo';
@@ -337,6 +360,7 @@ function CrearCampo(item, campo, etiqueta, min) {
     return label;
 }
 
+// Panel derecho: ejercicios elegidos con sus campos y el botón para quitarlos.
 function RenderSeleccionados() {
     const contenedor = document.getElementById('rut-seleccionados');
     const cantidad = RutSeleccionados.length;
@@ -385,6 +409,7 @@ function RenderEjerciciosRutina() {
     RenderSeleccionados();
 }
 
+// Pasa un ejercicio al panel derecho con valores iniciales.
 function AgregarEjercicio(e) {
     RutSeleccionados.push({
         id_ejercicio: Number(e.id_ejercicio),
@@ -396,6 +421,7 @@ function AgregarEjercicio(e) {
     RenderEjerciciosRutina();
 }
 
+// Lo saca de los elegidos y vuelve a aparecer a la izquierda.
 function QuitarEjercicio(idEjercicio) {
     RutSeleccionados = RutSeleccionados.filter(s => s.id_ejercicio !== idEjercicio);
     RenderEjerciciosRutina();

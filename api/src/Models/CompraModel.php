@@ -1,4 +1,7 @@
 <?php
+/**
+ * Registro de compras de la tienda.
+ */
 namespace App\Models;
 
 class CompraModel {
@@ -14,6 +17,10 @@ class CompraModel {
         return (int) $stmt->fetchColumn();
     }
 
+    // Crea la compra en una sola transacción: verifica stock, inserta COMPRA
+    // y DETALLECOMPRA y descuenta el stock. Si algo falla, se deshace todo.
+    // FOR UPDATE bloquea la fila del producto: si dos socios compran la última
+    // unidad a la vez, el segundo espera y ve el stock actualizado.
     public function crear($idPersona, $idProducto, $cantidad, $metodo) {
         $this->db->beginTransaction();
         try {

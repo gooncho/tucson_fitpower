@@ -1,4 +1,11 @@
 <?php
+/**
+ * Gestión de entrenadores desde el panel del Administrador (/api/entrenadores).
+ *
+ * Listar, crear, editar y eliminar entrenadores, y asignarles socios
+ * con día y horario (tabla SUPERVISA, que usa la agenda del entrenador).
+ * Todas las funciones son solo para el Administrador.
+ */
 namespace App\Controllers;
 
 use App\Models\EntrenadorModel;
@@ -14,6 +21,7 @@ class EntrenadorController {
         }
     }
 
+    // GET /api/entrenadores: lista con cantidad de socios y días asignados.
     public function listar() {
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
             http_response_code(403);
@@ -27,6 +35,7 @@ class EntrenadorController {
         echo json_encode($entrenadores, JSON_UNESCAPED_UNICODE);
     }
     
+    // POST /api/entrenadores: crea el usuario (rol Entrenador) y su persona.
     public function crear() {
 
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
@@ -63,6 +72,7 @@ class EntrenadorController {
         }
     }
 
+    // GET /api/entrenadores/:id/socios: socios asignados con su día y horario.
     public function sociosAsignados($idEntrenador) {
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
             http_response_code(403);
@@ -74,6 +84,10 @@ class EntrenadorController {
         echo json_encode(['status' => 'ok', 'data' => $stmt->fetchAll(\PDO::FETCH_ASSOC)], JSON_UNESCAPED_UNICODE);
     }
 
+    // PUT /api/entrenadores/:id/socios
+    // Reemplaza todas las asignaciones del entrenador en una transacción:
+    // borra las anteriores y guarda la lista nueva. Si un socio tenía otro
+    // entrenador, se lo mueve a este (un socio tiene un solo entrenador).
     public function guardarAsignaciones($idEntrenador) {
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
             http_response_code(403);
@@ -119,6 +133,7 @@ class EntrenadorController {
     }
 
 
+    // DELETE /api/entrenadores/:id: elimina al entrenador; sus socios quedan sin entrenador.
     public function eliminar($idUsuario) {
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
             http_response_code(403);
@@ -141,6 +156,7 @@ class EntrenadorController {
         }
     }
 
+    // PUT /api/entrenadores/:id: edita usuario, email y especialidad (con validación).
     public function actualizar($idUsuario) {
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
             http_response_code(403);

@@ -1,4 +1,7 @@
 <?php 
+/**
+ * Consultas de reseñas de productos.
+ */
 
 namespace App\Models;
 
@@ -9,6 +12,7 @@ class ResenaModel {
         $this->db = $db;
     }
 
+    // true si el producto existe.
     public function productoExiste($idProducto) {
         $stmt = $this->db->prepare (
             'SELECT 1 FROM PRODUCTO WHERE id_producto = :id LIMIT 1'
@@ -17,6 +21,7 @@ class ResenaModel {
         return (bool) $stmt->fetchColumn();
     }
 
+    // id_persona del usuario logueado.
     public function buscarPersonaPorUsuario($idUsuario) {
         $stmt = $this->db->prepare
         ('SELECT id_persona FROM PERSONA WHERE id_usuario = :id LIMIT 1');
@@ -24,6 +29,7 @@ class ResenaModel {
         return $stmt->fetchColumn();
     }
 
+    // Reseñas del producto con el nombre de quien la escribió, de la más nueva a la más vieja.
     public function listarPorProducto($idProducto) {
         $stmt = $this->db->prepare(
             'SELECT u.nombre_usuario AS usuario,
@@ -39,6 +45,8 @@ class ResenaModel {
             $stmt->execute(['id' => $idProducto]);
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
+    // Guarda la reseña. ON DUPLICATE KEY UPDATE: si la persona ya había opinado
+    // sobre ese producto, se reemplaza su reseña en vez de crear otra.
     public function guardar($idProducto, $idPersona, $puntuacion, $comentario) {
         $stmt = $this->db->prepare(
             'INSERT INTO RESENA (id_producto, id_persona, fecha_publicacion, puntuacion, comentario)

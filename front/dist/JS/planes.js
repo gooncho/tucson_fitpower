@@ -1,3 +1,8 @@
+/**
+ * Planes de membresía en la página pública.
+ * Carga los planes desde la API y arma una tarjeta por plan; la del medio se destaca.
+ */
+
 document.addEventListener('DOMContentLoaded', async () => {
     const contenedor = document.getElementById('listaPlanes');
     const respuesta = await API.request('/planes', 'GET');
@@ -12,4 +17,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         return `<div class="col-lg-4 col-md-6"><div class="card caja-plan h-100 ${destacado ? 'destacado position-relative shadow-lg' : ''}">${destacado ? '<span class="preferido">MÁS ELEGIDO</span>' : ''}<div class="card-body text-center d-flex flex-column"><h3 class="mb-3 ${destacado ? 'texto-fitpower' : ''}">${escPlan(plan.nombre)}</h3><h2 class="precio mb-4">$${Number(plan.precio).toLocaleString('es-UY')}<small>/mes</small></h2><ul class="lista-plan flex-grow-1 text-start mx-auto">${lista.map(item => `<li>${escPlan(item)}</li>`).join('')}</ul><a href="dist/Paginas/acceso.html" class="boton-login mt-4">Elegir plan</a></div></div></div>`;
     }).join('');
 });
+// Escapa el texto para mostrarlo dentro de HTML sin riesgo (evita XSS).
 function escPlan(valor) { return String(valor ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }

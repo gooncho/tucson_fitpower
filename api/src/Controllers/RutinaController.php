@@ -1,4 +1,14 @@
 <?php
+/**
+ * Rutinas de entrenamiento (/api/rutinas).
+ *
+ *  - Entrenador: crea rutinas para sus socios y edita/borra las de sus socios.
+ *  - Administrador: puede ver y gestionar todas.
+ *  - Socio: crea y edita sus propias rutinas, y ve las que tiene asignadas.
+ *
+ * Tablas: RUTINA (datos), DETALLERUTINA (ejercicios con series/reps/descanso),
+ * CREA (quién la creó) y ASIGNA (a qué socio pertenece).
+ */
 
 namespace App\Controllers;
 
@@ -17,6 +27,7 @@ class RutinaController {
         http_response_code($codigo);
         echo json_encode($payload, JSON_UNESCAPED_UNICODE);
     }
+    // Solo usuarios logueados con rol Entrenador o Administrador.
     private function accesoPermitido() {
             if (empty($_SESSION['usuario_id'])) {
                 $this->responder(401, ['status' => 'error', 'message' => 'Tienes que iniciar sesion']);
@@ -29,6 +40,7 @@ class RutinaController {
             return true;
     }
 
+    // id_persona del entrenador logueado; para el admin devuelve null (sin filtro).
     private function entrenadorActual() {
         if (($_SESSION['rol'] ?? '') !== 'Entrenador')  {
             return null;
@@ -37,6 +49,7 @@ class RutinaController {
         return $id ? (int) $id : 0;
     }
 
+    // GET /api/rutinas: rutinas de los socios del entrenador (o todas si es admin).
     public function index() {
         if (!$this->accesoPermitido()) {
             return;
@@ -56,6 +69,8 @@ class RutinaController {
         }
     }
 
+    // GET /api/rutinas/:id: ejercicios de una rutina.
+    // Un socio solo puede ver las rutinas que tiene asignadas.
     public function VerRutina($idRutina) {
         if (($_SESSION['rol'] ?? '') === 'Socio') {
             if (empty($_SESSION['usuario_id'])) {
@@ -80,6 +95,8 @@ class RutinaController {
         }
     }
 
+    // POST /api/rutinas: crea una rutina.
+    // Si quien la crea es un Socio, se usa guardarDeSocio (la rutina es para él mismo).
     public function store() {
         if (($_SESSION['rol'] ?? '') === 'Socio') {
             $this->guardarDeSocio(null);
@@ -122,6 +139,7 @@ class RutinaController {
         }
     }    
 
+    // DELETE /api/rutinas/:id: borra la rutina si pertenece a un socio del entrenador.
     public function destroy($idRutina) {
         if (!$this->accesoPermitido()) {
             return;
@@ -147,6 +165,8 @@ class RutinaController {
         }
     }
 
+    // Lee y valida el JSON de la rutina: nombre obligatorio, al menos un ejercicio,
+    // series y repeticiones de 1 o más, y sin ejercicios repetidos.
     private function leerRutina() {
         $datos = json_decode(file_get_contents('php://input'), true);
         if (!is_array($datos)) {
@@ -203,6 +223,7 @@ class RutinaController {
         ];
     }
 
+    // PUT /api/rutinas/:id: reemplaza el nombre y los ejercicios de la rutina.
     public function actualizar($idRutina) {
 
         if (($_SESSION['rol'] ?? '') === 'Socio') {
@@ -240,6 +261,8 @@ class RutinaController {
         }
     }
 
+    // Crear o editar una rutina como Socio. El socio queda como creador y como
+    // dueño, y solo puede editar las rutinas que él mismo creó (tabla CREA).
     private function guardarDeSocio($idRutina) {
         $idSocio = (int) $this->modelo->buscarPersonaPorUsuario((int) $_SESSION['usuario_id']);
         if (!$idSocio) {

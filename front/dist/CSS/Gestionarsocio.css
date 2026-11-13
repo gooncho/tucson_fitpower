@@ -1,3 +1,9 @@
+/* ==================================================================
+   Estilos de las tablas y formularios del Administrador.
+   Botones, buscadores, selects, tablas, etiquetas de estado y modales
+   (lo usan todas las páginas de gestión).
+   ================================================================== */
+
 .admin-body {
     font-family: "Inter", sans-serif;
 }
@@ -17,6 +23,7 @@
     opacity: 1;
 }
  
+/* --- Botones --- */
 .admin-btn {
     display: inline-flex;
     align-items: center;
@@ -39,6 +46,7 @@
     color: #0a0a0a;
 }
  
+/* --- Barra de búsqueda y filtros --- */
 .admin-herramientas {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
@@ -90,6 +98,7 @@
     color: #f4f4f2;
 }
  
+/* --- Tablas (se deslizan de costado si no entran) --- */
 .admin-tabla-wrap {
     overflow-x: auto;
 }
@@ -139,6 +148,7 @@
     color: #6b6b68;
 }
  
+/* --- Etiquetas de estado (Activo, Pendiente, Vencido...) --- */
 .admin-estado {
     display: inline-block;
     border-radius: 20px;
@@ -163,6 +173,7 @@
     border-color: #ff6b6b;
 }
  
+/* --- Botones chicos de la tabla (Ver, Editar, Eliminar) --- */
 .admin-mini {
     background: transparent;
     color: #f4f4f2;
@@ -206,6 +217,7 @@
     color: #ff7777;
     border-color: #ff7777;
 }
+/* --- Botón rojo para acciones que no se pueden deshacer --- */
 .admin-btn.peligro {
     background: #ff6b6b;
     border-color: #ff6b6b;

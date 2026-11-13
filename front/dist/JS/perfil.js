@@ -1,5 +1,13 @@
+/**
+ * Página "Mi perfil" (la usan los tres roles).
+ *
+ * Muestra los datos del usuario, permite editarlos en un modal
+ * y cambiar la foto de perfil.
+ */
+
 let PerfilActual = null;
 
+// Crea una fila "Etiqueta: valor" para la lista de datos.
 function  CrearFilaDato(etiqueta, valor) {
     const fila = document.createElement('div');
     fila.className = 'perfil-dato';
@@ -14,6 +22,8 @@ function  CrearFilaDato(etiqueta, valor) {
     return fila;
 }
 
+// Dibuja el perfil: foto (o inicial), nombre, email, datos y "Sobre mí".
+// Los datos que no corresponden al rol (por ejemplo, la especialidad para un socio) no se muestran.
 function PintarPerfil(p) {
     PerfilActual = p;
     const nombre = `${p.usuario} ${p.apellido || ''}`.trim();
@@ -47,6 +57,7 @@ function PintarPerfil(p) {
     document.getElementById('perfil-datos').replaceChildren(...filas);
 }
 
+// Pide el perfil a la API y lo dibuja.
 async function CargarPerfil() {
     const error = document.getElementById('perfil-error');
     const res = await API.request('/perfil');
@@ -58,6 +69,7 @@ async function CargarPerfil() {
     PintarPerfil(res.data);
 }
 
+// Abre el modal con los datos actuales ya cargados.
 function AbrirEditarPerfil() {
     if (!PerfilActual) return;
 
@@ -74,6 +86,7 @@ function AbrirEditarPerfil() {
     bootstrap.Modal.getOrCreateInstance(document.getElementById('modalPerfil')).show();
 }
 
+// Envía los cambios del modal; si se guardan, vuelve a dibujar el perfil.
 async function GuardarPerfil() {
     const error = document.getElementById('pf-error');
     error.textContent = '';
@@ -107,6 +120,7 @@ async function GuardarPerfil() {
     error.textContent = res?.message || 'No se pudo guardar el perfil.';
 }
 
+// Sube la foto elegida y la muestra al instante.
 async function SubirFotoPerfil(evento) {
     const archivo = evento.target.files[0];
     if (!archivo) return;

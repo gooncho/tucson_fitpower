@@ -1,4 +1,11 @@
 <?php
+/**
+ * Reseñas de productos (/api/producto/:id/resenas).
+ *
+ * Cualquiera puede leer las reseñas; para escribir hay que iniciar sesión.
+ * Cada persona tiene una sola reseña por producto: si vuelve a escribir,
+ * se reemplaza la anterior.
+ */
 
 namespace App\Controllers;
 
@@ -20,6 +27,7 @@ class ResenaController {
         echo json_encode($payload, JSON_UNESCAPED_UNICODE);
     }
    
+    // GET: reseñas del producto, promedio de estrellas y cantidad por puntuación.
     public function index($idProducto) {
         $idProducto = (int) $idProducto;
 
@@ -65,6 +73,8 @@ class ResenaController {
         }
     }
 
+    // POST: guarda (o reemplaza) la reseña del usuario logueado.
+    // La puntuación tiene que ser de 1 a 5 y el comentario hasta 500 caracteres.
     public function store($idProducto) {
         $idProducto = (int) $idProducto;
 

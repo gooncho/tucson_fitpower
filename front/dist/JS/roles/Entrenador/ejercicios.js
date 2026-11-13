@@ -1,11 +1,20 @@
+/**
+ * Ejercicios (Entrenador).
+ *
+ * Tabla de ejercicios con buscador, filtro activos/desactivados y paginación.
+ * Modales para ver, crear (con imagen), editar y desactivar; y botón para reactivar.
+ */
+
 let Todoslosejercicios = [];
 let EjercicioEditado = null;
 let EjercicioAEliminar = null;
 
+// Paginación de 10 en 10 (ver paginacion.js).
 const PagEjercicios = CrearPaginacion('pag-ejercicios', 10, lista => {
     document.getElementById('listar-ejercicios').replaceChildren(...lista.map(CrearFila));
 });
 
+// Muestra un mensaje dentro de la tabla (cargando, sin resultados, error).
 function MostrarMensaje(tbody, texto) {
     const fila = document.createElement('tr');
     const celda = document.createElement('td');
@@ -17,6 +26,7 @@ function MostrarMensaje(tbody, texto) {
 
 const EXTENSIONES = ['png', 'jpg', 'webp'];
 
+// Prueba {id}.png, .jpg y .webp hasta encontrar la imagen del ejercicio.
 function MostrarImagen(img, id) {
     let intento = 0;
     img.classList.remove('d-none');
@@ -31,6 +41,7 @@ function MostrarImagen(img, id) {
     img.src = `/front/dist/assets/Ejercicios/${id}.${EXTENSIONES[0]}`;
 }
 
+// Modal "Ver": imagen, descripción y grupos musculares como etiquetas.
 function AbrirEjercicio(e) {
     document.getElementById('ej-ver-nombre').textContent = e.nombre;
     document.getElementById('ej-ver-descripcion').textContent = e.descripcion || 'Sin descripcion';
@@ -53,6 +64,7 @@ function AbrirEjercicio(e) {
         bootstrap.Modal.getOrCreateInstance(document.getElementById('modalEjercicio')).show();
 }
 
+// Fila de la tabla con los botones según el estado del ejercicio.
 function CrearFila(e) {
     const fila = document.createElement('tr');
 
@@ -96,6 +108,7 @@ function CrearFila(e) {
     return fila;
 }
 
+// Minúsculas y sin tildes, para que el buscador no dependa de cómo se escriba.
 function normalizar(texto) {
     return texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
@@ -107,6 +120,7 @@ function Mostrarejercicios(lista) {
     }
 }
 
+// Filtra por nombre o grupo muscular y vuelve a mostrar la tabla.
 function FiltrarEjercicios() {
     const texto = normalizar(document.getElementById('buscar-ejercicio').value.trim());
     const filtrandos = Todoslosejercicios.filter(e =>
@@ -115,6 +129,7 @@ function FiltrarEjercicios() {
     Mostrarejercicios(filtrandos);
 }
 
+// Pide los ejercicios activos o desactivados según el filtro.
 async function CargarEjercicios() {
     const tbody = document.getElementById('listar-ejercicios');
     if (!tbody) return;
@@ -136,6 +151,7 @@ async function CargarEjercicios() {
     FiltrarEjercicios();
 }
 
+// Deja el formulario vacío para un ejercicio nuevo.
 function LimpiarFormularioEjercicio() {
     document.getElementById('ej-nombre').value = '';
     document.getElementById('ej-grupo').value = '';
@@ -145,6 +161,8 @@ function LimpiarFormularioEjercicio() {
     document.getElementById('ej-imagen').value = '';
     document.getElementById('ej-imagen-nombre').textContent = 'Ningún archivo seleccionado';
 }
+// Crea (POST) o edita (PUT) según EjercicioEditado. Si es nuevo y tiene
+// imagen, la sube después de crearlo.
 async function GuardarEjercicio() {
     const error = document.getElementById('ej-error');
     error.textContent = '';
@@ -179,7 +197,7 @@ async function GuardarEjercicio() {
             const resImg = await API.subir(`/ejercicio/${res.id}/imagen`, formulario);
 
             if (!resImg || resImg.status !== 'ok') {
-                alert('El ejercicio se creó, pero la imagen no: ' + (resImg?.message || 'error desconocido'));
+                MostrarAviso('El ejercicio se creó, pero no se pudo guardar la imagen: ' + (resImg?.message || 'error desconocido'));
             }
         }
         bootstrap.Modal.getOrCreateInstance(document.getElementById('modalNuevoEjercicio')).hide();
@@ -189,6 +207,7 @@ async function GuardarEjercicio() {
     error.textContent = res?.message || 'No se pudo guardar el ejercicio.';
 }
 
+// Abre el modal de confirmación para desactivar.
 function AbrirEliminarEjercicio(e) {
     EjercicioAEliminar = e;
     document.getElementById('elim-ej-nombre').textContent = e.nombre;
@@ -196,6 +215,7 @@ function AbrirEliminarEjercicio(e) {
     bootstrap.Modal.getOrCreateInstance(document.getElementById('modalEliminarEjercicio')).show();
 }
 
+// Desactiva el ejercicio y recarga la lista.
 async function ConfirmarEliminarEjercicio() {
     if (!EjercicioAEliminar) return;
 
@@ -213,17 +233,26 @@ async function ConfirmarEliminarEjercicio() {
     document.getElementById('elim-ej-error').textContent = res?.message || 'No se pudo eliminar el ejercicio';
 }
 
+// Vuelve a activar un ejercicio desactivado.
 async function ReactivarEjercicio(e) {
     const res = await API.request(`/ejercicio/${e.id_ejercicio}/reactivar`, 'PUT');
 
     if (!res || res.status !== 'ok') {
-        alert(res?.message || 'No se pudo reactivar el ejercicio');
+        MostrarAviso(res?.message || 'No se pudo reactivar el ejercicio');
         return;
     }
+    MostrarAviso('');
     await CargarEjercicios();
 }
 
+// Mensaje arriba de la tabla (errores fuera de los modales).
+function MostrarAviso(texto) {
+    document.getElementById('ej-aviso').textContent = texto || '';
+}
+
+// Abre el modal en modo "Nuevo" (sin e) o "Editar" (con los datos de e).
 function AbrirFormularioEjercicio(e = null) {
+    MostrarAviso('');
     LimpiarFormularioEjercicio();
     EjercicioEditado = e;
 

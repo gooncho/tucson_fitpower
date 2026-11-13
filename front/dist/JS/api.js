@@ -1,5 +1,16 @@
+/**
+ * Comunicación con la API.
+ *
+ * Todas las páginas usan este objeto para hablar con el backend:
+ *   API.request('/rutinas', 'POST', datos)  -> envía y recibe JSON
+ *   API.subir('/perfil/foto', formData)     -> sube archivos (fotos)
+ * Siempre devuelve un objeto con status ("ok" o "error"), aunque falle
+ * la conexión, así las páginas no tienen que usar try/catch.
+ */
+
 const API = {
     urlBase: '/api',
+    // Envía una petición JSON. credentials: 'same-origin' manda la cookie de sesión.
     async request(endpoint, method = 'GET', data = null) {
         const opciones = {
             method: method,
@@ -17,6 +28,7 @@ const API = {
                 console.error('La API devolvió una respuesta que no es JSON:', texto);
                 return { status: 'error', message: 'El servidor devolvió un error. Revisá el registro de PHP.' };
             }
+            // Si el servidor respondió con un código de error (4xx/5xx), se marca como error.
             if (!respuesta.ok && json.status === 'ok') json.status = 'error';
             return json;
         } catch (error) {
@@ -24,6 +36,7 @@ const API = {
             return { status: 'error', message: 'No se pudo conectar con la API' };
         }
     },
+    // Sube un archivo con FormData (sin Content-Type: el navegador lo arma solo).
     async subir(endpoint, formData) {
         try {
             const respuesta = await fetch(this.urlBase + endpoint, {

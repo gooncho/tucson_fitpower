@@ -1,4 +1,11 @@
 <?php
+/**
+ * Autenticación: login, registro, sesión y logout.
+ *
+ * Al iniciar sesión se guardan en $_SESSION el id del usuario, su nombre y su rol.
+ * El resto de los controllers usan esos datos para saber quién hace cada petición
+ * y qué puede hacer (Administrador, Entrenador o Socio).
+ */
 namespace App\Controllers;
 
 use App\Models\AuthModel;
@@ -14,6 +21,9 @@ class AuthController {
         }
     }
 
+    // POST /api/acceso
+    // Recibe usuario y contraseña. Si son correctos y la cuenta está activa,
+    // crea la sesión y devuelve el rol para que el front redirija al panel correcto.
     public function login() {
 
         $datos = json_decode(file_get_contents('php://input'), true);
@@ -59,6 +69,7 @@ class AuthController {
             return;
         }
         
+        // Cambia el id de sesión al iniciar sesión: evita que alguien reutilice un id viejo (session fixation).
         session_regenerate_id(true);
 
         $_SESSION['usuario_id'] = (int) $fila['id_usuario'];
@@ -77,6 +88,10 @@ class AuthController {
         ], JSON_UNESCAPED_UNICODE);
     }
 
+    // Comprueba la contraseña.
+    //  - Si lo guardado empieza con $2y$ es un hash (password_hash): se verifica con password_verify.
+    //  - Si no, es una contraseña vieja en texto plano: si coincide, se convierte a hash
+    //    en ese momento. Así los usuarios del init.sql quedan con hash al entrar.
     private function passwordCorrecta($password, $fila, $authModel) {
         $guardado = (string) $fila['hash'];
 
@@ -92,6 +107,9 @@ class AuthController {
         return false;
     }
 
+    // GET /api/sesion
+    // Devuelve quién está logueado. Cada página del panel la llama al cargar:
+    // si no hay sesión (401), el front manda al usuario al inicio.
     public function sesion() {
 
         if (empty($_SESSION['usuario_id'])) {
@@ -117,6 +135,8 @@ class AuthController {
     }
 
 
+    // POST /api/logout
+    // Vacía la sesión, borra la cookie del navegador y destruye la sesión en el servidor.
     public function logout() {
 
         $_SESSION = [];
@@ -144,6 +164,9 @@ class AuthController {
         ], JSON_UNESCAPED_UNICODE);
     }
 
+    // POST /api/registro
+    // Crea una cuenta de Socio con usuario, email y contraseña (guardada con hash),
+    // valida los datos, evita duplicados e inicia la sesión automáticamente.
     public function registrar() {
         $datos = json_decode(file_get_contents('php://input'), true);
         if (!is_array($datos)) {

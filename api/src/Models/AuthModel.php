@@ -1,4 +1,8 @@
 <?php
+/**
+ * Consultas de autenticación: buscar usuarios, detectar duplicados
+ * y crear cuentas de socio en el registro.
+ */
 namespace App\Models;
 
 class AuthModel {
@@ -9,6 +13,7 @@ class AuthModel {
         $this->db = $db;
     }
 
+    // Busca un usuario por su nombre de usuario e incluye su rol, el hash y si está activo.
     public function buscarPorUsuario($usuario) {
 
         try {
@@ -29,11 +34,13 @@ class AuthModel {
         }
     }
 
+    // Guarda el hash nuevo de la contraseña (migración de texto plano a hash).
     public function actualizarHash($idUsuario, $hash) {
         $stmt = $this->db->prepare('UPDATE USUARIO SET hash = :hash WHERE id_usuario = :id');
         $stmt->execute(['hash' => $hash, 'id' => $idUsuario]);
     }
 
+    // Devuelve un usuario que ya use ese nombre o ese email (o false si no hay).
     public function buscarDuplicado($usuario, $email) {
         $stmt = $this->db->prepare(
             'SELECT nombre_usuario, email
@@ -45,6 +52,8 @@ class AuthModel {
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    // Crea USUARIO (rol Socio, contraseña con password_hash) y su PERSONA.
+    // Va en una transacción: o se crean los dos registros, o ninguno.
     public function crearSocio($usuario, $email, $password) {
         try {
             $this->db->beginTransaction();

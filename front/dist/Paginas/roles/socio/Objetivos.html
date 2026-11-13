@@ -59,6 +59,7 @@
 
           <form id="formNuevoObjetivo">
             <div class="modal-body d-flex flex-column gap-3">
+              <div id="mensajeObjetivo" class="small" role="status"></div>
               <div>
                 <label class="form-label text-whit" style="font-size: 13px;">Título del objetivo</label>
                 <input type="text" id="inputTitulo" class="form-control bg-dark text-light border-secondary" required placeholder="Ej: Ganar masa muscular">
@@ -94,9 +95,28 @@
             </div>
             <div class="modal-header border-top border-secondary justify-content-end gap-2">
               <button type="button" class="btn btn-outline-light btn-sm px-3" data-bs-dismiss="modal">Cancelar</button>
-              <button type="submit" class="btn-lime btn-sm px-4 fw-bold">Guardar objetivo</button>
+              <button type="submit" id="btnGuardarObjetivo" class="btn-lime btn-sm px-4 fw-bold">Guardar objetivo</button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="modalEliminarObjetivo" tabindex="-1" aria-labelledby="modalEliminarObjetivoLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-light" style="background: #151515; border: 1px solid #2a2a2a; border-radius: 14px;">
+          <div class="modal-header border-bottom border-secondary">
+            <h5 class="modal-title fw-bold" id="modalEliminarObjetivoLabel" style="font-family: 'Montserrat', sans-serif;">Eliminar objetivo</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-2">¿Seguro que querés eliminar <strong id="eliminarObjetivoTitulo"></strong>?</p>
+            <p class="text-whit small mb-0">Esta acción no se puede deshacer.</p>
+            <p id="errorEliminarObjetivo" class="text-danger small mt-3 mb-0"></p>
+          </div>
+          <div class="modal-header border-top border-secondary justify-content-end gap-2">
+            <button type="button" class="btn btn-outline-light btn-sm px-3" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" id="btnConfirmarEliminarObjetivo" class="btn btn-danger btn-sm px-4 fw-bold">Eliminar</button>
+          </div>
         </div>
       </div>
     </div>

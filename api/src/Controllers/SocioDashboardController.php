@@ -1,4 +1,11 @@
 <?php
+/**
+ * Panel del Socio: todas las pantallas de datos propios.
+ *
+ * Rutinas asignadas, historial de entrenamientos, membresía, progreso, logros,
+ * peso, asistencia e inicio. Cada función obtiene el socio desde la sesión,
+ * así cada uno ve solo sus datos.
+ */
 namespace App\Controllers;
 
 class SocioDashboardController {
@@ -11,6 +18,7 @@ class SocioDashboardController {
         }
     }
 
+    // id_persona del socio logueado (0 si no hay sesión o no es Socio).
     private function personaActual() {
         if (empty($_SESSION['usuario_id']) || ($_SESSION['rol'] ?? '') !== 'Socio') {
             return 0;
@@ -20,6 +28,7 @@ class SocioDashboardController {
         return (int) $stmt->fetchColumn();
     }
 
+    // Responde {status: ok, data} o 403 si no hay un socio logueado.
     private function responder($data) {
         if (!$this->personaActual()) {
             http_response_code(403);
@@ -30,6 +39,8 @@ class SocioDashboardController {
         return true;
     }
 
+    // GET /api/mis-rutinas: rutinas asignadas al socio.
+    // es_propia = 1 si la creó él (así el front sabe a cuáles mostrarles "Editar").
     public function rutinas() {
         $id = $this->personaActual();
         if (!$id) { $this->responder(null); return; }
@@ -48,14 +59,60 @@ class SocioDashboardController {
         $this->responder($stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
+    // GET /api/entrenamientos: historial de entrenamientos.
+    // Une los entrenamientos guardados (ENTRENAMIENTO_REALIZADO) con las asistencias
+    // viejas que no tienen entrenamiento registrado ese día.
     public function entrenamientos() {
         $id = $this->personaActual();
         if (!$id) { $this->responder(null); return; }
-        $stmt = $this->db->prepare("SELECT fecha, 'Entrenamiento registrado' AS rutina, CASE WHEN hora_entrada IS NOT NULL AND hora_salida IS NOT NULL THEN CONCAT(TIMESTAMPDIFF(MINUTE, hora_entrada, hora_salida), ' min') ELSE 'Sin duración' END AS duracion, 'Completado' AS estado FROM ASISTENCIA WHERE id_persona = :persona ORDER BY fecha DESC");
-        $stmt->execute(['persona' => $id]);
+        $stmt = $this->db->prepare("SELECT DATE_FORMAT(e.fecha, '%Y-%m-%d') AS fecha, r.nombre AS rutina, CONCAT(e.duracion, ' min') AS duracion, 'Completado' AS estado FROM ENTRENAMIENTO_REALIZADO e INNER JOIN RUTINA r ON r.id_rutina = e.id_rutina WHERE e.id_persona = :persona
+            UNION ALL
+            SELECT DATE_FORMAT(a.fecha, '%Y-%m-%d') AS fecha, 'Rutina no registrada' AS rutina, CASE WHEN a.hora_entrada IS NOT NULL AND a.hora_salida IS NOT NULL THEN CONCAT(TIMESTAMPDIFF(MINUTE, a.hora_entrada, a.hora_salida), ' min') ELSE 'Sin duración' END AS duracion, 'Completado' AS estado FROM ASISTENCIA a WHERE a.id_persona = :persona_antigua AND NOT EXISTS (SELECT 1 FROM ENTRENAMIENTO_REALIZADO e WHERE e.id_persona = a.id_persona AND DATE(e.fecha) = a.fecha) ORDER BY fecha DESC");
+        $stmt->execute(['persona' => $id, 'persona_antigua' => $id]);
         $this->responder($stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
+    // POST /api/entrenamientos/completar
+    // Guarda un entrenamiento terminado (rutina y minutos). La rutina tiene
+    // que estar asignada al socio.
+    public function completarEntrenamiento() {
+        $idPersona = $this->personaActual();
+        if (!$idPersona) {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'No autorizado']);
+            return;
+        }
+
+        $datos = json_decode(file_get_contents('php://input'), true);
+        $idRutina = (int) ($datos['id_rutina'] ?? 0);
+        $duracion = (int) ($datos['duracion'] ?? 0);
+
+        if ($idRutina <= 0 || $duracion < 0) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Datos del entrenamiento inválidos']);
+            return;
+        }
+
+        try {
+            $stmt = $this->db->prepare('SELECT COUNT(*) FROM ASIGNA WHERE id_persona = :persona AND id_rutina = :rutina');
+            $stmt->execute(['persona' => $idPersona, 'rutina' => $idRutina]);
+            if ((int) $stmt->fetchColumn() === 0) {
+                http_response_code(403);
+                echo json_encode(['status' => 'error', 'message' => 'La rutina no está asignada a tu usuario']);
+                return;
+            }
+
+            $stmt = $this->db->prepare('INSERT INTO ENTRENAMIENTO_REALIZADO (id_persona, id_rutina, fecha, duracion) VALUES (:persona, :rutina, NOW(), :duracion)');
+            $stmt->execute(['persona' => $idPersona, 'rutina' => $idRutina, 'duracion' => $duracion]);
+            echo json_encode(['status' => 'ok', 'message' => 'Entrenamiento guardado']);
+        } catch (\Throwable $e) {
+            error_log('Error al guardar entrenamiento: ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'No se pudo guardar el entrenamiento']);
+        }
+    }
+
+    // GET /api/membresia: plan actual, fechas y estado (Activa, Vencida o Sin membresía).
     public function membresia() {
         $id = $this->personaActual();
         if (!$id) { $this->responder(null); return; }
@@ -64,6 +121,7 @@ class SocioDashboardController {
         $this->responder($stmt->fetch(\PDO::FETCH_ASSOC) ?: []);
     }
 
+    // GET /api/progreso: última medición, asistencias, racha, rutinas y objetivo actual.
     public function progreso() {
         $id = $this->personaActual();
         if (!$id) { $this->responder(null); return; }
@@ -102,6 +160,8 @@ class SocioDashboardController {
     }
 
 
+    // Cuenta cuántos días seguidos fue al gimnasio, contando hacia atrás desde la
+    // última asistencia. Si la última fue antes de ayer, la racha es 0.
     private function calcularRacha($idPersona) {
         $stmt = $this->db->prepare('SELECT DISTINCT fecha FROM ASISTENCIA WHERE id_persona = :persona ORDER BY fecha DESC');
         $stmt->execute(['persona' => $idPersona]);
@@ -124,6 +184,7 @@ class SocioDashboardController {
         return $racha;
     }
 
+    // POST /api/progreso/peso: registra el peso de hoy (entre 0 y 500 kg).
     public function guardarPeso() {
         $id = $this->personaActual();
         if (!$id) {
@@ -149,6 +210,7 @@ class SocioDashboardController {
         }
     }
 
+    // POST /api/asistencia: marca la asistencia de hoy (una sola vez por día).
     public function marcarAsistencia() {
         $id = $this->personaActual();
         if (!$id) {
@@ -173,6 +235,7 @@ class SocioDashboardController {
         }
     }
 
+    // DELETE /api/mis-rutinas/:id: quita la rutina de la lista del socio.
     public function eliminarRutina($idRutina) {
         $idPersona = $this->personaActual();
         if (!$idPersona) {
@@ -196,6 +259,7 @@ class SocioDashboardController {
         }
     }
 
+    // GET /api/logros: logros que obtuvo el socio.
     public function logros() {
         $id = $this->personaActual();
         if (!$id) { $this->responder(null); return; }
@@ -204,6 +268,7 @@ class SocioDashboardController {
         $this->responder($stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
+    // GET /api/inicio-socio: datos resumidos para la pantalla de inicio del socio.
     public function inicio() {
         $id = $this->personaActual();
         if (!$id) { $this->responder(null); return; }

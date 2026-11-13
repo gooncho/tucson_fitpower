@@ -1,3 +1,9 @@
+/**
+ * Detalle de una rutina (Socio): DetalleRutina.html?id=5
+ * Muestra los ejercicios de la rutina y permite quitarla de la lista del socio.
+ */
+
+// Escapa el texto antes de meterlo en innerHTML, para que nadie pueda inyectar HTML o scripts (XSS).
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -11,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Quitar la rutina de "Mis rutinas".
     document.getElementById('btnEliminarRutina')?.addEventListener('click', async () => {
         if (!confirm('¿Querés quitar esta rutina de tu lista?')) return;
         const boton = document.getElementById('btnEliminarRutina');

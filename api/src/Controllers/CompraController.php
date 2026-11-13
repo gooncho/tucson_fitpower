@@ -1,10 +1,17 @@
 <?php
+/**
+ * Compras de productos desde la tienda del socio (POST /api/compras).
+ *
+ * El socio reserva un producto y lo paga/retira en recepción.
+ * La compra queda "Pendiente" hasta que el admin la marca como "Pagada" en Pagos.
+ */
 namespace App\Controllers;
 
 use App\Models\CompraModel;
 
 class CompraController {
     private $modelo;
+    // Métodos de pago permitidos (cualquier otro valor se rechaza).
     const METODOS = ['Efectivo', 'Tarjeta', 'Transferencia'];
 
     public function __construct($db) {
@@ -19,6 +26,9 @@ class CompraController {
         echo json_encode($payload, JSON_UNESCAPED_UNICODE);
     }
 
+    // Solo para socios. El id de la persona sale de la sesión (nadie puede comprar
+    // a nombre de otro) y el precio sale de la base, no del navegador.
+    // La parte delicada (stock y transacción) está en CompraModel::crear.
     public function crear() {
         if (empty($_SESSION['usuario_id']) || ($_SESSION['rol'] ?? '') !== 'Socio') {
             $this->responder(403, ['status' => 'error', 'message' => 'Solo los socios pueden comprar']);

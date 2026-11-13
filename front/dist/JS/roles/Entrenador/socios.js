@@ -1,3 +1,9 @@
+/**
+ * Mis socios (Entrenador).
+ * Tabla de socios asignados con buscador por nombre, filtro por estado
+ * de la membresía y paginación.
+ */
+
 const PagSocios = CrearPaginacion('pag-socios', 10, lista => {
     document.getElementById('listar-socios').replaceChildren(...lista.map(CrearFila));
 });
@@ -11,6 +17,7 @@ function MostrarMensaje(tbody, texto) {
     tbody.replaceChildren(fila);
 }
 
+// Activo si la membresía vence hoy o después, Vencido si ya pasó, Sin plan si no tiene.
 function EstadoMembresia(fechaFin) {
     if (!fechaFin) return 'Sin plan';
         const fin = new Date(fechaFin + 'T00:00:00');
@@ -19,6 +26,7 @@ function EstadoMembresia(fechaFin) {
         return fin >= hoy ? 'Activo' : 'Vencido';
     }
 
+// Modal con los datos del socio.
 function AbrirSocio(s) {
     const nombre = `${s.usuario} ${s.apellido || ''}`.trim();
 
@@ -32,6 +40,7 @@ function AbrirSocio(s) {
     bootstrap.Modal.getOrCreateInstance(document.getElementById('modalSocio')).show();
 }
 
+// Fila de la tabla con el estado en color.
 function CrearFila(s) {
     const fila = document.createElement('tr');
     const socio = `${s.usuario} ${s.apellido || ''}` .trim();
@@ -64,6 +73,7 @@ fila.appendChild(acciones);
 return fila;
 }
 
+// Pide los socios a la API y los muestra.
 async function CargarSocios() {
     const tbody = document.getElementById('listar-socios');
     if(!tbody) return;
@@ -92,6 +102,7 @@ function MostrarSocios(lista) {
     }
 }
 
+// Combina el buscador y el filtro de estado (los dos tienen que cumplirse).
 function FiltrarSocios() {
     const texto = Normalizar(document.getElementById('buscar-socio').value.trim());
     const estado = document.getElementById('estado-socio').value;

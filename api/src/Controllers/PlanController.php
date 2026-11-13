@@ -1,4 +1,8 @@
 <?php
+/**
+ * Planes de membresía (GET /api/planes), ordenados por precio.
+ * Los muestra la página de membresía.
+ */
 namespace App\Controllers;
 
 class PlanController {

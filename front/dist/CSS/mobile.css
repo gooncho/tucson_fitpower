@@ -1,3 +1,7 @@
+/* ==================================================================
+   Ajustes de la página pública y del login para tablet y celular.
+   ================================================================== */
+
 @media (min-width: 992px) {
     .volver-derecha {
         left: auto;

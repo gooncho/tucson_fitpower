@@ -1,8 +1,19 @@
+/**
+ * Código común a varias páginas.
+ *
+ *  - Animación entre "Iniciar sesión" y "Registrarse" en acceso.html.
+ *  - Botón "Ver más productos" de la página pública.
+ *  - En los paneles: comprueba la sesión, muestra el nombre del usuario,
+ *    conecta "Cerrar sesión" e inicia el cierre de sesión por inactividad.
+ */
+
+// --- Login / registro: el panel se desliza entre los dos formularios ---
 const contenedor = document.getElementById('contenedorDeslizable');
 
 const irARegistro = document.getElementById('irARegistro');
 const irALogin = document.getElementById('irALogin');
 
+// sessionStorage recuerda qué formulario estaba abierto si se recarga la página.
 if (irARegistro && irALogin && contenedor) {
 
     irARegistro.addEventListener('click', (e) => {
@@ -45,6 +56,7 @@ if (irARegistro && irALogin && contenedor) {
 }
 document.addEventListener('DOMContentLoaded', () => {
 
+    // --- "Ver más productos": muestra las tarjetas que estaban ocultas ---
     const btnCargarMas = document.getElementById('MasProductos');
 
     if (btnCargarMas) {
@@ -65,10 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', async () => {
 
+    // --- Paneles (todas las páginas con sesión) ---
+    // En el login no se controla la sesión (ahí todavía no hay).
     if (document.getElementById('form-login')) {
         return;
     }
 
+    // Si no hay sesión, vuelve al inicio: así no se puede entrar a un panel escribiendo la URL.
     const sesion = await API.request('/sesion');
 
     if (sesion.status !== 'ok') {
@@ -99,13 +114,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 });
 
+// --- Cierre de sesión por inactividad ---
+// Segundos sin actividad antes de cerrar la sesión, según el rol (null = sin límite).
 const TIEMPO_INACTIVIDAD = {
     Socio: 10 * 60,            
     Entrenador: 20 * 60,       
     Administrador: null   
 };
+// Cuántos segundos antes de cerrar aparece el aviso con la cuenta regresiva.
 const SEGUNDOS_AVISO = 60; 
 
+// Vigila clics, teclas, mouse, scroll y toques. La hora de la última actividad
+// se guarda en localStorage para que todas las pestañas abiertas la compartan:
+// si usás una pestaña, las otras no te cierran la sesión.
 function iniciarControlInactividad(segundos) {
     if (!segundos) return;
 
@@ -120,6 +141,7 @@ function iniciarControlInactividad(segundos) {
         'border:1px solid #cdfa3f;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,0.5);';
     document.body.appendChild(aviso);
 
+    // Guarda la hora actual (como mucho una vez por segundo) y oculta el aviso.
     function marcarActividad() {
         const ahora = Date.now();
         aviso.classList.add('d-none');
@@ -138,6 +160,7 @@ function iniciarControlInactividad(segundos) {
         }
     }
 
+    // Cierra la sesión en el servidor y lleva al login con el motivo en la URL.
     async function cerrarPorInactividad() {
         if (cerrando) return;
         cerrando = true;
@@ -151,6 +174,7 @@ function iniciarControlInactividad(segundos) {
 
     marcarActividad();
 
+    // Cada segundo calcula cuánto falta: muestra el aviso al final y cierra al llegar a 0.
     setInterval(() => {
         const restante = limite - (Date.now() - ultimaActividad());
         if (restante <= 0) {

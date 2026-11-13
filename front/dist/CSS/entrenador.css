@@ -1,3 +1,10 @@
+/* ==================================================================
+   Estilos de las páginas del Entrenador.
+   Tarjetas del inicio, tablas de socios/rutinas/ejercicios, modal de rutina
+   y la agenda semanal.
+   ================================================================== */
+
+/* --- Inicio: tarjeta "Mis socios asignados" --- */
 .partners-card {
     background: #151515;
     border: 1px solid #2a2a2a;
@@ -84,6 +91,7 @@
     background: #b5e635;
 }
 
+/* --- Tablas de entrenamientos --- */
 .trainings-card {
     background: #151515;
     border: 1px solid #2a2a2a;
@@ -141,6 +149,7 @@
     background: #b5e635;
 }
 
+/* --- Tarjeta con tabla (Mis socios, Rutinas, Ejercicios) --- */
 .routine-card {
     background: #151515;
     border: 1px solid #2a2a2a;
@@ -207,6 +216,7 @@ a.details-btn {
     display: inline-block;
 }
 
+/* --- Modal "Ver rutina" --- */
 #modalRutina table {
     width: 100%;
 }
@@ -225,6 +235,7 @@ a.details-btn {
 #modalRutina td:first-child {
     width: 40%;
 }
+/* --- Agenda semanal --- */
 .agenda-dia {
     display: grid;
     grid-template-columns: 80px 1fr;
@@ -297,6 +308,7 @@ a.details-btn {
     }
 }
 
+/* --- Selector de imagen personalizado (el input file real está oculto) --- */
 .selector-archivo {
     display: flex;
     align-items: center;
@@ -323,4 +335,8 @@ a.details-btn {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+/* En el celular las tablas se deslizan de costado dentro de la tarjeta. */
+.routine-card {
+    overflow-x: auto;
 }

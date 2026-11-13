@@ -1,6 +1,14 @@
+/**
+ * Inicio del Socio.
+ * Resumen de la semana: entrenamientos, asistencia del mes, racha, logros,
+ * progreso, próxima rutina y membresía.
+ */
+
+// Escapa el texto antes de meterlo en innerHTML, para que nadie pueda inyectar HTML o scripts (XSS).
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+// Fecha de la base (AAAA-MM-DD) a formato DD/MM/AAAA.
 function formatearFecha(iso) {
     const d = new Date(iso);
     return isNaN(d) ? "—" : d.toLocaleDateString("es-UY", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });
@@ -16,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('valorRacha').textContent = d.racha;
     document.getElementById('valorLogros').textContent = d.total_logros;
 
+    // El anillo de progreso se dibuja con CSS usando la variable --pct.
     document.getElementById('anilloProgreso').style.setProperty('--pct', d.progreso_general);
     document.getElementById('pctProgreso').textContent = `${d.progreso_general}%`;
     document.getElementById('msgProgreso').textContent = d.progreso_general > 0 ? "¡Vas por buen camino!" : "¡Empieza ahora!";

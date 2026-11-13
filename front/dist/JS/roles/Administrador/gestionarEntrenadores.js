@@ -1,7 +1,16 @@
+/**
+ * Gestión de entrenadores (Administrador).
+ *
+ * Tabla de entrenadores y modales de Ver, Editar, Nuevo y Eliminar.
+ * En Editar también se asignan socios con día y horario: la lista de asignados
+ * se guarda en un arreglo y se envía completa al presionar Guardar.
+ */
+
 let entrenadores = []; 
 let adminModal = null;
 let modalTitle, modalBody;
 
+// Filtra y dibuja la tabla de entrenadores.
 function render() {
   const q = norm($("buscar").value.trim());
   const esp = $("filtroEspecialidad").value;
@@ -96,6 +105,7 @@ document.querySelectorAll('.btn-eliminar').forEach(btn => {
   });
 }
 
+// Modal de confirmación; avisa cuántos socios quedarán sin entrenador.
 function confirmarEliminarEntrenador(entrenador) {
     const cantidad = Number(entrenador.socios_asignados) || 0;
     const avisoSocios = cantidad > 0
@@ -130,8 +140,12 @@ function confirmarEliminarEntrenador(entrenador) {
     adminModal.show();
 }
 
+// Opciones del selector de día para cada socio asignado.
 const diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
+// Arma la sección de socios asignados del modal Editar.
+// "asignados" es la lista con la que se trabaja: agregar, quitar o cambiar
+// día/horario modifica el arreglo y se vuelve a dibujar.
 async function cargarAsignaciones(e) {
     const [socios, asignaciones] = await Promise.all([
         API.request('/socios', 'GET'),
@@ -156,6 +170,7 @@ async function cargarAsignaciones(e) {
     const contResultados = document.getElementById('resultadosSocios');
     const buscar = document.getElementById('buscarSocioAsignado');
 
+    // Dibuja los socios asignados, con su día y horario editables.
     function dibujarAsignados() {
         document.getElementById('totalAsignados').textContent = `(${asignados.length})`;
 
@@ -190,6 +205,7 @@ async function cargarAsignaciones(e) {
             }));
     }
 
+    // Resultados del buscador para agregar socios (máximo 8, sin los ya asignados).
     function dibujarResultados() {
         const texto = norm(buscar.value.trim());
         if (texto === '') {
@@ -265,6 +281,7 @@ async function cargarAsignaciones(e) {
     });
 }
 
+// Pide los entrenadores a la API y dibuja la tabla.
 function cargar() {
     API.request('/entrenadores', 'GET').then(d => {
       entrenadores = Array.isArray(d) ? d : (d.data || []);
@@ -275,6 +292,7 @@ function cargar() {
     }).catch(() => aviso("No se pudo conectar con la API"));
 }
 
+// Modal para crear un entrenador nuevo.
 function abrirNuevo() {
     modalTitle.textContent = "Nuevo Entrenador";
     modalBody.innerHTML = `

@@ -1,4 +1,10 @@
 <?php
+/**
+ * Conexión a la base de datos MySQL con PDO.
+ *
+ * Los datos de conexión (host, base, usuario y contraseña) se leen del .env,
+ * así no quedan escritos en el código ni se suben a GitHub.
+ */
 class Database {
     private $host;
     private $db_name;
@@ -14,6 +20,8 @@ class Database {
         $this->password = getenv('DB_PASS');
     }
 
+    // Crea la conexión PDO. ERRMODE_EXCEPTION hace que cualquier error de SQL
+    // lance una excepción, que después atrapan los controllers con try/catch.
     public function getConnection() {
         $this->conn = null;
         try {

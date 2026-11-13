@@ -1,14 +1,27 @@
+/**
+ * Funciones comunes a las páginas del Administrador.
+ *
+ * Las usan Pagos, Productos, Ejercicios, Entrenadores e Inicio:
+ * escapar texto, formatear dinero y fechas, avisos, filtros y paginación.
+ */
+
 const $ = (id) => document.getElementById(id);
+// Escapa el texto antes de meterlo en innerHTML, para que nadie pueda inyectar HTML o scripts (XSS).
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+// Pasa a minúsculas y quita tildes, para buscar sin importar cómo se escriba.
 const norm = (s) => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+// Convierte un texto en nombre de clase CSS (ej: "Sin stock" -> "sin-stock").
 const slug = (s) => norm(s).trim().replace(/\s+/g, "-");
+// Formatea un número como dinero: 1500 -> $1.500
 const dinero = (n) => "$" + Number(n ?? 0).toLocaleString("es-UY");
+// Formatea una fecha 2026-11-13 como 13/11/2026.
 const fecha = (iso) => {
   const d = new Date(iso);
   return isNaN(d) ? esc(iso) : d.toLocaleDateString("es-UY", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });
 };
  
+// (Función vieja; las páginas actuales usan API.request de api.js.)
 async function api(ruta) {
   const token = localStorage.getItem("token");
   const res = await fetch(`${API_URL}${ruta}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
@@ -16,17 +29,20 @@ async function api(ruta) {
   return res.json();
 }
  
+// Muestra un mensaje debajo de la tabla (por ejemplo, "No hay resultados").
 function aviso(texto) {
   $("vacio").textContent = texto || "";
   $("vacio").classList.toggle("visible", !!texto);
 }
  
+// Llena un <select> de filtro con los valores únicos, ordenados.
 function llenarSelect(id, valores, textoTodos) {
   const unicos = [...new Set(valores.filter(Boolean))].sort();
   $(id).innerHTML = `<option value="">${textoTodos}</option>` +
     unicos.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join("");
 }
  
+// Hace que al escribir o cambiar un filtro se vuelva a la página 1 y se redibuje la tabla.
 function conectar(idsFiltros, render) {
   idsFiltros.forEach(id => {
     const el = $(id);
@@ -37,6 +53,8 @@ function conectar(idsFiltros, render) {
   });
 }
 
+// (Versión vieja de la tabla de socios: hoy la maneja GestionarSocio.js,
+// y esa página no carga este archivo. En las demás páginas no hace nada.)
 async function cargarSocios() {
     try {
         const respuesta = await API.request('/socios', 'GET');
@@ -80,9 +98,13 @@ async function cargarSocios() {
         console.error("Hubo un error en la petición:", error);
     }
 }
+// --- Paginación de las tablas del admin ---
 const POR_PAGINA = 10;
 let paginaActual = 1;
 
+// Recibe la lista filtrada completa, dibuja las flechas en #paginacion
+// y devuelve solo los elementos de la página actual.
+// render es la función que redibuja la tabla al cambiar de página.
 function paginar(lista, render, porPagina = POR_PAGINA) {
   const total = Math.max(1, Math.ceil(lista.length / porPagina));
 

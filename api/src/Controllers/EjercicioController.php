@@ -1,4 +1,9 @@
 <?php
+/**
+ * Lista simple de ejercicios activos (GET /api/ejercicios).
+ *
+ * La usa el socio en "Crear rutina" para elegir ejercicios.
+ */
 namespace App\Controllers;
 
 use App\Models\EjercicioModel;

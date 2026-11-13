@@ -1,3 +1,11 @@
+/**
+ * Gestión de socios (Administrador).
+ *
+ * Tabla de socios con buscador, filtros por plan y estado, paginación,
+ * y los modales de Ver, Editar, Nuevo y Eliminar (con confirmación).
+ * Esta página no carga administrador.js, por eso tiene sus propias funciones.
+ */
+
 const buscar = document.getElementById('buscar');
 const filtroPlan = document.getElementById('filtroPlan');
 const filtroEstado = document.getElementById('filtroEstado');
@@ -6,6 +14,7 @@ const sinResultados = document.getElementById('sinResultados');
 let adminModal = null;
 let modalTitle, modalBody;
 
+// Escapa el texto antes de meterlo en innerHTML, para que nadie pueda inyectar HTML o scripts (XSS).
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -16,6 +25,7 @@ const fecha = (iso) => {
 
 let listaSocios = [];
 
+// --- Paginación (copia de la de administrador.js, con otra cantidad por página) ---
 const POR_PAGINA = 15;
 let paginaActual = 1;
 
@@ -55,6 +65,7 @@ function paginar(lista, render) {
     return lista.slice(inicio, inicio + POR_PAGINA);
 }
 
+// Pide los socios a la API y dibuja la tabla.
 async function cargarSocios() {
     try {
         const respuesta = await API.request('/socios', 'GET');
@@ -69,12 +80,15 @@ async function cargarSocios() {
     }
 }
 
+// Un socio está "activo" si su cuenta está activa y tiene una membresía vigente.
 function obtenerEstado(socio) {
     const tieneMembresia = Boolean(socio.nombre_plan && socio.fecha_fin);
     const vigente = socio.fecha_fin && new Date(socio.fecha_fin + 'T23:59:59') >= new Date();
     return Number(socio.activo) === 1 && tieneMembresia && vigente ? 'activo' : 'inactivo';
 }
 
+// Filtra por texto, plan y estado, pagina y dibuja la tabla.
+// Los botones guardan el id del socio (data-id) para buscarlo en la lista completa.
 function render() {
     const texto = buscar.value.trim().toLowerCase();
     const plan = filtroPlan.value.toLowerCase();
@@ -200,6 +214,7 @@ function render() {
     });
 }
 
+// Modal de confirmación: eliminar un socio borra todos sus datos para siempre.
 function confirmarEliminarSocio(socio) {
     modalTitle.textContent = 'Eliminar socio';
     modalBody.innerHTML = `
@@ -229,6 +244,7 @@ function confirmarEliminarSocio(socio) {
     adminModal.show();
 }
 
+// Modal para crear un socio nuevo.
 function abrirNuevo() {
     modalTitle.textContent = "Nuevo Socio";
     modalBody.innerHTML = `

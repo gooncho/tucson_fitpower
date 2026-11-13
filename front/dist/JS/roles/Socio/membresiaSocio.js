@@ -1,6 +1,11 @@
+/**
+ * Membresía del Socio: plan actual, precio, estado y fechas.
+ */
+
 document.addEventListener('DOMContentLoaded', async () => {
     await cargarMembresiaSocio();
 });
+// Si no tiene plan, muestra "Sin membresía" en todos los campos.
 async function cargarMembresiaSocio() {
     const respuesta = await API.request('/membresia', 'GET');
     const d = respuesta.status === 'ok' ? respuesta.data : null;
@@ -21,6 +26,7 @@ async function cargarMembresiaSocio() {
     document.getElementById('listaBeneficios').innerHTML = d.descripcion ? `<li class="d-flex align-items-center gap-2"><i class="bi bi-check-lg fs-5 text-light"></i>${d.descripcion}</li>` : '<li>El plan no tiene beneficios descriptos.</li>';
 }
 
+// Fecha de la base a DD/MM/AAAA.
 function formatearFecha(iso) {
     if (!iso) return "—";
     const d = new Date(iso);

@@ -1,4 +1,11 @@
 <?php
+/**
+ * Datos del Entrenador: sus socios y su agenda.
+ *
+ * GET /api/mis-socios  -> socios asignados al entrenador logueado.
+ * GET /api/mi-agenda   -> sus socios ordenados por día y hora (tabla SUPERVISA).
+ * El entrenador siempre se obtiene de la sesión, no de lo que manda el navegador.
+ */
 
 namespace App\Controllers;
 
@@ -19,6 +26,7 @@ class MissociosController {
             echo json_encode($payload, JSON_UNESCAPED_UNICODE);
         }
 
+        // Solo usuarios logueados con rol Entrenador o Administrador.
         private function accesoPermitido() {
             if (empty($_SESSION['usuario_id'])) {
                 $this->responder(401, ['status' => 'error', 'message' => 'Tienes que iniciar sesion']);
@@ -31,6 +39,7 @@ class MissociosController {
             return true;
         }
 
+        // Lista de socios del entrenador logueado.
         public function index() {
             if (!$this->accesoPermitido()) {
                 return;
@@ -51,6 +60,7 @@ class MissociosController {
                 $this->responder(500, ['status' => 'error', 'message' => 'No se pudieron cargar los socios']);
             }
         }
+                // Agenda semanal del entrenador logueado.
                 public function agenda() {
             if (empty($_SESSION['usuario_id']) || ($_SESSION['rol'] ?? '') !== 'Entrenador') {
                 $this->responder(403, ['status' => 'error', 'message' => 'Solo los entrenadores tienen agenda']);

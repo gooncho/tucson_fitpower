@@ -1,4 +1,12 @@
 <?php
+/**
+ * Autocarga de clases.
+ *
+ * Cuando el código usa una clase como App\Controllers\AuthController,
+ * PHP llama a esta función, que convierte el nombre en la ruta
+ * src/Controllers/AuthController.php y la incluye. Así no hace falta
+ * escribir un require por cada archivo.
+ */
 // api/autoload.php
 spl_autoload_register(function ($class) {
     $prefix = 'App\\';

@@ -1,4 +1,12 @@
+/**
+ * Login y registro (acceso.html).
+ *
+ * Si ya hay una sesión abierta, redirige directo al panel del rol.
+ * Si no, maneja los formularios de inicio de sesión y de registro.
+ */
+
 document.addEventListener('DOMContentLoaded', async () => {
+    // Si ya estaba logueado, no tiene sentido mostrar el login.
     const sesion = await API.request('/sesion');
     if (sesion.status === 'ok') {
         redirigirSegunRol(sesion.data.rol_id);
@@ -6,11 +14,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const form = document.getElementById('form-login');
     const alerta = document.getElementById('alerta-login');
+    // Si llegó por el cierre por inactividad, se le explica por qué.
     if (new URLSearchParams(window.location.search).get('motivo') === 'inactividad') {
         alerta.textContent = 'Tu sesión se cerró por inactividad. Iniciá sesión de nuevo.';
         alerta.classList.remove('d-none');
     }
     
+    // Envía usuario y contraseña a /api/acceso; si son correctos, va al panel.
     form.addEventListener('submit', async (evento) => {
         evento.preventDefault();
         alerta.classList.add('d-none');
@@ -33,6 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const formRegistro = document.getElementById('form-registro');
     const alertaRegistro = document.getElementById('alerta-registro');
 
+    // Crea la cuenta (siempre como Socio) y entra directamente.
     formRegistro.addEventListener('submit', async (evento) => {
         evento.preventDefault();
         alertaRegistro.classList.add('d-none');
@@ -61,6 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
+    // Manda a cada usuario a su panel: 1 = Administrador, 2 = Entrenador, 3 = Socio.
     function redirigirSegunRol(rol) {
         if (rol == 1) {
             window.location.href = './roles/administrador/inicioAdministrador.html';

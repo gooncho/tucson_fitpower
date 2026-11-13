@@ -1,3 +1,10 @@
+/**
+ * Inicio del Entrenador.
+ * Resumen con la cantidad de socios y rutinas, los primeros socios asignados
+ * y las últimas rutinas creadas.
+ */
+
+// Cuántos socios y rutinas se muestran en el resumen.
 const SOCIOS_RESUMEN = 4;
 const RUTINAS_RESUMEN = 5;
 
@@ -16,6 +23,7 @@ function MensajeTabla(tbody, texto) {
     tbody.replaceChildren(fila);
 }
 
+// Tarjeta de un socio con su objetivo y el botón "Ver socio".
 function CrearSocioItem(s) {
     const item = document.createElement('div');
     item.className = 'partner-item';
@@ -45,6 +53,7 @@ function CrearSocioItem(s) {
     return item;
 }
 
+// Fila de la tabla de rutinas.
 function CrearFilaRutina(r) {
     const fila = document.createElement('tr');
     const socio = `${r.usuario} ${r.apellido || ''}`.trim();
@@ -57,6 +66,7 @@ function CrearFilaRutina(r) {
     return fila;
 }
 
+// Pide socios y rutinas al mismo tiempo (Promise.all) y llena la página.
 async function CargarResumen() {
     const listaSocios = document.getElementById('lista-socios-resumen');
     const tbodyRutinas = document.getElementById('lista-rutinas-resumen');

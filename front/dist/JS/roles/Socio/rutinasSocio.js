@@ -1,10 +1,19 @@
+/**
+ * Mis rutinas (Socio).
+ * Lista de rutinas asignadas con buscador. Cada una tiene Iniciar y Ver;
+ * las que creó el propio socio también tienen Editar.
+ */
+
 let rutinas = [];
 let rutinaModal = null;
 let modalTitle, modalBody;
 
+// Escapa el texto antes de meterlo en innerHTML, para que nadie pueda inyectar HTML o scripts (XSS).
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+// Filtra y dibuja las rutinas. Cada botón que se crea en el HTML necesita
+// su addEventListener, que se agrega más abajo.
 function renderRutinas() {
     const q = (document.getElementById('buscar-rutina')?.value || "").toLowerCase().trim();
     const contenedor = document.getElementById('lista-rutinas');
@@ -81,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarRutinas();
 });
 
+// Pide las rutinas a la API y las dibuja.
 async function cargarRutinas() {
     try {
         const respuesta = await API.request('/mis-rutinas', 'GET');

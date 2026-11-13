@@ -1,15 +1,25 @@
+/**
+ * Reseñas de productos (dentro del modal de la tienda).
+ *
+ * Al abrirse el modal, carga las reseñas del producto, el promedio y la
+ * cantidad por estrellas. Si hay sesión, permite escribir una reseña.
+ */
+
 let idProductoActual = null;
 let sesionActiva = false;
 let puntuacionElegida = 0;
 
+// Atajo de document.getElementById.
 function porId(id) {
     return document.getElementById(id);
 }
 
+// "1 reseña" / "3 reseñas".
 function numero(n, singular, plural) {
     return `${n} ${n === 1 ? singular : plural}`;
 }
 
+// Fecha relativa: "hoy", "hace 3 días", etc.
 function tiempo(fechaTexto) {
     const [anio, mes, dia] = String(fechaTexto).split('-').map(Number);
     const fecha = new Date(anio, mes - 1, dia);
@@ -25,6 +35,7 @@ function tiempo(fechaTexto) {
     return 'Hace ' + numero(Math.floor(dias / 365), 'año', 'años');
 }
 
+// Estrellas llenas y vacías según la puntuación (redondeada).
 function crearEstrellas(valor) {
     const contenedor = document.createElement('div');
     contenedor.className = 'text-warning';
@@ -38,6 +49,7 @@ function crearEstrellas(valor) {
     return contenedor;
 }
 
+// Promedio, total y barras con la cantidad de reseñas por estrella.
 function pintarResumen(data) {
     const promedio = Number(data.promedio);
 
@@ -78,6 +90,7 @@ function pintarResumen(data) {
     }
 }
 
+// Tarjeta de una reseña (con textContent, así el comentario nunca se interpreta como HTML).
 function crearResena(r) {
     const fila = document.createElement('div');
     fila.className = 'd-flex gap-3 py-3 border-top';
@@ -123,6 +136,7 @@ function pintarLista(resenas) {
     lista.replaceChildren(...resenas.map(crearResena));
 }
 
+// Pide las reseñas del producto y las muestra.
 async function cargarResenas(id) {
     porId('lista-resenas').textContent = 'Cargando reseñas...';
 
@@ -138,6 +152,7 @@ async function cargarResenas(id) {
     pintarLista(res.data.resenas);
 }
 
+// Estrellas clickeables para elegir la puntuación.
 function pintarSelector() {
     porId('resena-selector').querySelectorAll('button').forEach((boton, i) => {
         boton.firstElementChild.className = 'bi ' + (i < puntuacionElegida ? 'bi-star-fill' : 'bi-star');
@@ -152,11 +167,13 @@ function reiniciarFormulario() {
     pintarSelector();
 }
 
+// Con sesión: botón "Escribir reseña". Sin sesión: link para iniciar sesión.
 function mostrarAccionesSegunSesion() {
     porId('btn-escribir-resena').classList.toggle('d-none', !sesionActiva);
     porId('resena-login').classList.toggle('d-none', sesionActiva);
 }
 
+// Valida y envía la reseña; después recarga la lista.
 async function publicarResena() {
     const error = porId('resena-error');
     const comentario = porId('resena-comentario').value.trim();

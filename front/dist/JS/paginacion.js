@@ -1,7 +1,17 @@
+/**
+ * Paginación reutilizable (la usan las tablas del entrenador).
+ *
+ * Uso:
+ *   const pag = CrearPaginacion('id-del-div', 10, lista => { ...dibujar la lista... });
+ *   pag.mostrar(listaCompleta);   // dibuja la página actual
+ *   pag.reiniciar();              // vuelve a la página 1 (al filtrar)
+ */
+
 function CrearPaginacion(idControles, porPagina, dibujar) {
     let lista = [];
     let pagina = 1;
 
+    // Crea un botón de flecha (anterior/siguiente).
     function crearBoton(icono, etiqueta, deshabilitado, alHacerClic) {
         const boton = document.createElement('button');
         boton.type = 'button';
@@ -15,6 +25,7 @@ function CrearPaginacion(idControles, porPagina, dibujar) {
         return boton;
     }
 
+    // Dibuja la página actual y las flechas con "Página X de Y".
     function render() {
         const total = Math.max(1, Math.ceil(lista.length / porPagina));
         if (pagina > total) pagina = total;

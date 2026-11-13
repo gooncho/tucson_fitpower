@@ -1,4 +1,14 @@
+/**
+ * Historial de entrenamientos (Socio).
+ * Tabla con buscador por rutina y filtro por fecha. En el celular cada fila
+ * se ve como una tarjeta (ver Socio.css, usa los data-label).
+ */
+
 let historialEntrenamientos = [];
+
+// Escapa el texto antes de meterlo en innerHTML, para que nadie pueda inyectar HTML o scripts (XSS).
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 document.addEventListener('DOMContentLoaded', async () => {
     await cargarHistorial();
@@ -13,6 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         inputFecha.addEventListener('change', renderTabla);
     }
 });
+// Pide el historial a la API y dibuja la tabla.
 async function cargarHistorial() {
     try {
         const respuesta = await API.request('/entrenamientos', 'GET');
@@ -24,6 +35,7 @@ async function cargarHistorial() {
     }
 }
 
+// Filtra por texto y fecha (el input date entrega AAAA-MM-DD, igual que la base).
 function renderTabla() {
     const texto = (document.getElementById('buscarEntrenamiento')?.value || "").toLowerCase().trim();
     const fechaFiltro = document.getElementById('filtroFecha')?.value || "";
@@ -55,12 +67,12 @@ function renderTabla() {
         }
         return `
             <tr class="border-bottom border-secondary" style="font-size: 14px;">
-                <td class="py-3 text-light">${fechaMostrar}</td>
-                <td class="py-3 text-light fw-medium">${item.rutina}</td>
-                <td class="py-3 text-muted">${item.duracion}</td>
-                <td class="py-3 text-end">
+                <td class="py-3 text-light" data-label="Fecha">${esc(fechaMostrar || "—")}</td>
+                <td class="py-3 text-light fw-medium" data-label="Rutina">${esc(item.rutina || "—")}</td>
+                <td class="py-3 text-light" data-label="Duración">${esc(item.duracion || "—")}</td>
+                <td class="py-3 text-end" data-label="Estado">
                     <span class="px-3 py-1 rounded-pill fw-semibold" style="font-size: 12px; ${badgeStyle}">
-                        ${item.estado}
+                        ${esc(item.estado)}
                     </span>
                 </td>
             </tr>

@@ -1,3 +1,13 @@
+/* ==================================================================
+   Estilos base de los paneles de Socio y Entrenador.
+
+   Colores del sitio: fondo #0a0a0a, tarjetas #151515, bordes #2a2a2a,
+   texto #f4f4f2 y verde lima #cdfa3f para lo destacado.
+   Incluye: barra lateral, menú hamburguesa, tarjetas, botones, perfil,
+   paginación y el modal de rutinas.
+   ================================================================== */
+
+/* --- Estructura general --- */
 body {
     margin: 0;
     padding: 0;
@@ -66,6 +76,7 @@ h6 {
     margin-bottom: 0;
 }
 
+/* --- Barra lateral (fija a la izquierda) --- */
 .sidebar {
     position: fixed;
     top: 0;
@@ -142,6 +153,7 @@ h6 {
     color: #f4f4f2;
 }
 
+/* --- Tarjetas de números del inicio --- */
 .metric-card {
     background: #151515;
     border: 1px solid #2a2a2a;
@@ -223,6 +235,7 @@ h6 {
     color: #cdfa3f;
 }
 
+/* --- Botón principal verde --- */
 .btn-lime {
     display: inline-flex;
     align-items: center;
@@ -246,6 +259,9 @@ h6 {
     color: #0a0a0a;
 }
 
+/* --- Menú hamburguesa (celular) ---
+   Un checkbox oculto guarda si el menú está abierto; el botón y el fondo
+   oscuro son <label> de ese checkbox, así funciona sin JavaScript. */
 .menu-toggle {
     display: none;
 }
@@ -285,6 +301,7 @@ h6 {
     z-index: 999;
 }
 
+/* En el celular la barra se esconde a la izquierda y entra al tocar el botón. */
 @media (max-width: 767px) {
 
     .hamburger-btn {
@@ -313,6 +330,7 @@ h6 {
     }
 }
 
+/* --- Página "Mi perfil" --- */
 .perfil-cabecera {
     display: flex;
     align-items: center;
@@ -387,6 +405,7 @@ h6 {
     color: #f4f4f2;
 }
 
+/* --- Botones y etiquetas compartidos con las tablas --- */
 .admin-btn {
     display: inline-flex;
     align-items: center;
@@ -475,6 +494,7 @@ h6 {
     object-fit: cover;
 }
 
+/* --- Paginación de las tablas --- */
 .paginacion {
     display: flex;
     align-items: center;
@@ -502,6 +522,7 @@ h6 {
     .menu-toggle:checked ~ .sidebar-overlay { display: block; }
 }
 
+/* --- Modal de rutinas de dos paneles (disponibles / elegidos) --- */
 .rut-panel {
     background: #151515;
     border: 1px solid #2a2a2a;
@@ -584,6 +605,7 @@ h6 {
     color: #9a9a9a;
     padding: 24px 0;
 }
+/* --- Campos de formulario en modo oscuro: mismos colores que las tarjetas --- */
 [data-bs-theme="dark"] .form-control {
     background: #151515;
     border-color: #2a2a2a;
@@ -594,4 +616,24 @@ h6 {
     background: #151515;
     border-color: #cdfa3f;
     box-shadow: 0 0 0 3px rgba(205, 250, 63, 0.15);
+}
+/* --- Perfil en el celular: avatar y nombre arriba, botones abajo en una fila --- */
+@media (max-width: 575px) {
+    .perfil-cabecera {
+        flex-wrap: wrap;
+    }
+
+    .perfil-identidad {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .perfil-cabecera > .d-flex {
+        width: 100%;
+    }
+
+    .perfil-cabecera > .d-flex > * {
+        flex: 1;
+        text-align: center;
+    }
 }

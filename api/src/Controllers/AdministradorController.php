@@ -1,4 +1,11 @@
 <?php
+/**
+ * Datos del inicio del administrador (GET /api/inicio-administrador).
+ *
+ * Junta en una sola respuesta los números del panel: socios, entrenadores,
+ * membresías activas, ejercicios, ingresos del mes, distribución de planes,
+ * productos con poco stock y membresías que vencen en los próximos 7 días.
+ */
 namespace App\Controllers;
 
 class AdministradorController {
@@ -11,6 +18,8 @@ class AdministradorController {
         }
     }
 
+    // Solo el Administrador puede usar esta función.
+    // Cada consulta llena una parte del panel; todo se devuelve junto en "data".
     public function inicio() {
         header('Content-Type: application/json; charset=utf-8');
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {

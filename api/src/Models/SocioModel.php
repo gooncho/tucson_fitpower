@@ -1,4 +1,7 @@
 <?php
+/**
+ * Consultas de socios para el panel del Administrador.
+ */
 namespace App\Models;
 
 class SocioModel {
@@ -8,6 +11,7 @@ class SocioModel {
         $this->db = $db;
     }
 
+    // Socios con su plan, fechas, estado de la cuenta y entrenador asignado.
     public function obtenerSocios() {
         $sql = "SELECT u.id_usuario, p.id_persona, u.nombre_usuario, u.email, u.activo, p.apellido, pl.nombre AS nombre_plan, p.fecha_inicio, p.fecha_fin, t.nombre_rol,
             p.id_entrenador, ue.nombre_usuario AS entrenador
@@ -21,6 +25,7 @@ class SocioModel {
         return $this->db->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    // Actualiza usuario, email y si la cuenta está activa (solo usuarios con rol Socio).
     public function actualizarSocio($id, $datos) {
         $stmt = $this->db->prepare("UPDATE USUARIO u INNER JOIN TIPOUSUARIO t ON t.id_rol = u.id_rol
                                     SET u.nombre_usuario = :nombre, u.email = :email, u.activo = :activo
@@ -35,6 +40,8 @@ class SocioModel {
     }
 
 
+    // Elimina al socio y todo lo relacionado (rutinas asignadas, progreso, compras,
+    // reseñas, etc.) en una transacción. Es permanente.
     public function eliminarSocio($id) {
         $this->db->beginTransaction();
         try {
@@ -54,7 +61,7 @@ class SocioModel {
             $stmt = $this->db->prepare('DELETE FROM DETALLECOMPRA WHERE id_compra IN (SELECT id_compra FROM COMPRA WHERE id_persona = :id)');
             $stmt->execute(['id' => $idPersona]);
 
-            foreach (['CREA', 'PROGRESO', 'OBJETIVO', 'OBTIENE', 'RESENA', 'ASISTENCIA', 'MENSAJE', 'ASIGNA'] as $tabla) {
+            foreach (['CREA', 'PROGRESO', 'OBJETIVO', 'OBTIENE', 'RESENA', 'ASISTENCIA', 'ENTRENAMIENTO_REALIZADO', 'MENSAJE', 'ASIGNA'] as $tabla) {
                 $stmt = $this->db->prepare('DELETE FROM ' . $tabla . ' WHERE id_persona = :id');
                 $stmt->execute(['id' => $idPersona]);
             }
@@ -73,6 +80,7 @@ class SocioModel {
         }
     }
 
+    // Crea USUARIO (rol Socio, contraseña con hash) y su PERSONA con el plan y sus fechas.
     public function crearSocio($usuario, $apellido, $email, $password, $idPlan) {
         $this->db->beginTransaction();
         try {

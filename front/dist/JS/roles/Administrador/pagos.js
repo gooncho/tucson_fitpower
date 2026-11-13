@@ -1,7 +1,15 @@
+/**
+ * Pagos (Administrador).
+ *
+ * Lista de compras con buscador y filtros. Desde Editar se cambia el estado
+ * a "Pagada" cuando el socio paga en recepción.
+ */
+
 let pagos = [];
 let adminModal = null;
 let modalTitle, modalBody;
 
+// Filtra, pagina y dibuja la tabla de pagos.
 function render() {
   const q = norm($("buscar").value.trim());
   const razon = norm($("filtroRazon").value);

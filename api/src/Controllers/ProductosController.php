@@ -1,4 +1,8 @@
 <?php 
+/**
+ * Productos para la tienda del socio (GET /api/producto).
+ * Devuelve todos los productos con el nombre de su categoría.
+ */
 namespace App\Controllers;
 
 class ProductosController {

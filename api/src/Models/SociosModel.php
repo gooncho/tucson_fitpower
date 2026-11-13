@@ -1,4 +1,7 @@
 <?php
+/**
+ * Consultas para el Entrenador: sus socios y su agenda.
+ */
 
 namespace App\Models;
 
@@ -8,6 +11,7 @@ class SociosModel {
     public function __construct($db) {
         $this->db = $db;
     }
+        // Socios asignados al entrenador, con su objetivo, plan y vencimiento.
         public function listar($idEntrenador = null) {
             $sql = 'SELECT  p.id_persona,
                             u.nombre_usuario AS usuario,
@@ -34,11 +38,14 @@ class SociosModel {
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         }
 
+        // id_persona del usuario logueado.
         public function buscarPersonaPorUsuario($idUsuario) {
             $stmt = $this->db->prepare('SELECT id_persona FROM PERSONA WHERE id_usuario = :id LIMIT 1');
             $stmt->execute(['id' =>  $idUsuario]);
             return $stmt->fetchColumn();
             }
+            // Horarios del entrenador (SUPERVISA) ordenados de lunes a domingo y por hora,
+            // con la última rutina asignada a cada socio. Solo cuentas activas.
             public function agenda($idEntrenador) {
             $stmt = $this->db->prepare(
                 "SELECT s.id_persona,

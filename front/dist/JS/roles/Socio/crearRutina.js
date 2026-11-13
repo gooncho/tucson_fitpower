@@ -1,8 +1,20 @@
+/**
+ * Crear / editar rutina (Socio).
+ *
+ * La misma página sirve para las dos cosas:
+ *   CrearRutina.html        -> crea una rutina nueva
+ *   CrearRutina.html?id=5   -> edita la rutina 5 (solo si la creó el socio)
+ * Los ejercicios elegidos se guardan en ejerciciosSeleccionados, cada uno
+ * con series, repeticiones y descanso editables.
+ */
+
 let ejerciciosDisponibles = [];
 let ejerciciosSeleccionados = [];
 
+// Id de la rutina que se edita (sale de ?id= en la URL) o null si es nueva.
 const RutinaEditada = Number(new URLSearchParams(window.location.search).get('id')) || null;
 
+// Escapa el texto antes de meterlo en innerHTML, para que nadie pueda inyectar HTML o scripts (XSS).
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -17,12 +29,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('btnGuardarRutina')?.addEventListener('click', guardarRutina);
 });
 
+// Pide la lista de ejercicios activos.
 async function cargarEjerciciosDisponibles() {
     const respuesta = await API.request('/ejercicios', 'GET');
     ejerciciosDisponibles = Array.isArray(respuesta) ? respuesta : (respuesta?.data || []);
     renderEjerciciosDisponibles();
 }
 
+// Modo edición: trae el nombre (de /mis-rutinas) y los ejercicios (de /rutinas/:id).
+// Si la rutina no es del socio, vuelve a la lista.
 async function cargarRutinaParaEditar() {
     const [lista, detalle] = await Promise.all([
         API.request('/mis-rutinas', 'GET'),
@@ -52,6 +67,7 @@ async function cargarRutinaParaEditar() {
     renderEjerciciosSeleccionados();
 }
 
+// Lista de la izquierda: ejercicios que coinciden con el buscador y todavía no se eligieron.
 function renderEjerciciosDisponibles() {
     const q = (document.getElementById('buscarEjercicio')?.value || "").toLowerCase().trim();
     const contenedor = document.getElementById('listaEjerciciosDisponibles');
@@ -92,6 +108,7 @@ function renderEjerciciosDisponibles() {
     });
 }
 
+// Input numérico que guarda su valor directamente en el ejercicio elegido.
 function crearCampo(item, campo, etiqueta, min) {
     const label = document.createElement('label');
     label.className = 'rut-campo';
@@ -112,6 +129,7 @@ function crearCampo(item, campo, etiqueta, min) {
     return label;
 }
 
+// Lista de la derecha: ejercicios elegidos con sus campos y el botón para quitar.
 function renderEjerciciosSeleccionados() {
     const contenedor = document.getElementById('listaEjerciciosSeleccionados');
     const cantidad = ejerciciosSeleccionados.length;
@@ -161,6 +179,7 @@ function renderEjerciciosSeleccionados() {
     }));
 }
 
+// Valida los datos y guarda: PUT si se está editando, POST si es nueva.
 async function guardarRutina() {
     const error = document.getElementById('errorRutina');
     const nombre = document.getElementById('nombreRutina').value.trim();

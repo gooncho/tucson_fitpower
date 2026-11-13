@@ -1,9 +1,18 @@
+/**
+ * Gestión de ejercicios (Administrador).
+ *
+ * Tabla con buscador, filtro por grupo muscular y por estado (activos/desactivados),
+ * paginación y los modales de Ver, Editar, Nuevo (con imagen), Desactivar y Reactivar.
+ */
+
 let ejercicios = [];
 let adminModal = null;
 let modalTitle, modalBody;
 
+// Separa "Pecho, Tríceps" en ["Pecho", "Tríceps"] para el filtro por grupo.
 const grupos = (e) => String(e.grupo_muscular ?? "").split(/[-,\\/]/).map(g => g.trim()).filter(Boolean);
 
+// Pide los ejercicios activos o desactivados según el filtro de estado.
 function cargar() {
   const estado = $("filtroEstado").value;
   API.request(`/ejercicio?estado=${estado}`, 'GET').then(respuesta => {
@@ -13,6 +22,8 @@ function cargar() {
   }).catch(() => aviso("No se pudo conectar con la API"));
 }
 
+// La imagen se llama {id}.png, .jpg o .webp: prueba cada extensión
+// hasta encontrar la que existe; si ninguna existe, oculta la imagen.
 function mostrarImagenEjercicio(img, id) {
   const extensiones = ['png', 'jpg', 'webp'];
   let intento = 0;
@@ -27,6 +38,7 @@ function mostrarImagenEjercicio(img, id) {
   img.src = `/front/dist/assets/Ejercicios/${id}.${extensiones[0]}`;
 }
 
+// Filtra, pagina y dibuja la tabla. En "Desactivados" el botón es Reactivar.
 function render() {
   const q = norm($("buscar").value.trim());
   const g = $("filtroGrupo").value;
@@ -80,7 +92,7 @@ function render() {
 document.querySelectorAll('.btn-eliminar').forEach(btn => {
   btn.addEventListener('click', ev => {
     ev.preventDefault();
-    confirmarDesactivarEjercicio(lista[btn.dataset.index]);
+    confirmarEliminarEjercicio(lista[btn.dataset.index]);
   });
 });
 
@@ -93,7 +105,8 @@ document.querySelectorAll('.btn-eliminar').forEach(btn => {
   });
 }
 
-function confirmarDesactivarEjercicio(e) {
+// Modal de confirmación para desactivar un ejercicio.
+function confirmarEliminarEjercicio(e) {
   modalTitle.textContent = 'Eliminar ejercicio';
   modalBody.innerHTML = `
     <p>¿Seguro que querés eliminar <strong>${esc(e.nombre)}</strong>?</p>
@@ -122,6 +135,13 @@ function confirmarDesactivarEjercicio(e) {
   adminModal.show();
 }
 
+// Mensaje arriba de la tabla (por ejemplo, si falló la subida de la imagen).
+function avisoEjercicios(texto) {
+  const aviso = document.getElementById('avisoEjercicios');
+  if (aviso) aviso.textContent = texto || '';
+}
+
+// Reactiva un ejercicio y lo saca de la lista actual.
 async function cambiarEstado(btn, e, metodo, ruta, sufijo = '') {
   btn.style.pointerEvents = 'none';
   try {
@@ -140,6 +160,7 @@ async function cambiarEstado(btn, e, metodo, ruta, sufijo = '') {
   }
 }
 
+// Modal para editar los datos de un ejercicio.
 function abrirEditar(e) {
   modalTitle.textContent = "Editar Ejercicio";
   modalBody.innerHTML = `
@@ -181,7 +202,10 @@ function abrirEditar(e) {
   adminModal.show();
 }
 
+// Modal para crear un ejercicio. Primero se crea y, si se eligió imagen,
+// se sube después usando el id que devolvió la API.
 function abrirNuevo() {
+  avisoEjercicios('');
   modalTitle.textContent = "Nuevo Ejercicio";
   modalBody.innerHTML = `
     <form id="formNuevoEjercicio">
@@ -235,7 +259,7 @@ function abrirNuevo() {
         formulario.append('imagen', archivo);
         const resImg = await API.subir(`/ejercicio/${respuesta.id}/imagen`, formulario);
         if (!resImg || resImg.status !== 'ok') {
-          alert('El ejercicio se creó, pero la imagen no: ' + (resImg?.message || 'error desconocido'));
+          avisoEjercicios('El ejercicio se creó, pero no se pudo guardar la imagen: ' + (resImg?.message || 'error desconocido'));
         }
       }
       adminModal.hide();

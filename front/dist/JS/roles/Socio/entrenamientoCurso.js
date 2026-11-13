@@ -1,18 +1,35 @@
+/**
+ * Entrenamiento en curso (Socio): EntrenamientoCurso.html?id=5
+ *
+ * Muestra los ejercicios de la rutina de a uno, con un cronómetro.
+ * El socio puede ajustar peso y repeticiones de cada serie y marcarlas.
+ * Al terminar, se guarda el entrenamiento (rutina y minutos) en el historial.
+ */
+
 let rutinaActual = null;
 let ejercicios = [];
+// Posición del ejercicio que se está mostrando.
 let indiceEjercicioActual = 0;
 let segundosTranscurridos = 0;
 let timerInterval = null;
+// Evita guardar el mismo entrenamiento dos veces (doble clic).
+let entrenamientoGuardado = false;
+
+// Id de la rutina, tomado de ?id= en la URL. Sin id no se puede entrenar.
+const idRutina = Number(new URLSearchParams(window.location.search).get('id')) || null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    iniciarCronometro();
+    if (!idRutina) {
+        document.getElementById('nombreRutina').textContent = 'No se eligió ninguna rutina';
+        document.getElementById('nombreEjercicio').textContent = 'Rutina no disponible';
+        document.getElementById('infoEjercicio').textContent = 'Volvé a Rutinas y apretá "Iniciar" en la que quieras hacer.';
+        return;
+    }
 
-    const params = new URLSearchParams(window.location.search);
-    const idRutina = params.get('id') || 1;
+    iniciarCronometro();
 
     try {
         const respuesta = await API.request(`/rutinas/${idRutina}`, 'GET');
-        console.log("Respuesta API rutina:", respuesta);
 
         let nombre = `Rutina #${idRutina}`;
         let listaEjercicios = [];
@@ -46,13 +63,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    document.getElementById('btnSiguiente').addEventListener('click', () => {
+    // "Siguiente": pasa al próximo ejercicio; en el último, termina el entrenamiento.
+    document.getElementById('btnSiguiente').addEventListener('click', async () => {
         if (indiceEjercicioActual < ejercicios.length - 1) {
             indiceEjercicioActual++;
             renderEjercicioActual();
         } else {
-            alert("¡Has completado todos los ejercicios del entrenamiento!");
-            window.location.href = "Rutinas.html";
+            await finalizarEntrenamiento();
         }
     });
     document.getElementById('btnAnterior').addEventListener('click', () => {
@@ -61,11 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderEjercicioActual();
         }
     });
-    document.getElementById('btnFinalizar').addEventListener('click', () => {
-        if (confirm("¿Estás seguro de que deseas finalizar el entrenamiento?")) {
-            window.location.href = "Rutinas.html";
-        }
-    });
+    document.getElementById('btnFinalizar').addEventListener('click', finalizarEntrenamiento);
     document.getElementById('btnAnadirSerie').addEventListener('click', () => {
         const ej = ejercicios[indiceEjercicioActual];
         if (!ej.listaSeries) {
@@ -79,6 +92,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
+// Guarda el entrenamiento con la duración en minutos y va al historial.
+async function finalizarEntrenamiento() {
+    if (entrenamientoGuardado) return;
+
+    const error = document.getElementById('errorEntrenamiento');
+    const boton = document.getElementById('btnFinalizar');
+    if (boton) boton.disabled = true;
+
+    const duracion = Math.ceil(segundosTranscurridos / 60);
+    const respuesta = await API.request('/entrenamientos/completar', 'POST', {
+        id_rutina: idRutina,
+        duracion: duracion
+    });
+
+    if (!respuesta || respuesta.status !== 'ok') {
+        if (error) error.textContent = respuesta?.message || 'No se pudo guardar el entrenamiento.';
+        if (boton) boton.disabled = false;
+        return;
+    }
+
+    entrenamientoGuardado = true;
+    clearInterval(timerInterval);
+    window.location.href = 'Entrenamientos.html';
+}
+
+// Suma un segundo por segundo y actualiza el reloj en pantalla.
 function iniciarCronometro() {
     timerInterval = setInterval(() => {
         segundosTranscurridos++;
@@ -89,6 +128,7 @@ function iniciarCronometro() {
     }, 1000);
 }
 
+// Muestra el ejercicio actual. La primera vez arma sus series con valores iniciales.
 function renderEjercicioActual() {
     const ej = ejercicios[indiceEjercicioActual];
     
@@ -116,6 +156,7 @@ function renderEjercicioActual() {
     renderSeries(ej);
 }
 
+// Dibuja las series del ejercicio; los cambios de peso y repeticiones se guardan en ej.listaSeries.
 function renderSeries(ej) {
     const contenedor = document.getElementById('contenedorSeries');
     contenedor.innerHTML = ej.listaSeries.map((s, idx) => `

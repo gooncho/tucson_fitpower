@@ -1,10 +1,19 @@
+/**
+ * Agenda semanal del Entrenador.
+ *
+ * Muestra, de lunes a domingo, los socios que atiende cada día con su horario
+ * y su última rutina. El día de hoy se resalta.
+ */
+
 const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
+// Nombre del día de hoy en español (getDay() empieza en domingo = 0).
 function NombreDeHoy() {
     // getDay(): 0 = domingo, 1 = lunes... Lo pasamos a 0 = lunes
     return DIAS[(new Date().getDay() + 6) % 7];
 }
 
+// Atajo para crear un elemento HTML con clase y texto.
 function Elemento(tag, clase, texto) {
     const el = document.createElement(tag);
     if (clase) el.className = clase;
@@ -12,10 +21,12 @@ function Elemento(tag, clase, texto) {
     return el;
 }
 
+// Nombre de usuario + apellido del socio.
 function NombreSocio(s) {
     return `${s.usuario} ${s.apellido || ''}`.trim();
 }
 
+// Tarjeta de un socio dentro del día: horario, nombre y rutina.
 function CrearSesion(s) {
     const fila = Elemento('div', 'agenda-sesion');
 
@@ -30,6 +41,7 @@ function CrearSesion(s) {
     return fila;
 }
 
+// Columna de un día con todas sus sesiones.
 function CrearDia(dia, sesiones, esHoy) {
     const bloque = Elemento('div', 'agenda-dia' + (esHoy ? ' agenda-hoy' : ''));
 
@@ -44,6 +56,7 @@ function CrearDia(dia, sesiones, esHoy) {
     return bloque;
 }
 
+// Agrupa las sesiones por día y dibuja la semana.
 function MostrarAgenda(datos) {
     const semana = document.getElementById('agenda-semana');
     const hoy = NombreDeHoy();
@@ -68,6 +81,7 @@ function MostrarAgenda(datos) {
     );
 }
 
+// Pide la agenda a la API y la muestra.
 async function CargarAgenda() {
     const semana = document.getElementById('agenda-semana');
     semana.replaceChildren(Elemento('p', 'agenda-vacio', 'Cargando agenda...'));

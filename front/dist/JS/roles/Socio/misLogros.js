@@ -1,3 +1,7 @@
+/**
+ * Mis logros (Socio): tarjetas con los logros obtenidos.
+ */
+
 document.addEventListener('DOMContentLoaded', cargarLogros);
 
 async function cargarLogros() {
@@ -15,6 +19,7 @@ async function cargarLogros() {
     }).join('');
 }
 
+// Escapa el texto antes de meterlo en innerHTML, para que nadie pueda inyectar HTML o scripts (XSS).
 function escLogro(valor) {
     return String(valor ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }

@@ -1,4 +1,12 @@
 <?php
+/**
+ * Lector del archivo .env.
+ *
+ * Lee cada línea NOMBRE=valor y la guarda como variable de entorno,
+ * para que database.php pueda usar getenv('DB_HOST'), etc.
+ * Ignora líneas vacías y comentarios (#), y no pisa variables que ya
+ * vengan definidas por Docker.
+ */
 namespace App\Utils;
 
 class EnvLoader {

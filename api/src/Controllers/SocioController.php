@@ -1,4 +1,10 @@
 <?php
+/**
+ * Gestión de socios desde el panel del Administrador (/api/socios).
+ *
+ * Listar, crear, editar (incluido activar/desactivar la cuenta) y eliminar socios.
+ * Todas las funciones son solo para el Administrador.
+ */
 namespace App\Controllers;
 
 use App\Models\SocioModel;
@@ -14,6 +20,7 @@ class SocioController {
         }
     }
 
+    // GET /api/socios: socios con su plan, vencimiento y entrenador.
     public function listar() {
 
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
@@ -31,6 +38,7 @@ class SocioController {
         ], JSON_UNESCAPED_UNICODE);
     }
 
+    // PUT /api/socios/:id: edita usuario, email y estado (activo/inactivo).
     public function actualizar($id) {
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
             http_response_code(403);
@@ -59,6 +67,7 @@ class SocioController {
     }
 
 
+    // DELETE /api/socios/:id: elimina al socio y todos sus datos (ver SocioModel).
     public function eliminar($id) {
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
             http_response_code(403);
@@ -81,6 +90,7 @@ class SocioController {
         }
     }
 
+    // POST /api/socios: crea el usuario (rol Socio) y su persona con el plan elegido.
     public function crear() {
 
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {

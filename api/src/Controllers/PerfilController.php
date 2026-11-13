@@ -1,4 +1,10 @@
 <?php
+/**
+ * Perfil del usuario logueado (/api/perfil), para los tres roles.
+ *
+ * Ver los datos, editarlos (apellido, fecha de nacimiento, altura, especialidad
+ * si es entrenador y "sobre mí") y subir la foto de perfil.
+ */
 
 namespace App\Controllers;
 
@@ -19,6 +25,7 @@ class PerfilController {
         echo json_encode($payload, JSON_UNESCAPED_UNICODE); 
     }
 
+    // GET /api/perfil: datos del usuario de la sesión.
     public function ver() {
         if (empty($_SESSION['usuario_id'])) {
             $this->responder(401, ['status' => 'error', 'message' => 'Tienes que iniciar sesion']);
@@ -38,6 +45,8 @@ class PerfilController {
             $this->responder(500, ['status' => 'error', 'message' => 'No se pudo cargar el perfil']);
         }
     }
+    // PUT /api/perfil: valida cada campo antes de guardarlo.
+    // La especialidad solo se guarda si el usuario es Entrenador.
     public function actualizar() {
         if (empty($_SESSION['usuario_id'])) {
             $this->responder(401, ['status' => 'error', 'message' => 'Tienes que iniciar sesion']);
@@ -106,6 +115,9 @@ class PerfilController {
         }
     }
 
+    // POST /api/perfil/foto
+    // Valida que sea una imagen real de hasta 2 MB, la guarda en assets/perfiles/
+    // con un nombre armado por el servidor y borra la foto anterior.
     public function subirFoto() {
         if (empty($_SESSION['usuario_id'])) {
             $this->responder (401, ['status' => 'error', 'message' => 'Tienes que iniciar sesion']);

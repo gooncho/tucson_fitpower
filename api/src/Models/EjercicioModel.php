@@ -1,4 +1,7 @@
 <?php
+/**
+ * Lista de ejercicios activos para el socio.
+ */
 namespace App\Models;
 
 class EjercicioModel {
