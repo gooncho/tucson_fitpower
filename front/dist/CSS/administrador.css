@@ -438,3 +438,33 @@
     border-color: #2a2a2a;
     color: #f4f4f2;
 }
+@media (min-width: 768px) {
+    .admin-sidebar {
+        display: flex !important;
+        flex-direction: column;
+    }
+}
+
+.admin-sidebar > .nav {
+    flex: 1;
+}
+
+.admin-sidebar .nav > hr {
+    margin: auto 0 14px;
+    border: 0;
+    border-top: 1px solid #2a2a2a;
+    opacity: 1;
+}
+
+.admin-sidebar,
+.admin-sidebar .admin-link {
+    font-family: "Inter", sans-serif;
+    font-size: 15px;
+}
+
+.admin-sidebar .admin-link {
+    display: block;
+    font-weight: 500;
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
