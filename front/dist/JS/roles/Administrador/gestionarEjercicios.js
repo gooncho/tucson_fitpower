@@ -77,12 +77,12 @@ function render() {
     });
   });
 
-    document.querySelectorAll('.btn-eliminar').forEach(btn => {
-    btn.addEventListener('click', ev => {
-      ev.preventDefault();
-      cambiarEstado(btn, lista[btn.dataset.index], 'DELETE', '/ejercicio/');
-    });
+document.querySelectorAll('.btn-eliminar').forEach(btn => {
+  btn.addEventListener('click', ev => {
+    ev.preventDefault();
+    confirmarDesactivarEjercicio(lista[btn.dataset.index]);
   });
+});
 
   document.querySelectorAll('.btn-reactivar').forEach(btn => {
     btn.addEventListener('click', ev => {
@@ -91,6 +91,35 @@ function render() {
       cambiarEstado(btn, e, 'PUT', '/ejercicio/', '/reactivar');
     });
   });
+}
+
+function confirmarDesactivarEjercicio(e) {
+  modalTitle.textContent = 'Eliminar ejercicio';
+  modalBody.innerHTML = `
+    <p>¿Seguro que querés eliminar <strong>${esc(e.nombre)}</strong>?</p>
+    <p class="small" style="color: #9c9c98;">
+      Dejará de aparecer en la lista y al crear rutinas. Las rutinas que ya lo usan lo mantienen.
+      Podés reactivarlo desde "Desactivados".
+    </p>
+    <p id="errorEliminar" class="text-danger small mb-3"></p>
+    <button type="button" class="admin-btn peligro" id="btnConfirmarEliminar">Sí, eliminar</button>`;
+
+  document.getElementById('btnConfirmarEliminar').addEventListener('click', async ev => {
+    const boton = ev.currentTarget;
+    boton.disabled = true;
+
+    const respuesta = await API.request('/ejercicio/' + e.id_ejercicio, 'DELETE');
+    if (respuesta.status === 'ok') {
+      ejercicios = ejercicios.filter(item => item.id_ejercicio !== e.id_ejercicio);
+      adminModal.hide();
+      render();
+    } else {
+      boton.disabled = false;
+      document.getElementById('errorEliminar').textContent = respuesta.message || 'No se pudo eliminar el ejercicio';
+    }
+  });
+
+  adminModal.show();
 }
 
 async function cambiarEstado(btn, e, metodo, ruta, sufijo = '') {
