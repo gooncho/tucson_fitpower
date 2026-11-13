@@ -135,6 +135,7 @@ CREATE TABLE PROGRESO (
     peso FLOAT,
     racha_actual INT,
     masa_muscular FLOAT,
+    masa_magra FLOAT,
     grasa FLOAT,
     observaciones TEXT,
     FOREIGN KEY (id_persona) REFERENCES PERSONA(id_persona)

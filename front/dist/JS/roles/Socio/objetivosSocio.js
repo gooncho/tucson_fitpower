@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (modalEl) modalObjetivoInstance = new bootstrap.Modal(modalEl);
     await cargarObjetivos();
 
+    document.getElementById('inputPorcentaje').addEventListener('input', actualizarEstadoPorcentaje);
+
     document.querySelectorAll('.filter-tab').forEach(tab => {
         tab.addEventListener('click', (e) => {
             e.preventDefault();
@@ -78,6 +80,19 @@ function prepararFormulario(objetivo = null) {
         document.getElementById('inputEstado').value = objetivo.estado || 'En curso';
         document.getElementById('inputPorcentaje').value = objetivo.porcentaje || 0;
     }
+    actualizarEstadoPorcentaje();
+}
+
+function actualizarEstadoPorcentaje() {
+    const porcentaje = Number(document.getElementById('inputPorcentaje').value);
+    const estado = document.getElementById('inputEstado');
+    if (porcentaje >= 100) {
+        estado.value = 'Completado';
+        estado.disabled = true;
+    } else {
+        estado.disabled = false;
+        if (estado.value === 'Completado') estado.value = 'En curso';
+    }
 }
 
 // Valida fechas y progreso, y guarda: PUT si se edita, POST si es nuevo.
@@ -86,8 +101,8 @@ async function guardarObjetivo() {
     const descripcion = document.getElementById('inputDescripcion').value.trim();
     const fecha_inicio = document.getElementById('inputFechaInicio').value;
     const fecha_fin = document.getElementById('inputFechaFin').value;
-    const estado = document.getElementById('inputEstado').value;
     const porcentaje = Number(document.getElementById('inputPorcentaje').value);
+    const estado = porcentaje >= 100 ? 'Completado' : document.getElementById('inputEstado').value;
     const mensaje = document.getElementById('mensajeObjetivo');
 
     if (!titulo || !fecha_inicio || !fecha_fin) {

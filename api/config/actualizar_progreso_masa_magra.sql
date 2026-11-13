@@ -1,0 +1,1 @@
+ALTER TABLE PROGRESO ADD COLUMN masa_magra FLOAT NULL AFTER masa_muscular;

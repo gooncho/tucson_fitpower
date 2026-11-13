@@ -16,6 +16,7 @@ $router->post('/logout', 'AuthController@logout');
 // --- Administrador: gestión de socios ---
 $router->get('/socios', 'SocioController@listar');
 $router->post('/socios', 'SocioController@crear');
+$router->post('/socios/:id/membresia', 'SocioController@asignarMembresia');
 $router->put('/socios/:id', 'SocioController@actualizar');
 $router->delete('/socios/:id', 'SocioController@eliminar');
 // --- Lista simple de ejercicios (la usa el socio al armar su rutina) ---
@@ -24,6 +25,7 @@ $router->get('/ejercicios', 'EjercicioController@listar');
 $router->get('/entrenadores', 'EntrenadorController@listar');
 $router->post('/entrenadores', 'EntrenadorController@crear');
 $router->delete('/entrenadores/:id', 'EntrenadorController@eliminar');
+$router->put('/entrenadores/:id/estado', 'EntrenadorController@cambiarEstado');
 // --- Administrador: pagos (compras de productos) ---
 $router->get('/pagos', 'PagoController@listar');
 $router->put('/pagos/:id', 'PagoController@actualizar');
@@ -74,6 +76,7 @@ $router->post('/entrenamientos/completar', 'SocioDashboardController@completarEn
 $router->get('/membresia', 'SocioDashboardController@membresia');
 $router->get('/progreso', 'SocioDashboardController@progreso');
 $router->post('/progreso/peso', 'SocioDashboardController@guardarPeso');
+$router->post('/progreso/medicion', 'SocioDashboardController@guardarMedicion');
 $router->post('/asistencia', 'SocioDashboardController@marcarAsistencia');
 $router->delete('/mis-rutinas/:id', 'SocioDashboardController@eliminarRutina');
 $router->get('/inicio-socio', 'SocioDashboardController@inicio');

@@ -25,13 +25,13 @@ class EntrenadorModel {
                         GROUP_CONCAT(DISTINCT s.dia_semana SEPARATOR ', ') AS dias,
                         TIME_FORMAT(MIN(s.hora_inicio), '%H:%i') AS hora_inicio,
                         TIME_FORMAT(MAX(s.hora_fin), '%H:%i') AS hora_fin,
-                        'Activo' AS estado
+                        CASE WHEN u.activo = 1 THEN 'Activo' ELSE 'Inactivo' END AS estado
                     FROM USUARIO u
                     INNER JOIN TIPOUSUARIO t ON u.id_rol = t.id_rol
                     INNER JOIN PERSONA p ON u.id_usuario = p.id_usuario
                     LEFT JOIN SUPERVISA s ON s.id_entrenador = p.id_persona
-                    WHERE t.nombre_rol = 'Entrenador' AND u.activo = 1
-                    GROUP BY u.id_usuario, p.id_persona, u.nombre_usuario, u.email, p.apellido, p.especialidad";
+                    WHERE t.nombre_rol = 'Entrenador'
+                    GROUP BY u.id_usuario, p.id_persona, u.nombre_usuario, u.email, p.apellido, p.especialidad, u.activo";
             
             $stmt = $this->db->prepare($sql);
             $stmt->execute();

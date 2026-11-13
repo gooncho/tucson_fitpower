@@ -156,6 +156,36 @@ class EntrenadorController {
         }
     }
 
+    public function cambiarEstado($idUsuario) {
+        if (($_SESSION['rol'] ?? '') !== 'Administrador') {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'No autorizado']);
+            return;
+        }
+
+        $datos = json_decode(file_get_contents('php://input'), true);
+        $activo = isset($datos['activo']) ? (int) $datos['activo'] : -1;
+        if (!in_array($activo, [0, 1], true)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Estado inválido']);
+            return;
+        }
+
+        $stmt = $this->db->prepare("UPDATE USUARIO u INNER JOIN TIPOUSUARIO t ON t.id_rol = u.id_rol SET u.activo = :activo WHERE u.id_usuario = :id AND t.nombre_rol = 'Entrenador'");
+        $stmt->execute(['activo' => $activo, 'id' => (int) $idUsuario]);
+        if ($stmt->rowCount() === 0) {
+            $verificar = $this->db->prepare("SELECT COUNT(*) FROM USUARIO u INNER JOIN TIPOUSUARIO t ON t.id_rol = u.id_rol WHERE u.id_usuario = :id AND t.nombre_rol = 'Entrenador'");
+            $verificar->execute(['id' => (int) $idUsuario]);
+            if (!(int) $verificar->fetchColumn()) {
+                http_response_code(404);
+                echo json_encode(['status' => 'error', 'message' => 'Entrenador no encontrado']);
+                return;
+            }
+        }
+
+        echo json_encode(['status' => 'ok', 'message' => $activo ? 'Entrenador activado' : 'Entrenador desactivado']);
+    }
+
     // PUT /api/entrenadores/:id: edita usuario, email y especialidad (con validación).
     public function actualizar($idUsuario) {
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {

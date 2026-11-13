@@ -33,6 +33,7 @@ function render() {
       <td class="col-acciones">
         <a href="#" class="admin-mini btn-ver" data-index="${index}">Ver</a>
         <a href="#" class="admin-mini btn-editar" data-index="${index}">Editar</a>
+        <a href="#" class="admin-mini btn-estado" data-index="${index}">${e.estado === 'Activo' ? 'Desactivar' : 'Activar'}</a>
         <a href="#" class="admin-mini btn-eliminar" data-index="${index}">Eliminar</a>
       </td>
     </tr>`).join("");
@@ -63,6 +64,22 @@ document.querySelectorAll('.btn-eliminar').forEach(btn => {
     btn.addEventListener('click', ev => {
         ev.preventDefault();
         confirmarEliminarEntrenador(lista[btn.dataset.index]);
+    });
+});
+
+document.querySelectorAll('.btn-estado').forEach(btn => {
+    btn.addEventListener('click', async ev => {
+        ev.preventDefault();
+        const entrenador = lista[btn.dataset.index];
+        const activo = entrenador.estado === 'Activo' ? 0 : 1;
+        const respuesta = await API.request('/entrenadores/' + entrenador.id_usuario + '/estado', 'PUT', { activo });
+        if (respuesta.status === 'ok') {
+            await cargar();
+        } else {
+            if (modalTitle) modalTitle.textContent = 'No se pudo cambiar el estado';
+            if (modalBody) modalBody.textContent = respuesta.message || 'Intentá nuevamente.';
+            if (adminModal) adminModal.show();
+        }
     });
 });
 

@@ -91,7 +91,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
     
-    iniciarControlInactividad(TIEMPO_INACTIVIDAD[sesion.data.rol]);
+    const ruta = window.location.pathname.toLowerCase();
+    const rol = sesion.data.rol;
+    let rolPermitido = '';
+
+    if (ruta.includes('/roles/administrador/')) rolPermitido = 'Administrador';
+    if (ruta.includes('/roles/entrenador/')) rolPermitido = 'Entrenador';
+    if (ruta.includes('/roles/socio/')) rolPermitido = 'Socio';
+
+    if (rolPermitido && rol !== rolPermitido) {
+        if (rol === 'Administrador') {
+            window.location.href = '/front/dist/Paginas/roles/administrador/inicioAdministrador.html';
+        } else if (rol === 'Entrenador') {
+            window.location.href = '/front/dist/Paginas/roles/entrenador/inicioEntrenador.html';
+        } else if (rol === 'Socio') {
+            window.location.href = '/front/dist/Paginas/roles/socio/inicioSocio.html';
+        }
+        return;
+    }
+
+    iniciarControlInactividad(TIEMPO_INACTIVIDAD[rol]);
 
     const nombre = document.getElementById('nombre-usuario');
 

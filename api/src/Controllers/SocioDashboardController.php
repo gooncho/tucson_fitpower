@@ -125,9 +125,24 @@ class SocioDashboardController {
     public function progreso() {
         $id = $this->personaActual();
         if (!$id) { $this->responder(null); return; }
-        $stmt = $this->db->prepare('SELECT peso, fecha, racha_actual, masa_muscular, grasa FROM PROGRESO WHERE id_persona = :persona AND peso IS NOT NULL ORDER BY fecha DESC, id_progreso DESC LIMIT 1');
+        $stmt = $this->db->prepare('SELECT peso, fecha, racha_actual, masa_muscular, masa_magra, grasa, observaciones FROM PROGRESO WHERE id_persona = :persona ORDER BY fecha DESC, id_progreso DESC LIMIT 1');
         $stmt->execute(['persona' => $id]);
         $medicion = $stmt->fetch(\PDO::FETCH_ASSOC) ?: [];
+        $stmt = $this->db->prepare('SELECT fecha_nacimiento, altura FROM PERSONA WHERE id_persona = :persona');
+        $stmt->execute(['persona' => $id]);
+        $datosFisicos = $stmt->fetch(\PDO::FETCH_ASSOC) ?: [];
+        $edad = null;
+        if (!empty($datosFisicos['fecha_nacimiento'])) {
+            $nacimiento = new \DateTime($datosFisicos['fecha_nacimiento']);
+            $edad = $nacimiento->diff(new \DateTime('today'))->y;
+        }
+        $altura = !empty($datosFisicos['altura']) ? (float) $datosFisicos['altura'] : null;
+        $stmt = $this->db->prepare('SELECT peso, fecha FROM PROGRESO WHERE id_persona = :persona AND peso IS NOT NULL ORDER BY fecha DESC, id_progreso DESC LIMIT 1');
+        $stmt->execute(['persona' => $id]);
+        $ultimaMedicionPeso = $stmt->fetch(\PDO::FETCH_ASSOC) ?: [];
+        $stmt = $this->db->prepare('SELECT id_progreso, fecha, peso, masa_muscular, masa_magra, grasa, observaciones FROM PROGRESO WHERE id_persona = :persona ORDER BY fecha DESC, id_progreso DESC LIMIT 20');
+        $stmt->execute(['persona' => $id]);
+        $historialProgreso = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $stmt = $this->db->prepare('SELECT COUNT(*) FROM ASIGNA WHERE id_persona = :persona');
         $stmt->execute(['persona' => $id]);
         $rutinas = (int) $stmt->fetchColumn();
@@ -145,11 +160,16 @@ class SocioDashboardController {
         $objetivo = $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
         $racha = $this->calcularRacha($id);
         $this->responder([
-            'peso_actual' => $medicion['peso'] ?? null,
-            'fecha_medicion' => $medicion['fecha'] ?? null,
+            'peso_actual' => $ultimaMedicionPeso['peso'] ?? null,
+            'fecha_medicion' => $ultimaMedicionPeso['fecha'] ?? null,
             'racha' => $racha,
             'masa_muscular' => $medicion['masa_muscular'] ?? null,
+            'masa_magra' => $medicion['masa_magra'] ?? null,
             'grasa' => $medicion['grasa'] ?? null,
+            'edad' => $edad,
+            'altura' => $altura,
+            'observaciones' => $medicion['observaciones'] ?? null,
+            'historial_progreso' => $historialProgreso,
             'asistencias_semana' => $asistenciasSemana,
             'asistencias_mes' => $asistenciasMes,
             'fechas_asistencia' => $fechasAsistencia,
@@ -207,6 +227,82 @@ class SocioDashboardController {
             error_log('Error al guardar peso: ' . $e->getMessage());
             http_response_code(500);
             echo json_encode(['status' => 'error', 'message' => 'No se pudo guardar el peso']);
+        }
+    }
+
+    public function guardarMedicion() {
+        $id = $this->personaActual();
+        if (!$id) {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'No autorizado']);
+            return;
+        }
+
+        $datos = json_decode(file_get_contents('php://input'), true);
+        $peso = $datos['peso'] ?? null;
+        $observaciones = trim((string) ($datos['observaciones'] ?? ''));
+
+        if (!is_numeric($peso) || (float) $peso <= 0 || (float) $peso > 500) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Ingresá un peso válido']);
+            return;
+        }
+
+        if (mb_strlen($observaciones) > 2000) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Las observaciones no pueden superar los 2000 caracteres']);
+            return;
+        }
+
+        try {
+            $stmt = $this->db->prepare('SELECT fecha_nacimiento, altura FROM PERSONA WHERE id_persona = :persona');
+            $stmt->execute(['persona' => $id]);
+            $perfil = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            if (!$perfil || empty($perfil['fecha_nacimiento']) || empty($perfil['altura'])) {
+                http_response_code(400);
+                echo json_encode(['status' => 'error', 'message' => 'Completá tu fecha de nacimiento y altura en Perfil para calcular tus mediciones']);
+                return;
+            }
+
+            $nacimiento = new \DateTime($perfil['fecha_nacimiento']);
+            $edad = $nacimiento->diff(new \DateTime('today'))->y;
+            $altura = (float) $perfil['altura'] / 100;
+            $peso = (float) $peso;
+            $imc = $peso / ($altura * $altura);
+            $grasa = (1.2 * $imc) + (0.23 * $edad) - 10.8 - 5.4;
+
+            if ($grasa < 0 || $grasa > 100) {
+                http_response_code(400);
+                echo json_encode(['status' => 'error', 'message' => 'Los datos ingresados no permiten calcular un porcentaje de grasa válido. Revisá tu peso, altura y fecha de nacimiento']);
+                return;
+            }
+
+            $grasa = round($grasa, 2);
+            $masaMagra = round($peso * (1 - ($grasa / 100)), 2);
+
+            $stmt = $this->db->prepare('INSERT INTO PROGRESO (id_persona, fecha, peso, masa_magra, grasa, observaciones) VALUES (:persona, CURDATE(), :peso, :masa_magra, :grasa, :observaciones)');
+            $stmt->execute([
+                'persona' => $id,
+                'peso' => $peso,
+                'masa_magra' => $masaMagra,
+                'grasa' => $grasa,
+                'observaciones' => $observaciones !== '' ? $observaciones : null
+            ]);
+
+            echo json_encode([
+                'status' => 'ok',
+                'message' => 'Medición guardada',
+                'data' => [
+                    'imc' => round($imc, 2),
+                    'grasa' => $grasa,
+                    'masa_magra' => $masaMagra
+                ]
+            ]);
+        } catch (\Throwable $e) {
+            error_log('Error al guardar medición: ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'No se pudo guardar la medición']);
         }
     }
 

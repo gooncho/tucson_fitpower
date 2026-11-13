@@ -128,6 +128,7 @@ function render() {
                 <td class="col-acciones">
                     <a href="#" class="admin-mini btn-ver" data-id="${socio.id_usuario}">Ver</a>
                     <a href="#" class="admin-mini btn-editar" data-id="${socio.id_usuario}">Editar</a>
+                    <a href="#" class="admin-mini btn-membresia" data-id="${socio.id_usuario}">Membresía</a>
                     <a href="#" class="admin-mini btn-eliminar" data-id="${socio.id_usuario}">Eliminar</a>
                 </td>
             </tr>
@@ -151,6 +152,14 @@ function render() {
                 `;
             }
             if (adminModal) adminModal.show();
+        });
+    });
+
+    document.querySelectorAll('.btn-membresia').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const socio = listaSocios.find(s => s.id_usuario == btn.dataset.id);
+            abrirMembresia(socio);
         });
     });
 
@@ -244,6 +253,43 @@ function confirmarEliminarSocio(socio) {
     adminModal.show();
 }
 
+function abrirMembresia(socio) {
+    modalTitle.textContent = 'Asignar membresía';
+    modalBody.innerHTML = `
+        <p>Seleccioná la membresía para <strong>${esc(socio.nombre_usuario)}</strong>.</p>
+        <form id="formMembresia">
+            <div class="mb-3">
+                <label class="form-label">Plan</label>
+                <select class="admin-select" name="id_plan" required>
+                    <option value="">Seleccionar plan</option>
+                    <option value="1">Plan Básico</option>
+                    <option value="2">Plan Pro</option>
+                    <option value="3">Plan Elite</option>
+                </select>
+            </div>
+            <p class="text-danger" id="errorMembresia"></p>
+            <button type="submit" class="admin-btn">Asignar membresía</button>
+        </form>
+    `;
+
+    document.getElementById('formMembresia').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const boton = e.target.querySelector('button[type="submit"]');
+        const datos = Object.fromEntries(new FormData(e.target));
+        boton.disabled = true;
+        const respuesta = await API.request('/socios/' + socio.id_usuario + '/membresia', 'POST', datos);
+        if (respuesta.status === 'ok') {
+            await cargarSocios();
+            adminModal.hide();
+        } else {
+            document.getElementById('errorMembresia').textContent = respuesta.message || 'No se pudo asignar la membresía';
+        }
+        boton.disabled = false;
+    });
+
+    adminModal.show();
+}
+
 // Modal para crear un socio nuevo.
 function abrirNuevo() {
     modalTitle.textContent = "Nuevo Socio";
@@ -270,8 +316,8 @@ function abrirNuevo() {
                 <select class="admin-select" name="id_plan">
                     <option value="">Sin plan</option>
                     <option value="1">Básico</option>
-                    <option value="2">Premium</option>
-                    <option value="3">Trimestral</option>
+                    <option value="2">Pro</option>
+                    <option value="3">Elite</option>
                 </select>
             </div>
             <p class="text-danger" id="errorNuevo"></p>

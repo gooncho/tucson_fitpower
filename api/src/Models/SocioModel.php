@@ -40,6 +40,20 @@ class SocioModel {
     }
 
 
+    public function asignarMembresia($idUsuario, $idPlan) {
+        $buscar = $this->db->prepare("SELECT p.id_persona FROM PERSONA p INNER JOIN USUARIO u ON u.id_usuario = p.id_usuario INNER JOIN TIPOUSUARIO t ON t.id_rol = u.id_rol WHERE u.id_usuario = :id AND t.nombre_rol = 'Socio'");
+        $buscar->execute(['id' => $idUsuario]);
+        $idPersona = $buscar->fetchColumn();
+
+        if (!$idPersona) {
+            return false;
+        }
+
+        $stmt = $this->db->prepare("UPDATE PERSONA SET id_plan = :plan, fecha_inicio = CURDATE(), fecha_fin = DATE_ADD(CURDATE(), INTERVAL 1 MONTH) WHERE id_persona = :id");
+        $stmt->execute(['plan' => $idPlan, 'id' => $idPersona]);
+        return true;
+    }
+
     // Elimina al socio y todo lo relacionado (rutinas asignadas, progreso, compras,
     // reseñas, etc.) en una transacción. Es permanente.
     public function eliminarSocio($id) {

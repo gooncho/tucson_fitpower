@@ -67,6 +67,37 @@ class SocioController {
     }
 
 
+    public function asignarMembresia($id) {
+        if (($_SESSION['rol'] ?? '') !== 'Administrador') {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'No autorizado'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        $datos = json_decode(file_get_contents('php://input'), true);
+        $idPlan = (int) ($datos['id_plan'] ?? 0);
+
+        if ($idPlan < 1 || $idPlan > 3) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Seleccioná un plan válido'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
+
+        try {
+            $modelo = new SocioModel($this->db);
+            if (!$modelo->asignarMembresia((int) $id, $idPlan)) {
+                http_response_code(404);
+                echo json_encode(['status' => 'error', 'message' => 'No se encontró el socio'], JSON_UNESCAPED_UNICODE);
+                return;
+            }
+            echo json_encode(['status' => 'ok', 'message' => 'Membresía asignada'], JSON_UNESCAPED_UNICODE);
+        } catch (\Throwable $e) {
+            error_log('Error al asignar membresía: ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'No se pudo asignar la membresía'], JSON_UNESCAPED_UNICODE);
+        }
+    }
+
     // DELETE /api/socios/:id: elimina al socio y todos sus datos (ver SocioModel).
     public function eliminar($id) {
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {

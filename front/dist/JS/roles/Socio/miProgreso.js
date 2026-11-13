@@ -7,6 +7,8 @@
 // Semana que se ve en el calendario (se mueve con las flechas).
 let semanaActual = new Date();
 let fechasAsistencia = [];
+let edadSocio = null;
+let alturaSocio = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     await cargarProgresoSocio();
@@ -20,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     document.getElementById('formPeso')?.addEventListener('submit', guardarPeso);
+    document.getElementById('inputPeso')?.addEventListener('input', actualizarCalculos);
     document.getElementById('btnMarcarAsistencia')?.addEventListener('click', marcarAsistencia);
 
     const btnDetalles = document.getElementById('btnVerDetalles');
@@ -38,9 +41,13 @@ async function cargarProgresoSocio() {
     if (!data) return;
 
     fechasAsistencia = Array.isArray(data.fechas_asistencia) ? data.fechas_asistencia : [];
+    edadSocio = data.edad !== null ? Number(data.edad) : null;
+    alturaSocio = data.altura !== null ? Number(data.altura) : null;
     renderCalendario();
+    actualizarCalculos();
 
     document.getElementById('valorPeso').textContent = data.peso_actual !== null ? `${data.peso_actual} kg` : 'Sin mediciones';
+    renderHistorialProgreso(data.historial_progreso || []);
     document.getElementById('fechaPeso').textContent = data.fecha_medicion ? `Última medición: ${formatearFecha(data.fecha_medicion)}` : 'Sin mediciones registradas';
     document.getElementById('valorRutinas').textContent = `${data.asistencias_semana} días`;
     document.getElementById('valorAsistencia').textContent = `${data.asistencias_mes} días`;
@@ -64,24 +71,85 @@ async function cargarProgresoSocio() {
     }
 }
 
-// Registra el peso de hoy.
+function actualizarCalculos() {
+    const peso = Number(document.getElementById('inputPeso')?.value || 0);
+    const campoIMC = document.getElementById('inputIMC');
+    const campoGrasa = document.getElementById('inputGrasa');
+    const campoMasa = document.getElementById('inputMasaMagra');
+    const mensaje = document.getElementById('mensajeCalculo');
+
+    if (!peso || !edadSocio || !alturaSocio) {
+        campoIMC.value = '';
+        campoGrasa.value = '';
+        campoMasa.value = '';
+        mensaje.textContent = !edadSocio || !alturaSocio ? 'Completá tu fecha de nacimiento y altura en Perfil para calcular estos valores.' : 'Ingresá tu peso para ver los cálculos.';
+        return;
+    }
+
+    const alturaMetros = alturaSocio / 100;
+    const imc = peso / (alturaMetros * alturaMetros);
+    const grasa = (1.2 * imc) + (0.23 * edadSocio) - 10.8 - 5.4;
+    const masaMagra = peso * (1 - grasa / 100);
+
+    campoIMC.value = imc.toFixed(2);
+    if (grasa < 0 || grasa > 100) {
+        campoGrasa.value = 'No válido';
+        campoMasa.value = 'No válido';
+        mensaje.textContent = 'Revisá los datos del perfil y el peso ingresado.';
+        return;
+    }
+
+    campoGrasa.value = `${grasa.toFixed(2)} %`;
+    campoMasa.value = `${masaMagra.toFixed(2)} kg`;
+    mensaje.textContent = 'Porcentaje de grasa y masa magra estimados automáticamente.';
+}
+
 async function guardarPeso(e) {
     e.preventDefault();
-    const input = document.getElementById('inputPeso');
+    const peso = document.getElementById('inputPeso').value;
+    const observaciones = document.getElementById('inputObservaciones').value.trim();
     const mensaje = document.getElementById('mensajePeso');
-    const peso = Number(input.value);
-    if (!peso || peso <= 0 || peso > 500) {
-        mensaje.textContent = 'Ingresá un peso válido.';
+
+    if (!peso) {
+        mensaje.textContent = 'Ingresá tu peso para calcular la medición.';
         mensaje.className = 'small mt-2 mb-0 text-danger';
         return;
     }
-    const respuesta = await API.request('/progreso/peso', 'POST', { peso });
-    mensaje.textContent = respuesta.message || (respuesta.status === 'ok' ? 'Peso guardado.' : 'No se pudo guardar el peso.');
+
+    const respuesta = await API.request('/progreso/medicion', 'POST', {
+        peso,
+        observaciones
+    });
+
+    mensaje.textContent = respuesta.message || (respuesta.status === 'ok' ? 'Medición guardada.' : 'No se pudo guardar la medición.');
     mensaje.className = 'small mt-2 mb-0 ' + (respuesta.status === 'ok' ? 'text-success' : 'text-danger');
     if (respuesta.status === 'ok') {
-        input.value = '';
+        document.getElementById('formPeso').reset();
+        actualizarCalculos();
         await cargarProgresoSocio();
     }
+}
+
+function renderHistorialProgreso(registros) {
+    const tbody = document.getElementById('tbodyProgreso');
+    if (!tbody) return;
+    if (!registros.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-with">Todavía no hay mediciones.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = registros.map(registro => `
+        <tr>
+            <td>${formatearFecha(registro.fecha)}</td>
+            <td>${registro.peso !== null ? `${registro.peso} kg` : '—'}</td>
+            <td>${registro.masa_magra !== null ? `${registro.masa_magra} kg` : '—'}</td>
+            <td>${registro.grasa !== null ? `${registro.grasa}%` : '—'}</td>
+            <td>${escTexto(registro.observaciones || '—')}</td>
+        </tr>
+    `).join('');
+}
+
+function escTexto(valor) {
+    return String(valor ?? '').replace(/[&<>"']/g, caracter => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[caracter]));
 }
 
 // Marca la asistencia de hoy (una vez por día).

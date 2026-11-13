@@ -82,20 +82,51 @@
       </div>
     </div>
     <section class="card-panel mb-4" style="max-width: 1050px;">
-      <div class="d-flex flex-wrap align-items-end justify-content-between gap-3">
-        <div>
-          <h3 class="mb-1" style="font-size: 19px; font-weight: 700;">Registrar peso</h3>
-          <p class="text-with mb-0" style="font-size: 13px;">Guardá una nueva medición en tu progreso</p>
-        </div>
-        <form id="formPeso" class="d-flex flex-wrap gap-2 align-items-end">
-          <div>
-            <label for="inputPeso" class="form-label text-with mb-1">Peso en kg</label>
-            <input type="number" id="inputPeso" class="form-control bg-dark text-light border-secondary" min="1" max="500" step="0.1" placeholder="Ej. 75.5" required>
-          </div>
-          <button type="submit" class="btn-lime">Guardar peso</button>
-        </form>
+      <div class="mb-3">
+        <h3 class="mb-1" style="font-size: 19px; font-weight: 700;">Registrar medición</h3>
+        <p class="text-with mb-0" style="font-size: 13px;">Guardá tu peso y observaciones. El IMC, la grasa corporal y la masa magra se calculan automáticamente</p>
       </div>
+      <form id="formPeso">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label for="inputPeso" class="form-label text-with mb-1">Peso en kg</label>
+            <input type="number" id="inputPeso" class="form-control bg-dark text-light border-secondary" min="1" max="500" step="0.1" placeholder="Ej. 75.5">
+          </div>
+          <div class="col-md-4">
+            <label for="inputIMC" class="form-label text-with mb-1">IMC estimado</label>
+            <input type="text" id="inputIMC" class="form-control bg-dark text-light border-secondary" readonly placeholder="Automático">
+          </div>
+          <div class="col-md-4">
+            <label for="inputGrasa" class="form-label text-with mb-1">Grasa corporal estimada</label>
+            <input type="text" id="inputGrasa" class="form-control bg-dark text-light border-secondary" readonly placeholder="Automático">
+          </div>
+          <div class="col-md-4">
+            <label for="inputMasaMagra" class="form-label text-with mb-1">Masa magra estimada</label>
+            <input type="text" id="inputMasaMagra" class="form-control bg-dark text-light border-secondary" readonly placeholder="Automático">
+          </div>
+          <div class="col-12">
+            <p id="mensajeCalculo" class="text-with small mb-0">Ingresá tu peso para ver los cálculos.</p>
+          </div>
+          <div class="col-12">
+            <label for="inputObservaciones" class="form-label text-with mb-1">Observaciones personales</label>
+            <textarea id="inputObservaciones" class="form-control bg-dark text-light border-secondary" rows="3" maxlength="2000" placeholder="Escribí cómo te sentiste, cambios que notaste o cualquier observación..."></textarea>
+          </div>
+          <div class="col-12 d-flex justify-content-end">
+            <button type="submit" class="btn-lime">Guardar medición</button>
+          </div>
+        </div>
+      </form>
       <p id="mensajePeso" class="small mt-2 mb-0"></p>
+    </section>
+
+    <section class="card-panel mb-4" style="max-width: 1050px;">
+      <h3 class="mb-3" style="font-size: 19px; font-weight: 700;">Historial de mediciones</h3>
+      <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0">
+          <thead><tr><th>Fecha</th><th>Peso</th><th>Masa magra</th><th>Grasa</th><th>Observaciones</th></tr></thead>
+          <tbody id="tbodyProgreso"><tr><td colspan="5" class="text-with">Todavía no hay mediciones.</td></tr></tbody>
+        </table>
+      </div>
     </section>
 
     <section class="card-panel mb-4" style="max-width: 1050px;">
