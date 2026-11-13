@@ -26,6 +26,7 @@ class EntrenadorController {
 
         echo json_encode($entrenadores, JSON_UNESCAPED_UNICODE);
     }
+    
     public function crear() {
 
         if (($_SESSION['rol'] ?? '') !== 'Administrador') {
