@@ -30,5 +30,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>`;
     }).join('') : '<p>No hay membresías registradas.</p>';
     document.getElementById('productosBajoStock').innerHTML = productos.length ? productos.map(p => `<div class="admin-producto"><div><strong>${escAdmin(p.nombre)}</strong><small>Stock actual: ${escAdmin(p.stock)}</small></div><span>${Number(p.stock) < 10 ? 'Crítico' : 'Bajo'}</span></div>`).join('') : '<p>No hay productos con stock bajo.</p>';
-    document.getElementById('membresiasPorVencer').innerHTML = porVencer.length ? porVencer.map(p => `<div class="col-md-4 col-lg-2"><div class="admin-membresia"><strong>${escAdmin(p.nombre_usuario)} ${escAdmin(p.apellido || '')}</strong><small>${escAdmin(p.plan || 'Sin plan')} · ${escAdmin(p.dias)} días</small></div></div>`).join('') : '<p>No hay membresías próximas a vencer.</p>';
+            function renderPorVencer() {
+        const contenedor = document.getElementById('membresiasPorVencer');
+        if (porVencer.length === 0) {
+            contenedor.innerHTML = '<p>No hay membresías próximas a vencer.</p>';
+            return;
+        }
+        const pagina = paginar(porVencer, renderPorVencer, 6);
+        contenedor.innerHTML = pagina.map(p => `<div class="col-md-4 col-lg-2"><div class="admin-membresia"><strong>${escAdmin(p.nombre_usuario)} ${escAdmin(p.apellido || '')}</strong><small>${escAdmin(p.plan || 'Sin plan')} · ${escAdmin(p.dias)} días</small></div></div>`).join('');
+    }
+    renderPorVencer();
 });

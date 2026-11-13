@@ -83,9 +83,8 @@ async function cargarSocios() {
 const POR_PAGINA = 10;
 let paginaActual = 1;
 
-function paginar(lista, render) {
-  const total = Math.max(1, Math.ceil(lista.length / POR_PAGINA));
-  if (paginaActual > total) paginaActual = total;
+function paginar(lista, render, porPagina = POR_PAGINA) {
+  const total = Math.max(1, Math.ceil(lista.length / porPagina));
 
   const controles = $("paginacion");
   if (controles) {
@@ -115,8 +114,8 @@ function paginar(lista, render) {
     }
   }
 
-  const inicio = (paginaActual - 1) * POR_PAGINA;
-  return lista.slice(inicio, inicio + POR_PAGINA);
+    const inicio = (paginaActual - 1) * porPagina;
+  return lista.slice(inicio, inicio + porPagina);
 }
 
 document.addEventListener('DOMContentLoaded', cargarSocios);
