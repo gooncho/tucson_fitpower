@@ -206,3 +206,18 @@
     color: #ff7777;
     border-color: #ff7777;
 }
+.admin-btn.peligro {
+    background: #ff6b6b;
+    border-color: #ff6b6b;
+    color: #0a0a0a;
+}
+
+.admin-btn.peligro:hover {
+    background: #ff5252;
+    border-color: #ff5252;
+}
+
+.admin-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

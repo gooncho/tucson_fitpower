@@ -141,23 +141,10 @@ function render() {
     });
 
     document.querySelectorAll('.btn-eliminar').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
+        btn.addEventListener('click', (e) => {
             e.preventDefault();
             const socio = listaSocios.find(s => s.id_usuario == btn.dataset.id);
-            btn.style.pointerEvents = 'none';
-            try {
-                const respuesta = await API.request('/socios/' + socio.id_usuario, 'DELETE');
-                if (respuesta.status === 'ok') {
-                    listaSocios = listaSocios.filter(item => item.id_usuario != socio.id_usuario);
-                    render();
-                } else {
-                    btn.style.pointerEvents = '';
-                    console.error(respuesta.message || 'No se pudo eliminar al socio');
-                }
-            } catch (error) {
-                btn.style.pointerEvents = '';
-                console.error(error);
-            }
+            if (socio) confirmarEliminarSocio(socio);
         });
     });
 
@@ -211,6 +198,35 @@ function render() {
             if (adminModal) adminModal.show();
         });
     });
+}
+
+function confirmarEliminarSocio(socio) {
+    modalTitle.textContent = 'Eliminar socio';
+    modalBody.innerHTML = `
+        <p>¿Seguro que querés eliminar a <strong>${esc(socio.nombre_usuario)}</strong>?</p>
+        <p class="small" style="color: #9c9c98;">
+            Se borran para siempre su cuenta, rutinas, progreso, asistencias, reseñas y compras.
+            Si solo querés que no pueda entrar, usá <strong>Editar</strong> y ponelo como Inactivo.
+        </p>
+        <p id="errorEliminar" class="text-danger small mb-3"></p>
+        <button type="button" class="admin-btn peligro" id="btnConfirmarEliminar">Sí, eliminar</button>`;
+
+    document.getElementById('btnConfirmarEliminar').addEventListener('click', async (ev) => {
+        const boton = ev.currentTarget;
+        boton.disabled = true;
+
+        const respuesta = await API.request('/socios/' + socio.id_usuario, 'DELETE');
+        if (respuesta.status === 'ok') {
+            listaSocios = listaSocios.filter(s => s.id_usuario != socio.id_usuario);
+            adminModal.hide();
+            render();
+        } else {
+            boton.disabled = false;
+            document.getElementById('errorEliminar').textContent = respuesta.message || 'No se pudo eliminar al socio';
+        }
+    });
+
+    adminModal.show();
 }
 
 function abrirNuevo() {

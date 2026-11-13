@@ -676,6 +676,10 @@
         "Página anterior": "Previous page",
         "Página siguiente": "Next page",
         "Tu sesión se cerró por inactividad. Iniciá sesión de nuevo.": "Your session was closed due to inactivity. Please log in again.",
+        "Eliminar socio": "Delete member",
+        "Sí, eliminar": "Yes, delete",
+        "Se borran para siempre su cuenta, rutinas, progreso, asistencias, reseñas y compras.": "Their account, routines, progress, attendance, reviews and purchases will be permanently deleted.",
+        "No se pudo eliminar al socio": "Couldn't delete the member",
     };
 
     const unidades = { "día": "day", "días": "days", "semana": "week", "semanas": "weeks", "mes": "month", "meses": "months", "año": "year", "años": "years" };
