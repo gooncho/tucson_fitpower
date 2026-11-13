@@ -680,6 +680,9 @@
         "Sí, eliminar": "Yes, delete",
         "Se borran para siempre su cuenta, rutinas, progreso, asistencias, reseñas y compras.": "Their account, routines, progress, attendance, reviews and purchases will be permanently deleted.",
         "No se pudo eliminar al socio": "Couldn't delete the member",
+        "Eliminar entrenador": "Delete trainer",
+        "No tiene socios asignados.": "Has no assigned members.",
+        "No se pudo eliminar el entrenador": "Couldn't delete the trainer",
     };
 
     const unidades = { "día": "day", "días": "days", "semana": "week", "semanas": "weeks", "mes": "month", "meses": "months", "año": "year", "años": "years" };

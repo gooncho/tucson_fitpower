@@ -50,26 +50,12 @@ function render() {
       });
   });
 
-  document.querySelectorAll('.btn-eliminar').forEach(btn => {
-      btn.addEventListener('click', async ev => {
-          ev.preventDefault();
-          const entrenador = lista[btn.dataset.index];
-          btn.style.pointerEvents = 'none';
-          try {
-              const respuesta = await API.request('/entrenadores/' + entrenador.id_usuario, 'DELETE');
-              if (respuesta.status === 'ok') {
-                  entrenadores = entrenadores.filter(item => item.id_usuario !== entrenador.id_usuario);
-                  render();
-              } else {
-                  btn.style.pointerEvents = '';
-                  console.error(respuesta.message || 'No se pudo eliminar el entrenador');
-              }
-          } catch (error) {
-              btn.style.pointerEvents = '';
-              console.error(error);
-          }
-      });
-  });
+document.querySelectorAll('.btn-eliminar').forEach(btn => {
+    btn.addEventListener('click', ev => {
+        ev.preventDefault();
+        confirmarEliminarEntrenador(lista[btn.dataset.index]);
+    });
+});
 
   document.querySelectorAll('.btn-editar').forEach(btn => {
       btn.addEventListener('click', (ev) => {
@@ -108,6 +94,40 @@ function render() {
           if (adminModal) adminModal.show();
       });
   });
+}
+
+function confirmarEliminarEntrenador(entrenador) {
+    const cantidad = Number(entrenador.socios_asignados) || 0;
+    const avisoSocios = cantidad > 0
+        ? `Sus ${cantidad} socio${cantidad === 1 ? '' : 's'} asignado${cantidad === 1 ? '' : 's'} van a quedar sin entrenador.`
+        : 'No tiene socios asignados.';
+
+    modalTitle.textContent = 'Eliminar entrenador';
+    modalBody.innerHTML = `
+        <p>¿Seguro que querés eliminar a <strong>${esc(entrenador.nombre_usuario)}</strong>?</p>
+        <p class="small" style="color: #9c9c98;">
+            Se borran para siempre su cuenta y sus horarios. ${avisoSocios}
+            Las rutinas que les armó siguen asignadas a los socios. Esta acción no se puede deshacer.
+        </p>
+        <p id="errorEliminar" class="text-danger small mb-3"></p>
+        <button type="button" class="admin-btn peligro" id="btnConfirmarEliminar">Sí, eliminar</button>`;
+
+    document.getElementById('btnConfirmarEliminar').addEventListener('click', async (ev) => {
+        const boton = ev.currentTarget;
+        boton.disabled = true;
+
+        const respuesta = await API.request('/entrenadores/' + entrenador.id_usuario, 'DELETE');
+        if (respuesta.status === 'ok') {
+            entrenadores = entrenadores.filter(item => item.id_usuario !== entrenador.id_usuario);
+            adminModal.hide();
+            render();
+        } else {
+            boton.disabled = false;
+            document.getElementById('errorEliminar').textContent = respuesta.message || 'No se pudo eliminar el entrenador';
+        }
+    });
+
+    adminModal.show();
 }
 
 const diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
