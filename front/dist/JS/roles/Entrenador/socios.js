@@ -94,8 +94,11 @@ function MostrarSocios(lista) {
 
 function FiltrarSocios() {
     const texto = Normalizar(document.getElementById('buscar-socio').value.trim());
+    const estado = document.getElementById('estado-socio').value;
+
     const filtrados = TodoslosSocios.filter(s =>
-        Normalizar(`${s.usuario} ${s.apellido || ''}`).includes(texto)
+        Normalizar(`${s.usuario} ${s.apellido || ''}`).includes(texto) &&
+        (!estado || EstadoMembresia(s.fecha_fin) === estado)
     );
     MostrarSocios(filtrados);
 }
@@ -103,6 +106,10 @@ function FiltrarSocios() {
 document.addEventListener('DOMContentLoaded', () => {
     CargarSocios();
     document.getElementById('buscar-socio').addEventListener('input', () => {
+        PagSocios.reiniciar();
+        FiltrarSocios();
+    });
+    document.getElementById('estado-socio').addEventListener('change', () => {
         PagSocios.reiniciar();
         FiltrarSocios();
     });

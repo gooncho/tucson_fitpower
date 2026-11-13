@@ -686,6 +686,10 @@
         "Eliminar producto": "Delete product",
         "No se puede eliminar: el producto tiene compras asociadas": "Can't delete: the product has purchases",
         "No se pudo eliminar el producto": "Couldn't delete the product",
+        "Todos los estados": "All statuses",
+        "Activos": "Active",
+        "Vencidos": "Expired",
+        "Sin plan": "No plan",
     };
 
     const unidades = { "día": "day", "días": "days", "semana": "week", "semanas": "weeks", "mes": "month", "meses": "months", "año": "year", "años": "years" };
