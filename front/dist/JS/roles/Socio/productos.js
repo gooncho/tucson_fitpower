@@ -9,7 +9,7 @@
 
 // Cuántos productos se muestran antes de apretar "Ver más productos".
 const PRODUCTOS_VISIBLES = 6;
-const CARPETA_PRODUCTOS = '/front/dist/assets/productos/';
+const CARPETA_PRODUCTOS = '/front/dist/assets/Productos/';
 const IMAGEN_POR_DEFECTO = '/front/dist/assets/FITPOWER.png';
 // Producto abierto en el modal.
 let ProductoActual = null;
