@@ -1,30 +1,38 @@
-# Archivos y carpetas ocultos (.env, .git, .htaccess...)
-    RedirectMatch 404 /\.
-# Código y configuración del backend: PHP los usa por dentro, nadie los pide por URL
-    RedirectMatch 404 ^/api/(config|src)/
-# Archivos de base de datos, Docker y documentación
-    RedirectMatch 404 \.(sql|yml|yaml|md|log|bak)$
-    RedirectMatch 404 ^/Dockerfile$
+# Archivos que nunca se muestran
+RedirectMatch 404 /\.
+RedirectMatch 404 ^/api/(config|src)/
+RedirectMatch 404 \.(sql|yml|yaml|md|log|bak)$
+RedirectMatch 404 ^/Dockerfile$
 
-<IfModule mod_rewrite.c> 
+<IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # ====================================================
-    # 1. TRÁFICO DE LA API (Los repartidores)
-    # ====================================================
-    # Si la URL solicitada empieza con "api/"...
+    # API: igual que antes
     RewriteCond %{REQUEST_URI} ^/api/
-    # ...y no es un archivo físico que exista (como una imagen)...
     RewriteCond %{REQUEST_FILENAME} !-f
-    # ...y tampoco es una carpeta real...
     RewriteCond %{REQUEST_FILENAME} !-d
-    # ...entonces, manda TODO al index.php de la carpeta api.
     RewriteRule ^api/(.*)$ /api/index.php [L,QSA]
 
+    # --- A) Si alguien entra con una dirección vieja, se la cambiamos por la corta ---
+    # /front/dist/Paginas/roles/socio/Rutinas.html  ->  /socio/Rutinas
+    # /socio/Rutinas.html                            ->  /socio/Rutinas
+    RewriteCond %{THE_REQUEST} \s/(?:front/dist/Paginas/roles/)?(socio|entrenador|administrador)/(\w+)\.html[\s?]
+    RewriteRule ^ /%1/%2 [R=302,L]
 
-    # ====================================================
-    # 2. TRÁFICO DEL FRONTEND (Los clientes)
-    # ====================================================
-    # Redirige físicamente a la carpeta front cuando entran a la raíz
-    RewriteRule ^$ /front/index.html [R=301,L]
+    # /front/dist/Paginas/acceso.html  ->  /acceso
+    RewriteCond %{THE_REQUEST} \s/(?:front/)?dist/Paginas/acceso\.html[\s?]
+    RewriteRule ^ /acceso [R=302,L]
+
+    # /index.html o /front/index.html  ->  /
+    RewriteCond %{THE_REQUEST} \s/(?:front/)?index\.html[\s?]
+    RewriteRule ^ / [R=302,L]
+
+    # --- B) Direcciones cortas -> archivo real (la barra NO cambia) ---
+    RewriteRule ^$ front/index.html [L]
+    RewriteRule ^acceso$ front/dist/Paginas/acceso.html [L]
+    RewriteRule ^(socio|entrenador|administrador)/(\w+)$ front/dist/Paginas/roles/$1/$2.html [L]
+
+    # --- C) CSS, JS e imágenes ---
+    RewriteRule ^(CSS|JS|assets)/(.*)$ front/dist/$1/$2 [L]
+    RewriteRule ^dist/(.*)$ front/dist/$1 [L]
 </IfModule>

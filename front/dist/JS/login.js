@@ -75,11 +75,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Manda a cada usuario a su panel: 1 = Administrador, 2 = Entrenador, 3 = Socio.
     function redirigirSegunRol(rol) {
         if (rol == 1) {
-            window.location.href = './roles/administrador/inicioAdministrador.html';
+            window.location.href = './administrador/inicioAdministrador.html';
         } else if (rol == 2) {
-            window.location.href = './roles/entrenador/inicioEntrenador.html';
+            window.location.href = './entrenador/inicioEntrenador.html';
         } else if (rol == 3) {
-            window.location.href = './roles/socio/inicioSocio.html';
+            window.location.href = './socio/inicioSocio.html';
         } else {
             alert('Tipo de usuario no válido');
         }

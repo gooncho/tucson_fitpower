@@ -95,17 +95,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const rol = sesion.data.rol;
     let rolPermitido = '';
 
-    if (ruta.includes('/roles/administrador/')) rolPermitido = 'Administrador';
-    if (ruta.includes('/roles/entrenador/')) rolPermitido = 'Entrenador';
-    if (ruta.includes('/roles/socio/')) rolPermitido = 'Socio';
+    if (ruta.includes('/administrador/')) rolPermitido = 'Administrador';
+    if (ruta.includes('/entrenador/')) rolPermitido = 'Entrenador';
+    if (ruta.includes('/socio/')) rolPermitido = 'Socio';
 
     if (rolPermitido && rol !== rolPermitido) {
         if (rol === 'Administrador') {
-            window.location.href = '/front/dist/Paginas/roles/administrador/inicioAdministrador.html';
+            window.location.href = '/administrador/inicioAdministrador.html';
         } else if (rol === 'Entrenador') {
-            window.location.href = '/front/dist/Paginas/roles/entrenador/inicioEntrenador.html';
+            window.location.href = '/entrenador/inicioEntrenador.html';
         } else if (rol === 'Socio') {
-            window.location.href = '/front/dist/Paginas/roles/socio/inicioSocio.html';
+            window.location.href = '/socio/inicioSocio.html';
         }
         return;
     }
@@ -184,7 +184,7 @@ function iniciarControlInactividad(segundos) {
         if (cerrando) return;
         cerrando = true;
         await API.request('/logout', 'POST');
-        window.location.href = '/front/dist/Paginas/acceso.html?motivo=inactividad';
+        window.location.href = '/acceso.html?motivo=inactividad';
     }
 
     ['click', 'keydown', 'mousemove', 'scroll', 'touchstart'].forEach(evento => {
