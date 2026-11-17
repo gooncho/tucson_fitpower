@@ -1,9 +1,15 @@
-<IfModule mod_rewrite.c> 
 RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
 
-# Redirige cualquier petición no encontrada al index del HTML
-RewriteRule ^(.*)$ index.html [QSA,L]
+# Direcciones viejas que pasan por /front/ -> dirección corta
 
-</IfModule>
+# /front/dist/Paginas/roles/socio/Rutinas.html -> /socio/Rutinas
+RewriteCond %{THE_REQUEST} \s/front/dist/Paginas/roles/(socio|entrenador|administrador)/(\w+)\.html[\s?]
+RewriteRule ^ /%1/%2 [R=302,L]
+
+# /front/dist/Paginas/acceso.html -> /acceso
+RewriteCond %{THE_REQUEST} \s/front/dist/Paginas/acceso\.html[\s?]
+RewriteRule ^ /acceso [R=302,L]
+
+# /front/ o /front/index.html -> /
+RewriteCond %{THE_REQUEST} \s/front/(index\.html)?[\s?]
+RewriteRule ^ / [R=302,L]
